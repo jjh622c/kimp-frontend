@@ -1,0 +1,126 @@
+import Link from 'next/link'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
+import { redirect } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
+import { getLatestOraclePrice } from '@/lib/data/oracle'
+import { ConnectButton } from '@/components/wallet/ConnectButton'
+import { OracleUpdateForm } from '@/components/admin/OracleUpdateForm'
+import { AdminInvestorTable } from '@/components/admin/AdminInvestorTable'
+import { InviteLinkGenerator } from '@/components/admin/InviteLinkGenerator'
+
+export default async function AdminPage() {
+  const session = await getServerSession(authOptions)
+  if ((session?.user as { role?: string })?.role !== 'admin') {
+    redirect('/dashboard')
+  }
+
+  let investorsSerialized: {
+    id: string
+    name: string | null
+    email: string | null
+    createdAt: string
+    investment: {
+      id: string
+      amountKrw: number
+      tokenAmount: number
+      status: string
+      contractSigned: boolean
+      depositConfirmed: boolean
+      tokenMinted: boolean
+    } | null
+  }[] = []
+
+  let withdrawSerialized: {
+    id: string
+    tokenAmount: number
+    krwAmount: number
+    txHash: string | null
+    status: string
+    createdAt: string
+    user: { name: string | null; email: string | null }
+  }[] = []
+
+  let tokenPrice = 1000
+
+  try {
+    const [rawInvestors, rawWithdraws, price] = await Promise.all([
+      prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          createdAt: true,
+          investment: {
+            select: {
+              id: true,
+              amountKrw: true,
+              tokenAmount: true,
+              status: true,
+              contractSigned: true,
+              depositConfirmed: true,
+              tokenMinted: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.withdrawRequest.findMany({
+        select: {
+          id: true,
+          tokenAmount: true,
+          krwAmount: true,
+          txHash: true,
+          status: true,
+          createdAt: true,
+          user: { select: { name: true, email: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      getLatestOraclePrice(),
+    ])
+
+    tokenPrice = price
+
+    investorsSerialized = rawInvestors.map((inv) => ({
+      ...inv,
+      createdAt: inv.createdAt.toISOString(),
+      investment: inv.investment
+        ? { ...inv.investment, tokenAmount: Number(inv.investment.tokenAmount) }
+        : null,
+    }))
+
+    withdrawSerialized = rawWithdraws.map((req) => ({
+      ...req,
+      tokenAmount: Number(req.tokenAmount),
+      createdAt: req.createdAt.toISOString(),
+    }))
+  } catch {
+    // DB 미연결 시 빈 상태로 렌더
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0a0e1a]">
+      <nav className="border-b border-white/[0.07]">
+        <div className="max-w-[1280px] mx-auto flex items-center justify-between px-8 max-sm:px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="text-[17px] font-medium text-white tracking-[0.4px] no-underline"
+            >
+              [<span className="text-[#3d8ef8]">P</span>ROJECT]
+            </Link>
+            <span className="text-xs text-white/30 max-sm:hidden">· Admin</span>
+          </div>
+          <ConnectButton />
+        </div>
+      </nav>
+
+      <div className="max-w-[1280px] mx-auto px-8 max-sm:px-4 py-8">
+        <InviteLinkGenerator />
+        <OracleUpdateForm currentPrice={tokenPrice} />
+        <AdminInvestorTable investors={investorsSerialized} withdrawRequests={withdrawSerialized} />
+      </div>
+    </div>
+  )
+}

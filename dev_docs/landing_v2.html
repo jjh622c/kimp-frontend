@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[PROJECT NAME] — Private Arbitrage Protocol</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0e1a; color: #e8eaf0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+  /* NAV */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; border-bottom: 0.5px solid rgba(255,255,255,0.07); position: sticky; top: 0; background: #0a0e1a; z-index: 100; }
+  .nav-logo { font-size: 17px; font-weight: 500; color: #fff; letter-spacing: 0.4px; }
+  .nav-logo span { color: #3d8ef8; }
+  .nav-right { display: flex; align-items: center; gap: 12px; }
+  .nav-link { font-size: 13px; color: rgba(255,255,255,0.4); cursor: pointer; text-decoration: none; }
+  .nav-btn { background: #3d8ef8; color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .nav-btn:hover { background: #2d7ee8; }
+
+  /* HERO */
+  .hero { padding: 56px 32px 40px; text-align: center; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(61,142,248,0.1); border: 0.5px solid rgba(61,142,248,0.25); border-radius: 20px; padding: 4px 13px; font-size: 11px; color: #3d8ef8; margin-bottom: 20px; letter-spacing: 0.3px; }
+  .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #3d8ef8; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .hero h1 { font-size: 34px; font-weight: 500; color: #fff; line-height: 1.2; margin-bottom: 10px; }
+  .hero h1 span { color: #3d8ef8; }
+  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.38); max-width: 380px; margin: 0 auto 32px; line-height: 1.65; }
+  .hero-cta { display: inline-flex; align-items: center; gap: 7px; background: #3d8ef8; color: #fff; border: none; border-radius: 9px; padding: 11px 24px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
+  .hero-cta:hover { background: #2d7ee8; }
+
+  /* MARKETS */
+  .markets-wrap { padding: 0 32px 48px; }
+  .markets-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .markets-title { font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing: 1.2px; text-transform: uppercase; }
+  .markets-count { font-size: 12px; color: rgba(255,255,255,0.22); }
+  .pool-table { width: 100%; border: 0.5px solid rgba(255,255,255,0.07); border-radius: 12px; overflow: hidden; }
+  .pool-table-head { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 80px; padding: 10px 20px; border-bottom: 0.5px solid rgba(255,255,255,0.07); background: #0b0f1f; }
+  .pool-table-head span { font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing: 0.5px; text-transform: uppercase; }
+  .pool-table-head span:not(:first-child) { text-align: right; }
+  .pool-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 80px; padding: 14px 20px; align-items: center; background: #0e1425; border-bottom: 0.5px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.15s; text-decoration: none; color: inherit; }
+  .pool-row:last-child { border-bottom: none; }
+  .pool-row:hover { background: #121930; }
+  .pool-token-info { display: flex; align-items: center; gap: 10px; }
+  .token-dot { width: 28px; height: 28px; border-radius: 50%; background: rgba(61,142,248,0.2); border: 0.5px solid rgba(61,142,248,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; color: #3d8ef8; flex-shrink: 0; }
+  .token-label { font-size: 13px; font-weight: 500; color: #fff; }
+  .token-sub { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+  .pool-cell { text-align: right; font-size: 14px; color: #fff; font-weight: 500; }
+  .pool-cell.apy { color: #22c55e; font-size: 15px; }
+  .pool-cell.muted { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 400; line-height: 1.5; }
+  .pool-action { text-align: right; }
+  .arrow-btn { background: rgba(61,142,248,0.1); border: 0.5px solid rgba(61,142,248,0.2); border-radius: 6px; padding: 5px 10px; font-size: 12px; color: #3d8ef8; cursor: pointer; }
+  .arrow-btn:hover { background: rgba(61,142,248,0.2); }
+
+  /* DIVIDER */
+  .divider { height: 0.5px; background: rgba(255,255,255,0.05); margin: 0 32px; }
+
+  /* STEPS */
+  .steps-wrap { padding: 40px 32px; }
+  .sec-label { font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 14px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .step-card { background: #0e1425; border: 0.5px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 18px; }
+  .step-num { font-size: 11px; color: #3d8ef8; font-weight: 500; margin-bottom: 10px; letter-spacing: 0.5px; }
+  .step-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 5px; }
+  .step-desc { font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.6; }
+
+  /* FOOTER */
+  .footer-risk { padding: 20px 32px; border-top: 0.5px solid rgba(255,255,255,0.05); font-size: 10px; color: rgba(255,255,255,0.18); line-height: 1.7; }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    nav { padding: 14px 16px; }
+    .hero { padding: 40px 16px 32px; }
+    .hero h1 { font-size: 26px; }
+    .markets-wrap { padding: 0 16px 32px; }
+    .pool-table-head { grid-template-columns: 1fr 80px 80px; }
+    .pool-table-head span:nth-child(3),
+    .pool-table-head span:nth-child(4) { display: none; }
+    .pool-row { grid-template-columns: 1fr 80px 80px; }
+    .pool-cell:nth-child(3),
+    .pool-cell:nth-child(4) { display: none; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .steps-wrap, .divider { margin: 0; padding: 32px 16px; }
+    .footer-risk { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">[<span>P</span>ROJECT]</div>
+  <div class="nav-right">
+    <a href="#" class="nav-link">Docs</a>
+    <button class="nav-btn" onclick="location.href='/onboarding/step1'">Launch App →</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Private arbitrage protocol · Invite only
+  </div>
+  <h1>Algorithmic yield,<br><span>precisely automated.</span></h1>
+  <p class="hero-sub">Korea premium arbitrage bot. Auditable on-chain. Private access only.</p>
+  <a href="/onboarding/step1" class="hero-cta">
+    &#8594; Get started
+  </a>
+</div>
+
+<div class="markets-wrap">
+  <div class="markets-header">
+    <span class="markets-title">Markets</span>
+    <span class="markets-count">1 pool</span>
+  </div>
+  <div class="pool-table">
+    <div class="pool-table-head">
+      <span>Pool</span>
+      <span>APY</span>
+      <span>Token price</span>
+      <span>Strategy</span>
+      <span></span>
+    </div>
+    <a href="/pool/detail" class="pool-row">
+      <div class="pool-token-info">
+        <div class="token-dot">K</div>
+        <div>
+          <div class="token-label">[TOKEN] · KRW Arb Vault</div>
+          <div class="token-sub">Buyback &amp; burn · Private</div>
+        </div>
+      </div>
+      <div class="pool-cell apy">~68%</div>
+      <div class="pool-cell">1,000 KRW</div>
+      <div class="pool-cell muted">Korea premium<br>arbitrage v3</div>
+      <div class="pool-action">
+        <button class="arrow-btn">View →</button>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="steps-wrap">
+  <div class="sec-label">How it works</div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">STEP 01</div>
+      <div class="step-title">Sign agreement</div>
+      <div class="step-desc">Review and sign the investment agreement online. Invite-only access.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 02</div>
+      <div class="step-title">Deposit funds</div>
+      <div class="step-desc">Transfer KRW to the provided account. Confirmation within 24h.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">STEP 03</div>
+      <div class="step-title">Receive tokens &amp; earn</div>
+      <div class="step-desc">Tokens issued to your wallet. Track returns on your dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-risk">
+  ※ Invite-only platform for pre-approved participants only. Past performance does not guarantee future results.
+  Token value may decrease. Principal loss is possible. This is not a public offering or solicitation.
+</div>
+
+</body>
+</html>

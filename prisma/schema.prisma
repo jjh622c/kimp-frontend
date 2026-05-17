@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String?   @unique
+  walletAddress String?   @unique
+  name          String?
+  createdAt     DateTime  @default(now())
+
+  investment Investment?
+  withdraws  WithdrawRequest[]
+}
+
+model Investment {
+  id               String           @id @default(cuid())
+  userId           String           @unique
+  user             User             @relation(fields: [userId], references: [id])
+  amountKrw        Int
+  tokenAmount      Decimal
+  entryPrice       Decimal
+  status           InvestmentStatus @default(PENDING)
+  contractSigned   Boolean          @default(false)
+  depositConfirmed Boolean          @default(false)
+  tokenMinted      Boolean          @default(false)
+  lockupEndsAt     DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model OraclePrice {
+  id        String   @id @default(cuid())
+  price     Decimal
+  updatedBy String
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model WithdrawRequest {
+  id          String         @id @default(cuid())
+  userId      String
+  user        User           @relation(fields: [userId], references: [id])
+  tokenAmount Decimal
+  krwAmount   Int
+  txHash      String?
+  status      WithdrawStatus @default(PENDING)
+  createdAt   DateTime       @default(now())
+  processedAt DateTime?
+}
+
+model InviteLink {
+  id        String    @id @default(cuid())
+  token     String    @unique @default(cuid())
+  usedBy    String?
+  usedAt    DateTime?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+enum InvestmentStatus {
+  PENDING
+  DEPOSITED
+  ACTIVE
+  WITHDRAWN
+}
+
+enum WithdrawStatus {
+  PENDING
+  APPROVED
+  COMPLETED
+  REJECTED
+}
