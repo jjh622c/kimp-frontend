@@ -76,9 +76,9 @@ export default function Step2Page() {
 
         <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-lg p-4 mb-5 space-y-3">
           {[
-            { label: '은행', value: '신한은행' },
-            { label: '계좌번호', value: '110-XXX-XXXXXX' },
-            { label: '예금주', value: '[운영팀 이름]' },
+            { label: '은행', value: process.env.NEXT_PUBLIC_BANK_NAME || '—' },
+            { label: '계좌번호', value: process.env.NEXT_PUBLIC_BANK_ACCOUNT || '—' },
+            { label: '예금주', value: process.env.NEXT_PUBLIC_BANK_HOLDER || '—' },
           ].map((row) => (
             <div key={row.label} className="flex justify-between text-sm">
               <span className="text-white/40">{row.label}</span>

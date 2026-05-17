@@ -22,6 +22,7 @@ export default withAuth(
           path === '/' ||
           path.startsWith('/pool') ||
           path.startsWith('/onboarding') ||
+          path.startsWith('/auth') ||
           path.startsWith('/api/auth') ||
           path.startsWith('/api/oracle')
         ) {

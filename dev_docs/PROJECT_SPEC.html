@@ -857,39 +857,79 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <div class="phase-item">CLAUDE.md 구현 상태 테이블 업데이트</div>
     </div>
 
-    <h2>다음 작업 순서</h2>
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v0.8 — 2026.05.18</span>
+        <span class="phase-title">인증 페이지 + 에러/로딩 페이지 완성</span>
+      </div>
+      <div class="phase-item"><strong>커스텀 로그인 페이지</strong> — app/auth/login/page.tsx. 이메일/비밀번호 폼, 브랜드 컬러 적용, 에러 메시지 인라인 표시</div>
+      <div class="phase-item"><strong>404 페이지</strong> — app/not-found.tsx. "페이지를 찾을 수 없습니다" 풀스크린 + 홈으로 이동 버튼</div>
+      <div class="phase-item"><strong>에러 페이지</strong> — app/error.tsx + app/global-error.tsx. 에러 재시도 버튼 포함</div>
+      <div class="phase-item"><strong>로딩 페이지</strong> — app/loading.tsx. 스피너 UI</div>
+      <div class="phase-item">WithdrawForm 락업 기간 체크 — investment.lockupUntil 비교, 잠금 중인 경우 버튼 비활성 + 잠금 해제일 표시</div>
+    </div>
+
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v0.9 — 2026.05.18</span>
+        <span class="phase-title">대시보드/관리자 완성 · 토스트 · 보안 헤더</span>
+      </div>
+      <div class="phase-item"><strong>버그 수정</strong> — middleware.ts에 /auth 공개 경로 추가 (auth/login 무한 리다이렉트 버그 수정). TS pre-existing 에러 2건 수정 (update-oracle session null, auth credentials undefined)</div>
+      <div class="phase-item"><strong>HeroSection</strong> — "Get started" 버튼 href /onboarding/step1 → /pool/detail 변경, 텍스트 "→ View vault"로 수정 (초대 토큰 없이 접근 시 invalid 오류 방지)</div>
+      <div class="phase-item"><strong>Step2 은행 계좌 환경변수화</strong> — NEXT_PUBLIC_BANK_NAME / NEXT_PUBLIC_BANK_ACCOUNT / NEXT_PUBLIC_BANK_HOLDER env 변수. 미설정 시 "—" 표시</div>
+      <div class="phase-item"><strong>InvestmentTimeline</strong> (components/dashboard/) — 4단계 투자 진행 타임라인. 완료=초록, 현재=파란 pulse, 대기=회색. Dashboard 페이지에 stat cards 아래 통합</div>
+      <div class="phase-item"><strong>WithdrawHistory</strong> (components/dashboard/) + GET /api/dashboard/withdrawals — 출금 신청 내역 목록. 상태 배지(PENDING/APPROVED/COMPLETED/REJECTED). 내역 없을 때 빈 상태 UI</div>
+      <div class="phase-item"><strong>토스트 알림 시스템</strong> — lib/toast-context.tsx (ToastContext + useToast hook). components/ui/Toaster.tsx (우하단 fixed, 슬라이드인 애니메이션). 3.5초 자동 닫힘. WithdrawForm · AdminInvestorTable 모든 액션에 적용</div>
+      <div class="phase-item"><strong>AdminStatsCards</strong> (components/admin/) — 전체 투자자 수 · 총 투자금(KRW) · 현재 TVL · 대기 출금 수 요약 카드 4개. admin 페이지 상단에 통합</div>
+      <div class="phase-item"><strong>관리자 모바일 뷰</strong> — AdminInvestorTable md:hidden 카드 뷰 + hidden md:block 테이블 분리. 출금 신청 테이블도 동일 패턴 적용</div>
+      <div class="phase-item"><strong>보안 헤더</strong> — next.config.mjs headers() 추가: X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy, Permissions-Policy, HSTS (max-age=63072000)</div>
+      <div class="phase-item"><strong>앱 이름 환경변수화</strong> — NEXT_PUBLIC_APP_NAME. Navbar · 온보딩 레이아웃 · 대시보드 · 관리자 패널 모두 env 변수 사용. .env.example 업데이트</div>
+      <div class="phase-item"><strong>OG 메타태그</strong> — app/layout.tsx에 metadataBase · openGraph(title/description/url/siteName/locale/type) · twitter(card/title/description) · robots(noindex/nofollow) 추가</div>
+      <div class="phase-item">dev_docs/WORKLOG.md 신규 — 세션 초기화 시 작업 상태 유지용 체크리스트 문서</div>
+    </div>
+
+    <h2>다음 작업 순서 (v0.9 이후)</h2>
     <table class="tbl">
       <tr><th>순서</th><th>작업</th><th>상태</th><th>메모</th></tr>
-      <tr><td>1</td><td><code>npm install</code> → <code>.env</code> 작성 → DB URL 설정</td><td><span class="badge badge-amber">대기</span></td><td>Supabase 프로젝트 생성 필요</td></tr>
+      <tr><td>1</td><td><code>npm install</code> → <code>.env</code> 작성 → DB URL 설정</td><td><span class="badge badge-amber">대기</span></td><td>Supabase 프로젝트 생성 필요. .env.example 참고</td></tr>
       <tr><td>2</td><td><code>npx prisma db push</code> → <code>npx prisma generate</code></td><td><span class="badge badge-amber">대기</span></td><td>스키마 → DB 반영</td></tr>
       <tr><td>3</td><td>모두싸인 API 연동 (Step1 계약서)</td><td><span class="badge badge-amber">대기</span></td><td>API 키 발급 후 iframe embed + 서명 완료 웹훅</td></tr>
       <tr><td>4</td><td>ERC-20 토큰 컨트랙트 배포 (Base 테스트넷 → 메인넷)</td><td><span class="badge badge-gray">Phase 1 후반</span></td><td>Hardhat + TypeChain — 백엔드 작업</td></tr>
-      <tr><td>5</td><td>관리자 패널 — 초대 링크 생성 기능</td><td><span class="badge badge-amber">대기</span></td><td>DB 연결 후 InviteLink 생성 버튼 추가 가능</td></tr>
+      <tr><td>5</td><td>관리자 패널 — 초대 링크 생성 기능</td><td><span class="badge badge-amber">대기</span></td><td>DB 연결 후 InviteLink 생성 버튼 활성화</td></tr>
+      <tr><td>6</td><td>프론트엔드 → 모든 페이지 완성</td><td><span class="badge badge-green">✅ 완료 (v0.9)</span></td><td>토스트, 타임라인, 출금 내역, 관리자 통계, 보안 헤더 포함</td></tr>
     </table>
 
-    <h2>파일 구조 (현재 상태 — v1.2)</h2>
+    <h2>파일 구조 (현재 상태 — v0.9)</h2>
     <pre><code>kimp-frontend/
 ├── app/
 │   ├── (public)/           ✅ 랜딩 · 풀 상세 (max-w-[1280px] 폭 제한)
 │   ├── (onboarding)/       ✅ step1~4 구조 + ConnectButton (step3 wagmi 실제 연동)
 │   ├── (protected)/        ✅ dashboard · admin (ConnectButton 포함)
-│   └── api/                ✅ 9개 route 스켈레톤
+│   ├── auth/login/         ✅ 커스텀 로그인 페이지
+│   ├── api/                ✅ 10개 route (oracle, onboarding, dashboard, admin, withdraw + withdrawals)
+│   ├── not-found.tsx       ✅ 404 페이지
+│   ├── error.tsx           ✅ 에러 페이지
+│   ├── global-error.tsx    ✅ 전역 에러 페이지
+│   └── loading.tsx         ✅ 로딩 페이지
 ├── components/
-│   ├── landing/            ✅ HeroSection, MarketsSection, HowItWorks, RiskFooter
-│   ├── layout/             ✅ Navbar (ConnectButton 통합)
+│   ├── landing/            ✅ HeroSection (href 수정), MarketsSection, HowItWorks, RiskFooter
+│   ├── layout/             ✅ Navbar (ConnectButton + 앱 이름 env)
 │   ├── onboarding/         ✅ StepHeader
 │   ├── pool/               ✅ InvestPanel (지갑 상태 인식), PriceChartCard (lightweight-charts)
-│   ├── dashboard/          ✅ DashboardChart (lightweight-charts), WithdrawForm (락업 체크)
-│   ├── admin/              ✅ OracleUpdateForm, AdminInvestorTable (승인 버튼 클라이언트 컴포넌트)
+│   ├── dashboard/          ✅ DashboardChart, WithdrawForm (토스트), InvestmentTimeline, WithdrawHistory
+│   ├── admin/              ✅ OracleUpdateForm, AdminInvestorTable (토스트 + 모바일 뷰), AdminStatsCards
 │   ├── wallet/             ✅ ConnectButton (wagmi MetaMask · 3가지 상태 · 드롭다운)
-│   └── ui/                 ✅ Button (shadcn/ui)
-├── lib/                    ✅ prisma, wagmi, utils, auth, data/oracle
+│   └── ui/                 ✅ Button (shadcn/ui), Toaster (토스트 UI)
+├── lib/                    ✅ prisma, wagmi, utils, auth, data/oracle, toast-context
 ├── prisma/schema.prisma    ✅ 확정
 ├── types/index.ts          ✅ 확정
-├── middleware.ts            ✅ 라우트 보호
+├── middleware.ts            ✅ 라우트 보호 (auth 공개 경로 포함)
+├── next.config.mjs         ✅ 보안 헤더 (X-Frame-Options, HSTS 등)
+├── .env.example            ✅ 전체 환경변수 문서화
 ├── CLAUDE.md               ✅ Claude Code 프로젝트 가이드 (한국어)
 └── dev_docs/
-    └── PROJECT_SPEC.html   ✅ 이 파일 (기능 정의 · 형상관리 기준)</code></pre>
+    ├── PROJECT_SPEC.html   ✅ 이 파일 (기능 정의 · 형상관리 기준)
+    └── WORKLOG.md          ✅ 세션 작업 상태 추적 체크리스트</code></pre>
   </section>
 
 </main>

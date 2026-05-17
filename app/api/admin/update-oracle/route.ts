@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   const record = await prisma.oraclePrice.create({
     data: {
       price,
-      updatedBy: session.user?.email ?? 'admin',
+      updatedBy: session?.user?.email ?? 'admin',
       note: note ?? null,
     },
   })

@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
           credentials?.email === process.env.ADMIN_EMAIL &&
           credentials?.password === process.env.ADMIN_PASSWORD
         ) {
-          return { id: 'admin', email: credentials.email, role: 'admin' }
+          return { id: 'admin', email: credentials?.email ?? '', role: 'admin' }
         }
         return null
       },

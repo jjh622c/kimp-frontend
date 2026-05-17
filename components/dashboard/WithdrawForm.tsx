@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useToast } from '@/lib/toast-context'
 
 interface WithdrawFormProps {
   tokenBalance: number
@@ -18,24 +19,20 @@ export function WithdrawForm({
   const [tokenAmount, setTokenAmount] = useState('')
   const [txHash, setTxHash] = useState('')
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null)
+  const toast = useToast()
 
   const isLocked =
     investmentStatus !== 'ACTIVE' ||
     (lockupEndsAt ? new Date(lockupEndsAt) > new Date() : true)
 
   const lockupDate = lockupEndsAt ? new Date(lockupEndsAt) : null
-
-  const estimatedKrw = tokenAmount
-    ? Math.floor(parseFloat(tokenAmount) * currentPrice)
-    : 0
+  const estimatedKrw = tokenAmount ? Math.floor(parseFloat(tokenAmount) * currentPrice) : 0
 
   async function handleSubmit() {
     const amount = parseFloat(tokenAmount)
     if (!amount || amount <= 0 || amount > tokenBalance) return
 
     setLoading(true)
-    setResult(null)
     try {
       const res = await fetch('/api/withdraw/request', {
         method: 'POST',
@@ -44,17 +41,14 @@ export function WithdrawForm({
       })
       const json = await res.json()
       if (res.ok) {
-        setResult({
-          success: true,
-          message: `출금 신청 완료 — 예상 수령액: ${json.krwAmount?.toLocaleString('ko-KR')} KRW`,
-        })
+        toast.success(`출금 신청 완료 — 예상 수령액: ${json.krwAmount?.toLocaleString('ko-KR')} KRW`)
         setTokenAmount('')
         setTxHash('')
       } else {
-        setResult({ success: false, message: json.error ?? '오류가 발생했습니다' })
+        toast.error(json.error ?? '출금 신청 중 오류가 발생했습니다')
       }
     } catch {
-      setResult({ success: false, message: '네트워크 오류' })
+      toast.error('네트워크 오류가 발생했습니다')
     } finally {
       setLoading(false)
     }
@@ -123,18 +117,6 @@ export function WithdrawForm({
           />
         </div>
       </div>
-
-      {result && (
-        <div
-          className={`mb-3 px-3 py-2.5 rounded-lg text-xs ${
-            result.success
-              ? 'bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e]'
-              : 'bg-[#ef4444]/10 border border-[#ef4444]/20 text-[#ef4444]'
-          }`}
-        >
-          {result.message}
-        </div>
-      )}
 
       <button
         onClick={handleSubmit}

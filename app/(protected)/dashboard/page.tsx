@@ -6,6 +6,10 @@ import { prisma } from '@/lib/prisma'
 import { ConnectButton } from '@/components/wallet/ConnectButton'
 import { DashboardChart } from '@/components/dashboard/DashboardChart'
 import { WithdrawForm } from '@/components/dashboard/WithdrawForm'
+import { InvestmentTimeline } from '@/components/dashboard/InvestmentTimeline'
+import { WithdrawHistory } from '@/components/dashboard/WithdrawHistory'
+
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'PROJECT'
 
 export default async function DashboardPage() {
   const [session, tokenPrice, priceHistory] = await Promise.all([
@@ -14,7 +18,6 @@ export default async function DashboardPage() {
     getOraclePriceHistory(),
   ])
 
-  // 실제 투자 데이터 조회 (DB 미연결 시 fallback)
   let investmentData: {
     tokenBalance: number
     entryPrice: number
@@ -22,6 +25,9 @@ export default async function DashboardPage() {
     roi: number
     lockupEndsAt: string | null
     investmentStatus: string
+    contractSigned: boolean
+    depositConfirmed: boolean
+    tokenMinted: boolean
   } | null = null
 
   try {
@@ -40,6 +46,9 @@ export default async function DashboardPage() {
           roi: ((tokenPrice - entryPrice) / entryPrice) * 100,
           lockupEndsAt: user.investment.lockupEndsAt?.toISOString() ?? null,
           investmentStatus: user.investment.status,
+          contractSigned: user.investment.contractSigned,
+          depositConfirmed: user.investment.depositConfirmed,
+          tokenMinted: user.investment.tokenMinted,
         }
       }
     }
@@ -47,7 +56,6 @@ export default async function DashboardPage() {
     // DB 미연결 시 fallback 사용
   }
 
-  // DB 없거나 투자 기록 없으면 목 데이터
   const data = investmentData ?? {
     tokenBalance: 1500,
     entryPrice: 1000,
@@ -55,21 +63,15 @@ export default async function DashboardPage() {
     roi: ((tokenPrice - 1000) / 1000) * 100,
     lockupEndsAt: new Date(Date.now() + 90 * 86400000).toISOString(),
     investmentStatus: 'ACTIVE',
+    contractSigned: true,
+    depositConfirmed: true,
+    tokenMinted: true,
   }
 
   const statCards = [
-    {
-      label: 'Token balance',
-      value: `${data.tokenBalance.toLocaleString('ko-KR')} TOKEN`,
-    },
-    {
-      label: 'Current price',
-      value: `${tokenPrice.toLocaleString('ko-KR')} KRW`,
-    },
-    {
-      label: 'Valuation',
-      value: `${Math.floor(data.valuationKrw).toLocaleString('ko-KR')} KRW`,
-    },
+    { label: 'Token balance', value: `${data.tokenBalance.toLocaleString('ko-KR')} TOKEN` },
+    { label: 'Current price', value: `${tokenPrice.toLocaleString('ko-KR')} KRW` },
+    { label: 'Valuation', value: `${Math.floor(data.valuationKrw).toLocaleString('ko-KR')} KRW` },
     {
       label: 'ROI',
       value: `${data.roi >= 0 ? '+' : ''}${data.roi.toFixed(2)}%`,
@@ -81,11 +83,8 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-[#0a0e1a]">
       <nav className="border-b border-white/[0.07]">
         <div className="max-w-[1280px] mx-auto flex items-center justify-between px-8 max-sm:px-4 py-4">
-          <Link
-            href="/"
-            className="text-[17px] font-medium text-white tracking-[0.4px] no-underline"
-          >
-            [<span className="text-[#3d8ef8]">P</span>ROJECT]
+          <Link href="/" className="text-[17px] font-medium text-white tracking-[0.4px] no-underline">
+            [<span className="text-[#3d8ef8]">{APP_NAME[0]}</span>{APP_NAME.slice(1)}]
           </Link>
           <div className="flex items-center gap-3 min-w-0">
             <span className="text-sm text-white/40 max-sm:hidden truncate max-w-[160px]">
@@ -100,7 +99,6 @@ export default async function DashboardPage() {
         <div className="max-w-3xl">
           <h1 className="text-xl font-medium text-white mb-6">Dashboard</h1>
 
-          {/* 투자 없는 상태 */}
           {!investmentData && (
             <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-4 py-3 mb-5">
               <p className="text-xs text-[#f59e0b]/80 leading-[1.6]">
@@ -109,19 +107,22 @@ export default async function DashboardPage() {
             </div>
           )}
 
+          {/* 투자 단계 타임라인 */}
+          <InvestmentTimeline
+            contractSigned={data.contractSigned}
+            depositConfirmed={data.depositConfirmed}
+            tokenMinted={data.tokenMinted}
+            status={data.investmentStatus}
+          />
+
           {/* Stat cards */}
           <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-3 mb-5">
             {statCards.map((card) => (
-              <div
-                key={card.label}
-                className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5"
-              >
+              <div key={card.label} className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
                 <div className="text-[11px] text-white/[0.28] tracking-[0.5px] uppercase mb-2">
                   {card.label}
                 </div>
-                <div
-                  className={`text-2xl font-medium ${card.green ? 'text-[#22c55e]' : 'text-white'}`}
-                >
+                <div className={`text-2xl font-medium ${card.green ? 'text-[#22c55e]' : 'text-white'}`}>
                   {card.value}
                 </div>
               </div>
@@ -140,6 +141,9 @@ export default async function DashboardPage() {
             lockupEndsAt={data.lockupEndsAt}
             investmentStatus={data.investmentStatus}
           />
+
+          {/* 출금 신청 내역 */}
+          <WithdrawHistory />
         </div>
       </div>
     </div>

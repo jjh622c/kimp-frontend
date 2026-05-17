@@ -18,10 +18,10 @@ export function HeroSection() {
       </p>
 
       <Link
-        href="/onboarding/step1"
+        href="/pool/detail"
         className="inline-flex items-center gap-[7px] bg-[#3d8ef8] hover:bg-[#2d7ee8] text-white rounded-[9px] px-6 py-[11px] text-sm font-medium transition-colors no-underline"
       >
-        → Get started
+        → View vault
       </Link>
     </div>
   )

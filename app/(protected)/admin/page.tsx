@@ -8,6 +8,9 @@ import { ConnectButton } from '@/components/wallet/ConnectButton'
 import { OracleUpdateForm } from '@/components/admin/OracleUpdateForm'
 import { AdminInvestorTable } from '@/components/admin/AdminInvestorTable'
 import { InviteLinkGenerator } from '@/components/admin/InviteLinkGenerator'
+import { AdminStatsCards } from '@/components/admin/AdminStatsCards'
+
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'PROJECT'
 
 export default async function AdminPage() {
   const session = await getServerSession(authOptions)
@@ -104,11 +107,8 @@ export default async function AdminPage() {
       <nav className="border-b border-white/[0.07]">
         <div className="max-w-[1280px] mx-auto flex items-center justify-between px-8 max-sm:px-4 py-4">
           <div className="flex items-center gap-2">
-            <Link
-              href="/"
-              className="text-[17px] font-medium text-white tracking-[0.4px] no-underline"
-            >
-              [<span className="text-[#3d8ef8]">P</span>ROJECT]
+            <Link href="/" className="text-[17px] font-medium text-white tracking-[0.4px] no-underline">
+              [<span className="text-[#3d8ef8]">{APP_NAME[0]}</span>{APP_NAME.slice(1)}]
             </Link>
             <span className="text-xs text-white/30 max-sm:hidden">· Admin</span>
           </div>
@@ -117,6 +117,15 @@ export default async function AdminPage() {
       </nav>
 
       <div className="max-w-[1280px] mx-auto px-8 max-sm:px-4 py-8">
+        <h1 className="text-xl font-medium text-white mb-6">Admin Panel</h1>
+
+        {/* 요약 통계 */}
+        <AdminStatsCards
+          investors={investorsSerialized}
+          withdrawRequests={withdrawSerialized}
+          tokenPrice={tokenPrice}
+        />
+
         <InviteLinkGenerator />
         <OracleUpdateForm currentPrice={tokenPrice} />
         <AdminInvestorTable investors={investorsSerialized} withdrawRequests={withdrawSerialized} />
