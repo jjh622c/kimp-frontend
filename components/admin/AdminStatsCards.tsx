@@ -25,27 +25,27 @@ export function AdminStatsCards({ investors, withdrawRequests, tokenPrice }: Adm
 
   const cards = [
     {
-      label: '전체 투자자',
+      label: 'Total investors',
       value: investors.length.toString(),
-      sub: `활성 ${activeInvestors}명`,
+      sub: `${activeInvestors} active`,
       color: 'text-white',
     },
     {
-      label: '총 투자금',
+      label: 'Total investment',
       value: `${(totalKrw / 10000).toFixed(0)}만 KRW`,
-      sub: `${totalKrw.toLocaleString('ko-KR')} KRW`,
+      sub: `${totalKrw.toLocaleString()} KRW`,
       color: 'text-white',
     },
     {
-      label: '현재 TVL',
+      label: 'Current TVL',
       value: `${(tvl / 10000).toFixed(0)}만 KRW`,
-      sub: `${totalTokens.toLocaleString('ko-KR', { maximumFractionDigits: 0 })} TOKEN × ${tokenPrice.toLocaleString('ko-KR')}`,
+      sub: `${totalTokens.toLocaleString(undefined, { maximumFractionDigits: 0 })} TOKEN × ${tokenPrice.toLocaleString()}`,
       color: 'text-[#22c55e]',
     },
     {
-      label: '대기 출금',
+      label: 'Pending withdrawals',
       value: pendingWithdrawals.toString(),
-      sub: pendingWithdrawals > 0 ? '승인 필요' : '없음',
+      sub: pendingWithdrawals > 0 ? 'Needs approval' : 'None',
       color: pendingWithdrawals > 0 ? 'text-[#f59e0b]' : 'text-white/40',
     },
   ]

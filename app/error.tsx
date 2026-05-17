@@ -10,7 +10,6 @@ interface ErrorPageProps {
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
   useEffect(() => {
-    // 에러 로깅 — production에서 Sentry 등으로 교체
     console.error(error)
   }, [error])
 
@@ -27,14 +26,14 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
         </svg>
       </div>
 
-      <h1 className="text-lg font-medium text-white mb-2">문제가 발생했습니다</h1>
+      <h1 className="text-lg font-medium text-white mb-2">Something went wrong</h1>
       <p className="text-sm text-white/[0.4] mb-2 max-w-xs leading-[1.7]">
-        페이지를 불러오는 중 오류가 발생했습니다.
+        An error occurred while loading the page.
       </p>
 
       {error.digest && (
         <p className="text-[11px] text-white/[0.2] font-mono mb-6">
-          오류 코드: {error.digest}
+          Error code: {error.digest}
         </p>
       )}
 
@@ -43,13 +42,13 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           onClick={reset}
           className="bg-[#3d8ef8] hover:bg-[#2d7ee8] text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-colors"
         >
-          다시 시도
+          Try again
         </button>
         <Link
           href="/"
           className="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white/70 rounded-xl px-5 py-2.5 text-sm font-medium transition-colors no-underline"
         >
-          홈으로
+          Go home
         </Link>
       </div>
     </div>

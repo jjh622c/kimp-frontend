@@ -9,6 +9,7 @@ import { OracleUpdateForm } from '@/components/admin/OracleUpdateForm'
 import { AdminInvestorTable } from '@/components/admin/AdminInvestorTable'
 import { InviteLinkGenerator } from '@/components/admin/InviteLinkGenerator'
 import { AdminStatsCards } from '@/components/admin/AdminStatsCards'
+import { AdminReportSection } from '@/components/admin/AdminReportSection'
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'PROJECT'
 
@@ -128,6 +129,7 @@ export default async function AdminPage() {
 
         <InviteLinkGenerator />
         <OracleUpdateForm currentPrice={tokenPrice} />
+        <AdminReportSection />
         <AdminInvestorTable investors={investorsSerialized} withdrawRequests={withdrawSerialized} />
       </div>
     </div>

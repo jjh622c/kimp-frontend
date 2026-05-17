@@ -2,93 +2,136 @@
 
 > 세션이 초기화되면 이 파일을 먼저 읽고 `[ ]` 상태인 작업부터 이어서 진행할 것.
 > 작업 완료 시 `[ ]` → `[x]`로 변경.
+> **형상관리 기준 파일: `dev_docs/PROJECT_SPEC.html`** — 모든 기능 변경 시 여기에도 반영.
 
 ## 작업 규칙
 - 백엔드 연동 부분은 구조/UI만 만들고 TODO 주석으로 표시
-- 작업 완료 후 반드시 PROJECT_SPEC.html 업데이트
+- 작업 완료 후 반드시 PROJECT_SPEC.html changelog + 다음 작업 순서 업데이트
 - 모든 작업 완료 후 모바일(390px) 포함 브라우저 테스트
 - 최종 git commit & push
 
 ---
 
-## 작업 목록
+## v1.0 — UI/UX 1차 개선 (2026.05.18 완료)
 
-### 버그 수정
-- [x] **TASK-01** `components/landing/HeroSection.tsx` — "Get started" 버튼 href `/onboarding/step1` → `/pool/detail`로 변경 (토큰 없이 접근 시 invalid 오류 방지)
-- [x] **TASK-02** `app/(onboarding)/onboarding/step2/page.tsx` — 계좌번호/은행/예금주를 env 변수(`BANK_NAME`, `BANK_ACCOUNT`, `BANK_HOLDER`)로 변경. 미설정 시 빈 플레이스홀더 표시
-
-### 대시보드 완성
-- [x] **TASK-03** `components/dashboard/InvestmentTimeline.tsx` (NEW) — 투자 단계 타임라인 컴포넌트
-  - 4단계: 계약서 서명 → 입금 확인 → 토큰 발행 → 운용 중
-  - props: `contractSigned`, `depositConfirmed`, `tokenMinted`, `status: InvestmentStatus`
-  - 완료 단계 = 초록, 현재 단계 = 파란 pulse, 대기 단계 = 회색
-- [x] **TASK-04** `app/(protected)/dashboard/page.tsx` — InvestmentTimeline 컴포넌트 추가 (stat cards 아래)
-- [x] **TASK-05** `app/api/dashboard/withdrawals/route.ts` (NEW) — 내 출금 신청 내역 GET API
-  - 인증 필요, prisma.withdrawRequest.findMany({ where: { userId } })
-  - DB 없으면 빈 배열 반환
-- [x] **TASK-06** `components/dashboard/WithdrawHistory.tsx` (NEW) — 출금 신청 내역 컴포넌트
-  - 신청일, 토큰 수, 예상 KRW, 상태 배지(PENDING/APPROVED/COMPLETED/REJECTED)
-  - 내역 없으면 "출금 신청 내역이 없습니다" 빈 상태
-- [x] **TASK-07** `app/(protected)/dashboard/page.tsx` — WithdrawHistory 컴포넌트 추가 (WithdrawForm 아래)
-
-### 토스트 알림
-- [x] **TASK-08** `lib/toast-context.tsx` (NEW) — ToastContext + useToast hook
-  - `{ id, message, type: 'success'|'error'|'info' }` 상태 관리
-  - `toast.success()`, `toast.error()`, `toast.info()` 함수 제공
-  - 3초 후 자동 사라짐
-- [x] **TASK-09** `components/ui/Toaster.tsx` (NEW) — 토스트 UI 컴포넌트
-  - 화면 우하단 fixed 포지션
-  - 타입별 색상: success=#22c55e, error=#ef4444, info=#3d8ef8
-  - 슬라이드인 애니메이션
-- [x] **TASK-10** `app/providers.tsx` — ToastProvider + Toaster 추가
-- [x] **TASK-11** `components/dashboard/WithdrawForm.tsx` — 출금 신청 성공/실패 시 toast 사용
-- [x] **TASK-12** `components/admin/AdminInvestorTable.tsx` — 승인 액션 성공/실패 시 toast 사용
-
-### 관리자 패널 완성
-- [x] **TASK-13** `components/admin/AdminStatsCards.tsx` (NEW) — 요약 통계 카드
-  - 총 투자자 수, 총 투자금(KRW), 발행 토큰 합계, 대기 출금 수
-  - props: `investors[]`, `withdrawRequests[]`, `tokenPrice`
-- [x] **TASK-14** `app/(protected)/admin/page.tsx` — AdminStatsCards 추가 (InviteLinkGenerator 위)
-- [x] **TASK-15** `components/admin/AdminInvestorTable.tsx` — 모바일 카드 뷰 추가
-  - `md:hidden` 카드 목록 + `hidden md:block` 테이블 분리
-  - 카드: 이름/이메일/상태/투자금/액션 버튼
-
-### 보안 & 설정
-- [x] **TASK-16** `next.config.mjs` — 보안 헤더 추가 (`headers()`)
-  - X-Frame-Options: DENY
-  - X-Content-Type-Options: nosniff
-  - Referrer-Policy: strict-origin-when-cross-origin
-  - Permissions-Policy: camera=(), microphone=(), geolocation=()
-- [x] **TASK-17** `.env.example` + 코드 — 앱 이름 환경변수화
-  - `NEXT_PUBLIC_APP_NAME` 추가
-  - `BANK_NAME`, `BANK_ACCOUNT`, `BANK_HOLDER` 추가
-  - Navbar/대시보드/admin 등 `[PROJECT]` → env 변수 사용
-- [x] **TASK-18** `app/layout.tsx` — OG 메타태그 완성
-  - og:title, og:description, og:type, og:url
-  - twitter:card, twitter:title, twitter:description
-
-### 마무리
-- [x] **TASK-19** `dev_docs/PROJECT_SPEC.html` — 변경 이력 v0.9 추가, 구현 상태 테이블 업데이트
-- [x] **TASK-20** 브라우저 테스트 — 데스크톱(1280px) + 모바일(390px) 전 페이지 확인
-- [ ] **TASK-21** git commit & push — `feat: 대시보드/관리자/토스트/보안헤더 완성 (v0.9)`
+### 완료된 작업 [x]
+- [x] **UX-01** `components/landing/HeroSection.tsx` — 단일 CTA "→ View vault" → 이중 CTA
+  - Primary: "Start investing →" → /onboarding/step1 (초대 투자자 직행)
+  - Secondary ghost: "View strategy" → /pool/detail (먼저 확인하는 사람용)
+  - 화살표 위치 텍스트 뒤로 통일
+- [x] **UX-02** `components/landing/MarketsSection.tsx` — 용어 통일
+  - 섹션 헤더: "Markets" → "Active Vault"
+  - 카운트: "1 pool" → "1 vault"
+  - 테이블 헤더: "Pool" → "Vault"
+  - 행 버튼: "View →" → "Details →"
+  - APY 아래 "30D est." 맥락 레이블 추가
+- [x] **UX-03** `app/(public)/page.tsx` — MarketsSkeleton 용어 동일하게 업데이트
+- [x] **UX-04** `components/pool/InvestPanel.tsx` — "Connect Wallet to Invest" → "Connect wallet"
+- [x] **UX-05** `app/(protected)/dashboard/page.tsx` — 한국어 에러 메시지 → 영문
+- [x] **UX-06** `app/(public)/pool/detail/page.tsx` — 4개 stat 카드 note 레이블 추가
+  - 30D Return: "Last 30 days"
+  - All-time Return: "Since Jan 2025"
+  - Win Rate: "Trades settled"
+  - Token Price: "Oracle · live"
+- [x] **UX-07** `dev_docs/PROJECT_SPEC.html` — v1.0 업데이트 (페이지 사양, 다음 작업, changelog)
+- [x] **UX-08** `memory/ux-plan.md` (신규) — Phase A/B/C 진행 추적 문서
 
 ---
 
-## 완료된 파일 목록 (참고)
-작업 완료 시 여기에 기록:
-- `components/landing/HeroSection.tsx` ✅
-- `app/(onboarding)/onboarding/step2/page.tsx` ✅
-- `components/dashboard/InvestmentTimeline.tsx` ✅ (신규)
-- `app/(protected)/dashboard/page.tsx` ✅
-- `app/api/dashboard/withdrawals/route.ts` ✅ (신규)
-- `components/dashboard/WithdrawHistory.tsx` ✅ (신규)
-- `lib/toast-context.tsx` ✅ (신규)
-- `components/ui/Toaster.tsx` ✅ (신규)
-- `app/providers.tsx` ✅
-- `components/dashboard/WithdrawForm.tsx` ✅
-- `components/admin/AdminInvestorTable.tsx` ✅
-- `components/admin/AdminStatsCards.tsx` ✅ (신규)
-- `app/(protected)/admin/page.tsx` ✅
-- `next.config.mjs` ✅
-- `.env.example` ✅
-- `app/layout.tsx` ✅
+## v0.9 — 대시보드/관리자/토스트/보안헤더 (2026.05.18 완료)
+
+- [x] **TASK-01** HeroSection — "Get started" href → /pool/detail 변경
+- [x] **TASK-02** Step2 — 계좌번호 env 변수화 (BANK_NAME, BANK_ACCOUNT, BANK_HOLDER)
+- [x] **TASK-03** InvestmentTimeline 컴포넌트 신규
+- [x] **TASK-04** Dashboard — InvestmentTimeline 추가
+- [x] **TASK-05** /api/dashboard/withdrawals GET 신규
+- [x] **TASK-06** WithdrawHistory 컴포넌트 신규
+- [x] **TASK-07** Dashboard — WithdrawHistory 추가
+- [x] **TASK-08** toast-context.tsx 신규
+- [x] **TASK-09** Toaster.tsx 신규
+- [x] **TASK-10** providers.tsx — ToastProvider + Toaster 추가
+- [x] **TASK-11** WithdrawForm — 토스트 적용
+- [x] **TASK-12** AdminInvestorTable — 토스트 적용
+- [x] **TASK-13** AdminStatsCards 컴포넌트 신규
+- [x] **TASK-14** Admin page — AdminStatsCards 추가
+- [x] **TASK-15** AdminInvestorTable — 모바일 카드 뷰 추가
+- [x] **TASK-16** next.config.mjs — 보안 헤더 추가
+- [x] **TASK-17** .env.example + 앱 이름 환경변수화 (NEXT_PUBLIC_APP_NAME)
+- [x] **TASK-18** app/layout.tsx — OG 메타태그 완성
+
+---
+
+## 다음 작업 (v1.1 이후 — 우선순위 순)
+
+### Phase 1 — 환경 설정 & 실연동
+- [x] **NEXT-01** 토큰명 env 변수화 (`NEXT_PUBLIC_TOKEN_NAME`)
+  - `MarketsSection.tsx`, `pool/detail/page.tsx` — [TOKEN] → env 변수
+  - `.env.example` 업데이트
+- [ ] **NEXT-02** `npm install` → `.env` 파일 작성 → DATABASE_URL(Supabase) 설정
+  - **사용자 직접 실행:** `.env.example` 복사 후 값 입력
+- [ ] **NEXT-03** `npx prisma db push` → `npx prisma generate`
+  - **사용자 직접 실행:** NEXT-02 완료 후 실행
+- [x] **NEXT-04** 관리자 패널 — 초대 링크 생성 UI
+  - `InviteLinkGenerator.tsx` ✅, `/api/admin/create-invite` ✅ (기존 완료)
+
+### Phase 1 후반 — 외부 서비스 연동
+- [x] **NEXT-05** 모두싸인 API 연동 구조 완성
+  - `lib/modusign.ts` — API wrapper (createSigningSession, verifyWebhookSignature)
+  - `/api/onboarding/modusign-session` — iframe URL 발급 엔드포인트
+  - `/api/webhooks/modusign` — 서명 완료 웹훅
+  - `step1/page.tsx` — API 키 있으면 실제 iframe, 없으면 플레이스홀더
+  - **활성화:** `MODUSIGN_API_KEY` + `MODUSIGN_TEMPLATE_ID` env 설정
+- [x] **NEXT-06** ERC-20 스마트 컨트랙트 파일 작성
+  - `contracts/Token.sol` — KimpToken ERC-20 (mint, burnFrom)
+  - `contracts/Oracle.sol` — KimpOracle (updatePrice, recordMonthlyReport)
+  - **배포:** Hardhat 설정 + `npx hardhat deploy --network base` (별도 백엔드 작업)
+
+### Phase 2 — 고도화
+- [x] **NEXT-07** APY 오라클 실시간 연동
+  - `lib/data/oracle.ts` — `getLatestApy()` 추가 (30D 기준 연환산, fallback 68%)
+  - `MarketsSection.tsx` — ~68% 하드코딩 → `getLatestApy()` 동적 연동
+- [x] **NEXT-08** 카카오 알림톡 구조 완성
+  - `lib/kakao.ts` — sendAlimtalk, notifyDepositConfirmed, notifyWithdrawApproved
+  - `approve-deposit/route.ts`, `approve-withdraw/route.ts` — 알림 호출 연결
+  - **활성화:** `KAKAO_API_KEY` + `KAKAO_CHANNEL_ID` env 설정
+  - **TODO:** User 모델에 `phone` 필드 추가 후 실제 번호 전달
+- [x] **NEXT-09** 월간 수익 리포트 온체인 해시 구조 완성
+  - `lib/onchain.ts` — recordMonthlyReportHash, computeSha256
+  - `contracts/Oracle.sol` — recordMonthlyReport 함수 포함
+  - **활성화:** 컨트랙트 배포 후 `ORACLE_ADMIN_PRIVATE_KEY` + `NEXT_PUBLIC_ORACLE_CONTRACT_ADDRESS` 설정
+
+---
+
+## v1.1 — 언어 통일 & 관리자 기능 완성 (2026.05.18)
+
+- [x] **V11-01** `prisma/schema.prisma` — User 모델 `phone` 필드 추가 (카카오 알림톡 활성화)
+- [x] **V11-02** `components/admin/AdminReportSection.tsx` — 월간 리포트 해시 등록 UI 신규
+- [x] **V11-03** `app/(protected)/admin/page.tsx` — AdminReportSection 추가
+  - `/api/admin/record-report/route.ts` 신규 (AdminReportSection 호출용)
+- [x] **V11-04** UI 언어 통일 — 투자자 노출 화면 전체 한국어 → 영문
+  - `step1`, `step2`, `step3` 온보딩 페이지
+  - `error`, `not-found`, `global-error`, `loading`, `auth/login`
+  - `AdminInvestorTable`, `AdminStatsCards`, `InviteLinkGenerator`, `OracleUpdateForm`
+  - `InvestmentTimeline`, `WithdrawForm`, `WithdrawHistory`
+- [x] **V11-05** `dev_docs/PROJECT_SPEC.html` — v1.1 changelog 업데이트
+- [x] **V11-06** `memory/project_kimp.md` — v1.1 상태 반영
+
+---
+
+## 완료된 주요 파일 목록
+- `components/landing/HeroSection.tsx` ✅ v1.0
+- `components/landing/MarketsSection.tsx` ✅ v1.0
+- `app/(public)/page.tsx` ✅ v1.0
+- `components/pool/InvestPanel.tsx` ✅ v1.0
+- `app/(protected)/dashboard/page.tsx` ✅ v1.0
+- `app/(public)/pool/detail/page.tsx` ✅ v1.0
+- `components/dashboard/InvestmentTimeline.tsx` ✅ v0.9
+- `components/dashboard/WithdrawHistory.tsx` ✅ v0.9
+- `lib/toast-context.tsx` ✅ v0.9
+- `components/ui/Toaster.tsx` ✅ v0.9
+- `components/admin/AdminStatsCards.tsx` ✅ v0.9
+- `components/admin/AdminInvestorTable.tsx` ✅ v0.9
+- `next.config.mjs` ✅ v0.9
+- `app/layout.tsx` ✅ v0.9
+- `dev_docs/PROJECT_SPEC.html` ✅ v1.0
+- `memory/ux-plan.md` ✅ v1.0 (신규)

@@ -7,7 +7,7 @@ interface GlobalErrorProps {
 
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
   return (
-    <html lang="ko">
+    <html lang="en">
       <body style={{ margin: 0, background: '#0a0e1a', color: '#e2e8f0', fontFamily: 'system-ui, sans-serif' }}>
         <div style={{
           minHeight: '100vh',
@@ -19,7 +19,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
           padding: '0 16px',
         }}>
           <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
-            심각한 오류가 발생했습니다
+            A critical error occurred
           </div>
           {error.digest && (
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.2)', fontFamily: 'monospace', marginBottom: 16 }}>
@@ -39,7 +39,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               cursor: 'pointer',
             }}
           >
-            페이지 새로고침
+            Reload page
           </button>
         </div>
       </body>

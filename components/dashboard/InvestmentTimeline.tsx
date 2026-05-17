@@ -6,10 +6,10 @@ interface InvestmentTimelineProps {
 }
 
 const STEPS = [
-  { key: 'contract', label: '계약서 서명', desc: '투자 계약서에 서명 완료' },
-  { key: 'deposit', label: '입금 확인', desc: '관리자가 입금을 확인' },
-  { key: 'minted', label: '토큰 발행', desc: 'ERC-20 토큰 지갑 전송' },
-  { key: 'active', label: '운용 중', desc: '봇 수익 바이백 진행' },
+  { key: 'contract', label: 'Contract signed', desc: 'Investment agreement signed' },
+  { key: 'deposit', label: 'Deposit confirmed', desc: 'Admin verified deposit' },
+  { key: 'minted', label: 'Tokens minted', desc: 'ERC-20 tokens sent to wallet' },
+  { key: 'active', label: 'Active', desc: 'Bot profit buyback in progress' },
 ]
 
 function getStepState(
@@ -47,11 +47,10 @@ export function InvestmentTimeline({
   return (
     <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5 mb-5">
       <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-4">
-        투자 진행 단계
+        Investment progress
       </div>
 
       <div className="relative">
-        {/* 연결선 */}
         <div className="absolute left-[15px] top-4 bottom-4 w-px bg-white/[0.07]" />
 
         <div className="space-y-5">
@@ -66,7 +65,6 @@ export function InvestmentTimeline({
 
             return (
               <div key={step.key} className="flex items-start gap-4 relative">
-                {/* 아이콘 */}
                 <div
                   className={`w-[30px] h-[30px] rounded-full border flex items-center justify-center shrink-0 z-10 ${
                     state === 'done'
@@ -87,7 +85,6 @@ export function InvestmentTimeline({
                   )}
                 </div>
 
-                {/* 텍스트 */}
                 <div className="pt-[5px]">
                   <div
                     className={`text-sm font-medium ${
@@ -101,7 +98,7 @@ export function InvestmentTimeline({
                     {step.label}
                     {state === 'current' && (
                       <span className="ml-2 text-[10px] font-normal bg-[#3d8ef8]/15 text-[#3d8ef8] rounded-full px-2 py-0.5">
-                        진행 중
+                        In progress
                       </span>
                     )}
                   </div>
@@ -116,7 +113,7 @@ export function InvestmentTimeline({
       {status === 'WITHDRAWN' && (
         <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-white/30 shrink-0" />
-          <span className="text-xs text-white/40">출금 완료 — 투자가 종료되었습니다</span>
+          <span className="text-xs text-white/40">Withdrawal complete — investment closed</span>
         </div>
       )}
     </div>

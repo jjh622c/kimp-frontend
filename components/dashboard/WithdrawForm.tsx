@@ -41,14 +41,14 @@ export function WithdrawForm({
       })
       const json = await res.json()
       if (res.ok) {
-        toast.success(`출금 신청 완료 — 예상 수령액: ${json.krwAmount?.toLocaleString('ko-KR')} KRW`)
+        toast.success(`Withdrawal requested — estimated payout: ${json.krwAmount?.toLocaleString()} KRW`)
         setTokenAmount('')
         setTxHash('')
       } else {
-        toast.error(json.error ?? '출금 신청 중 오류가 발생했습니다')
+        toast.error(json.error ?? 'Error submitting withdrawal request')
       }
     } catch {
-      toast.error('네트워크 오류가 발생했습니다')
+      toast.error('Network error')
     } finally {
       setLoading(false)
     }
@@ -60,18 +60,18 @@ export function WithdrawForm({
         <h2 className="text-sm font-medium text-white mb-1">Withdraw</h2>
         <p className="text-xs text-white/[0.35] mb-4">
           {investmentStatus !== 'ACTIVE'
-            ? '투자가 활성화된 후 출금이 가능합니다.'
+            ? 'Withdrawal available once investment is active.'
             : lockupDate
-            ? `락업 기간: ${lockupDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}까지`
-            : '락업 기간이 진행 중입니다.'}
+            ? `Locked until ${lockupDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
+            : 'Lockup period in progress.'}
         </p>
         <button
           disabled
           className="w-full bg-white/[0.05] text-white/30 rounded-xl py-3 text-sm font-medium cursor-not-allowed"
         >
           {lockupDate
-            ? `잠금 해제: ${lockupDate.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })}`
-            : '출금 잠금 중'}
+            ? `Unlocks ${lockupDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+            : 'Withdrawal locked'}
         </button>
       </div>
     )
@@ -81,13 +81,14 @@ export function WithdrawForm({
     <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
       <h2 className="text-sm font-medium text-white mb-1">Withdraw</h2>
       <p className="text-xs text-white/[0.35] mb-4">
-        토큰을 운영팀 지갑으로 전송한 뒤 트랜잭션 해시를 입력하세요. 관리자 확인 후 KRW를 송금합니다.
+        Transfer tokens to the operations wallet, then enter the transaction hash. KRW will be sent
+        after admin verification.
       </p>
 
       <div className="space-y-3 mb-4">
         <div>
           <label className="block text-[11px] text-white/40 mb-1.5 uppercase tracking-[0.4px]">
-            출금 토큰 수 (보유: {tokenBalance.toLocaleString('ko-KR')} TOKEN)
+            Token amount (balance: {tokenBalance.toLocaleString()} TOKEN)
           </label>
           <input
             type="number"
@@ -99,14 +100,14 @@ export function WithdrawForm({
           />
           {tokenAmount && estimatedKrw > 0 && (
             <p className="text-[11px] text-white/40 mt-1">
-              예상 수령액: {estimatedKrw.toLocaleString('ko-KR')} KRW
+              Estimated payout: {estimatedKrw.toLocaleString()} KRW
             </p>
           )}
         </div>
 
         <div>
           <label className="block text-[11px] text-white/40 mb-1.5 uppercase tracking-[0.4px]">
-            트랜잭션 해시 (선택)
+            Transaction hash (optional)
           </label>
           <input
             type="text"
@@ -123,7 +124,7 @@ export function WithdrawForm({
         disabled={loading || !tokenAmount || parseFloat(tokenAmount) <= 0}
         className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl py-3 text-sm font-medium transition-colors"
       >
-        {loading ? '처리 중…' : '출금 신청'}
+        {loading ? 'Processing…' : 'Request withdrawal'}
       </button>
     </div>
   )

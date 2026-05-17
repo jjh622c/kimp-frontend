@@ -28,15 +28,15 @@ export function OracleUpdateForm({ currentPrice }: OracleUpdateFormProps) {
       if (res.ok) {
         setResult({
           success: true,
-          message: `업데이트 완료 — 새 가격: ${json.price?.toLocaleString('ko-KR')} KRW`,
+          message: `Updated — new price: ${json.price?.toLocaleString()} KRW`,
         })
         setPrice('')
         setNote('')
       } else {
-        setResult({ success: false, message: json.error ?? '오류가 발생했습니다' })
+        setResult({ success: false, message: json.error ?? 'An error occurred' })
       }
     } catch {
-      setResult({ success: false, message: '네트워크 오류' })
+      setResult({ success: false, message: 'Network error' })
     } finally {
       setLoading(false)
     }
@@ -45,9 +45,9 @@ export function OracleUpdateForm({ currentPrice }: OracleUpdateFormProps) {
   return (
     <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5 mb-4">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-medium text-white">오라클 토큰 가격 업데이트</h2>
+        <h2 className="text-sm font-medium text-white">Update oracle token price</h2>
         <span className="text-xs text-white/40">
-          현재: <span className="text-white">{currentPrice.toLocaleString('ko-KR')} KRW</span>
+          Current: <span className="text-white">{currentPrice.toLocaleString()} KRW</span>
         </span>
       </div>
       <div className="flex gap-2 mb-2">
@@ -55,14 +55,14 @@ export function OracleUpdateForm({ currentPrice }: OracleUpdateFormProps) {
           type="number"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
-          placeholder="새 가격 (KRW)"
+          placeholder="New price (KRW)"
           className="flex-1 bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
         />
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="메모 (선택)"
+          placeholder="Note (optional)"
           className="w-44 bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
         />
         <button
@@ -70,7 +70,7 @@ export function OracleUpdateForm({ currentPrice }: OracleUpdateFormProps) {
           disabled={loading || !price}
           className="bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap"
         >
-          {loading ? '처리 중…' : '업데이트'}
+          {loading ? 'Processing…' : 'Update'}
         </button>
       </div>
       {result && (

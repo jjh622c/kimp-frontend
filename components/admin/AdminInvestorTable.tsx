@@ -53,12 +53,12 @@ function ApproveDepositButton({ investor }: { investor: InvestorRow }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
 
-  if (done) return <span className="text-xs text-[#22c55e]">승인 완료</span>
+  if (done) return <span className="text-xs text-[#22c55e]">Approved</span>
 
   if (!showForm) {
     return (
       <button onClick={() => setShowForm(true)} className="text-xs text-[#3d8ef8] hover:underline mr-3">
-        입금 승인
+        Approve deposit
       </button>
     )
   }
@@ -74,11 +74,11 @@ function ApproveDepositButton({ investor }: { investor: InvestorRow }) {
         body: JSON.stringify({ userId: investor.id, amountKrw: amountNum }),
       })
       if (res.ok) {
-        toast.success(`${investor.name ?? investor.email ?? '투자자'} 입금 승인 완료`)
+        toast.success(`Deposit approved for ${investor.name ?? investor.email ?? 'Investor'}`)
         setDone(true)
         router.refresh()
       } else {
-        toast.error('입금 승인 실패')
+        toast.error('Failed to approve deposit')
       }
     } finally {
       setLoading(false)
@@ -91,7 +91,7 @@ function ApproveDepositButton({ investor }: { investor: InvestorRow }) {
         type="number"
         value={amount}
         onChange={(e) => setAmount(e.target.value)}
-        placeholder="KRW 금액"
+        placeholder="KRW amount"
         className="w-28 bg-[#0a0e1a] border border-white/[0.1] rounded px-2 py-1 text-xs text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/50"
       />
       <button
@@ -99,10 +99,10 @@ function ApproveDepositButton({ investor }: { investor: InvestorRow }) {
         disabled={loading}
         className="text-xs bg-[#3d8ef8]/20 hover:bg-[#3d8ef8]/30 text-[#3d8ef8] rounded px-2 py-1 transition-colors disabled:opacity-50"
       >
-        {loading ? '…' : '확인'}
+        {loading ? '…' : 'Confirm'}
       </button>
       <button onClick={() => setShowForm(false)} className="text-xs text-white/30 hover:text-white/60">
-        취소
+        Cancel
       </button>
     </div>
   )
@@ -114,7 +114,7 @@ function MintTokensButton({ investor }: { investor: InvestorRow }) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
 
-  if (done) return <span className="text-xs text-[#22c55e]">발행 완료</span>
+  if (done) return <span className="text-xs text-[#22c55e]">Minted</span>
 
   async function handleMint() {
     setLoading(true)
@@ -125,11 +125,11 @@ function MintTokensButton({ investor }: { investor: InvestorRow }) {
         body: JSON.stringify({ userId: investor.id }),
       })
       if (res.ok) {
-        toast.success(`${investor.name ?? investor.email ?? '투자자'} 토큰 발행 확인 완료`)
+        toast.success(`Token mint confirmed for ${investor.name ?? investor.email ?? 'Investor'}`)
         setDone(true)
         router.refresh()
       } else {
-        toast.error('토큰 발행 확인 실패')
+        toast.error('Failed to confirm token mint')
       }
     } finally {
       setLoading(false)
@@ -138,7 +138,7 @@ function MintTokensButton({ investor }: { investor: InvestorRow }) {
 
   return (
     <button onClick={handleMint} disabled={loading} className="text-xs text-[#22c55e] hover:underline disabled:opacity-50">
-      {loading ? '처리 중…' : '토큰 발행 확인'}
+      {loading ? 'Processing…' : 'Confirm mint'}
     </button>
   )
 }
@@ -149,7 +149,7 @@ function ApproveWithdrawButton({ requestId, userName }: { requestId: string; use
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
 
-  if (done) return <span className="text-xs text-[#22c55e]">승인됨</span>
+  if (done) return <span className="text-xs text-[#22c55e]">Approved</span>
 
   async function handleApprove() {
     setLoading(true)
@@ -160,11 +160,11 @@ function ApproveWithdrawButton({ requestId, userName }: { requestId: string; use
         body: JSON.stringify({ requestId }),
       })
       if (res.ok) {
-        toast.success(`${userName} 출금 승인 완료`)
+        toast.success(`Withdrawal approved for ${userName}`)
         setDone(true)
         router.refresh()
       } else {
-        toast.error('출금 승인 실패')
+        toast.error('Failed to approve withdrawal')
       }
     } finally {
       setLoading(false)
@@ -173,7 +173,7 @@ function ApproveWithdrawButton({ requestId, userName }: { requestId: string; use
 
   return (
     <button onClick={handleApprove} disabled={loading} className="text-xs text-[#f59e0b] hover:underline disabled:opacity-50">
-      {loading ? '…' : '출금 승인'}
+      {loading ? '…' : 'Approve withdrawal'}
     </button>
   )
 }
@@ -182,28 +182,28 @@ function InvestorAction({ inv }: { inv: InvestorRow }) {
   if (!inv.investment) return <span className="text-xs text-white/20">—</span>
   if (!inv.investment.depositConfirmed) return <ApproveDepositButton investor={inv} />
   if (!inv.investment.tokenMinted) return <MintTokensButton investor={inv} />
-  return <span className="text-xs text-white/30">활성</span>
+  return <span className="text-xs text-white/30">Active</span>
 }
 
 export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvestorTableProps) {
   return (
     <div className="space-y-4">
-      {/* ── 투자자 목록 ── */}
+      {/* Investors */}
       <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl overflow-hidden">
         <div className="px-5 py-3 border-b border-white/[0.07]">
-          <h2 className="text-sm font-medium text-white">투자자 ({investors.length})</h2>
+          <h2 className="text-sm font-medium text-white">Investors ({investors.length})</h2>
         </div>
 
         {investors.length === 0 ? (
-          <div className="px-5 py-8 text-center text-white/[0.28] text-sm">아직 투자자 없음</div>
+          <div className="px-5 py-8 text-center text-white/[0.28] text-sm">No investors yet</div>
         ) : (
           <>
-            {/* 데스크톱 테이블 */}
+            {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm min-w-[700px]">
                 <thead>
                   <tr className="border-b border-white/[0.07]">
-                    {['이름', '이메일', '투자금 (KRW)', '토큰수', '상태', '가입일', '액션'].map((h) => (
+                    {['Name', 'Email', 'Investment (KRW)', 'Tokens', 'Status', 'Joined', 'Action'].map((h) => (
                       <th key={h} className="px-5 py-2.5 text-left text-[11px] text-white/[0.28] uppercase tracking-[0.3px] font-medium">
                         {h}
                       </th>
@@ -216,11 +216,11 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
                       <td className="px-5 py-3 text-white">{inv.name ?? '—'}</td>
                       <td className="px-5 py-3 text-white/[0.55]">{inv.email ?? '—'}</td>
                       <td className="px-5 py-3 text-white">
-                        {inv.investment?.amountKrw ? inv.investment.amountKrw.toLocaleString('ko-KR') : '—'}
+                        {inv.investment?.amountKrw ? inv.investment.amountKrw.toLocaleString() : '—'}
                       </td>
                       <td className="px-5 py-3 text-white/70">
                         {inv.investment?.tokenAmount
-                          ? Number(inv.investment.tokenAmount).toLocaleString('ko-KR', { maximumFractionDigits: 2 })
+                          ? Number(inv.investment.tokenAmount).toLocaleString(undefined, { maximumFractionDigits: 2 })
                           : '—'}
                       </td>
                       <td className="px-5 py-3">
@@ -229,7 +229,7 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
                         </span>
                       </td>
                       <td className="px-5 py-3 text-white/40 text-xs">
-                        {new Date(inv.createdAt).toLocaleDateString('ko-KR')}
+                        {new Date(inv.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-5 py-3">
                         <InvestorAction inv={inv} />
@@ -240,7 +240,7 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
               </table>
             </div>
 
-            {/* 모바일 카드 뷰 */}
+            {/* Mobile card view */}
             <div className="md:hidden divide-y divide-white/[0.04]">
               {investors.map((inv) => (
                 <div key={inv.id} className="px-4 py-4 space-y-2">
@@ -254,7 +254,7 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
                     </span>
                   </div>
                   <div className="flex items-center gap-4 text-xs text-white/50">
-                    <span>{inv.investment?.amountKrw ? `${inv.investment.amountKrw.toLocaleString('ko-KR')} KRW` : '—'}</span>
+                    <span>{inv.investment?.amountKrw ? `${inv.investment.amountKrw.toLocaleString()} KRW` : '—'}</span>
                     <span>{inv.investment?.tokenAmount ? `${Number(inv.investment.tokenAmount).toFixed(2)} TOKEN` : '—'}</span>
                   </div>
                   <div className="pt-1">
@@ -267,19 +267,19 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
         )}
       </div>
 
-      {/* ── 출금 신청 목록 ── */}
+      {/* Withdrawal requests */}
       {withdrawRequests.length > 0 && (
         <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl overflow-hidden">
           <div className="px-5 py-3 border-b border-white/[0.07]">
-            <h2 className="text-sm font-medium text-white">출금 신청 ({withdrawRequests.length})</h2>
+            <h2 className="text-sm font-medium text-white">Withdrawal Requests ({withdrawRequests.length})</h2>
           </div>
 
-          {/* 데스크톱 테이블 */}
+          {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-sm min-w-[600px]">
               <thead>
                 <tr className="border-b border-white/[0.07]">
-                  {['투자자', '토큰수', '지급 예정 (KRW)', 'Tx 해시', '상태', '신청일', '액션'].map((h) => (
+                  {['Investor', 'Tokens', 'Payout (KRW)', 'Tx hash', 'Status', 'Date', 'Action'].map((h) => (
                     <th key={h} className="px-5 py-2.5 text-left text-[11px] text-white/[0.28] uppercase tracking-[0.3px] font-medium">
                       {h}
                     </th>
@@ -290,18 +290,18 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
                 {withdrawRequests.map((req) => (
                   <tr key={req.id} className="border-b border-white/[0.04] hover:bg-white/[0.02]">
                     <td className="px-5 py-3 text-white/70 text-xs">{req.user.name ?? req.user.email ?? '—'}</td>
-                    <td className="px-5 py-3 text-white">{Number(req.tokenAmount).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}</td>
-                    <td className="px-5 py-3 text-white">{req.krwAmount.toLocaleString('ko-KR')}</td>
+                    <td className="px-5 py-3 text-white">{Number(req.tokenAmount).toLocaleString(undefined, { maximumFractionDigits: 2 })}</td>
+                    <td className="px-5 py-3 text-white">{req.krwAmount.toLocaleString()}</td>
                     <td className="px-5 py-3 text-white/40 font-mono text-xs">{req.txHash ? `${req.txHash.slice(0, 10)}…` : '—'}</td>
                     <td className="px-5 py-3">
                       <span className={`text-xs rounded px-2 py-0.5 ${STATUS_STYLE[req.status] ?? 'bg-white/[0.06] text-white/50'}`}>
                         {req.status}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-white/40 text-xs">{new Date(req.createdAt).toLocaleDateString('ko-KR')}</td>
+                    <td className="px-5 py-3 text-white/40 text-xs">{new Date(req.createdAt).toLocaleDateString()}</td>
                     <td className="px-5 py-3">
                       {req.status === 'PENDING' && (
-                        <ApproveWithdrawButton requestId={req.id} userName={req.user.name ?? req.user.email ?? '투자자'} />
+                        <ApproveWithdrawButton requestId={req.id} userName={req.user.name ?? req.user.email ?? 'Investor'} />
                       )}
                     </td>
                   </tr>
@@ -310,7 +310,7 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
             </table>
           </div>
 
-          {/* 모바일 카드 뷰 */}
+          {/* Mobile card view */}
           <div className="md:hidden divide-y divide-white/[0.04]">
             {withdrawRequests.map((req) => (
               <div key={req.id} className="px-4 py-4 space-y-2">
@@ -320,16 +320,16 @@ export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvesto
                       {Number(req.tokenAmount).toFixed(2)} TOKEN
                     </div>
                     <div className="text-xs text-white/40 mt-0.5">
-                      {req.user.name ?? req.user.email ?? '—'} · {new Date(req.createdAt).toLocaleDateString('ko-KR')}
+                      {req.user.name ?? req.user.email ?? '—'} · {new Date(req.createdAt).toLocaleDateString()}
                     </div>
                   </div>
                   <span className={`text-[11px] rounded px-2 py-0.5 shrink-0 ${STATUS_STYLE[req.status] ?? 'bg-white/[0.06] text-white/50'}`}>
                     {req.status}
                   </span>
                 </div>
-                <div className="text-xs text-white/50">{req.krwAmount.toLocaleString('ko-KR')} KRW 지급 예정</div>
+                <div className="text-xs text-white/50">{req.krwAmount.toLocaleString()} KRW payout</div>
                 {req.status === 'PENDING' && (
-                  <ApproveWithdrawButton requestId={req.id} userName={req.user.name ?? req.user.email ?? '투자자'} />
+                  <ApproveWithdrawButton requestId={req.id} userName={req.user.name ?? req.user.email ?? 'Investor'} />
                 )}
               </div>
             ))}

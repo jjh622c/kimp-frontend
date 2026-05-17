@@ -7,7 +7,6 @@ export default function Step2Page() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  // 새로고침 시 sessionStorage에서 상태 복원 (hydration 이후)
   useEffect(() => {
     if (sessionStorage.getItem('step2_submitted') === '1') {
       setSubmitted(true)
@@ -16,7 +15,6 @@ export default function Step2Page() {
 
   async function handleTransferComplete() {
     setLoading(true)
-    // 입금 완료 알림 — 현재 별도 API 없음. 관리자가 은행 확인 후 수동 승인함.
     await new Promise((r) => setTimeout(r, 600))
     setLoading(false)
     sessionStorage.setItem('step2_submitted', '1')
@@ -45,17 +43,17 @@ export default function Step2Page() {
                 />
               </svg>
             </div>
-            <h2 className="text-base font-medium text-white">입금 확인 대기 중</h2>
+            <h2 className="text-base font-medium text-white">Awaiting deposit confirmation</h2>
           </div>
           <p className="text-sm text-white/[0.45] leading-[1.7] mb-5">
-            입금 기록을 받았습니다. 관리자가 확인 후{' '}
-            <strong className="text-white/70">24시간 이내</strong>에 Step 3를 활성화해드립니다.
+            Deposit record received. An admin will verify and activate Step 3 within{' '}
+            <strong className="text-white/70">24 hours</strong>.
           </p>
           <div className="bg-[#0a0e1a] border border-white/[0.05] rounded-lg px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-badge-pulse shrink-0" />
               <span className="text-xs text-white/40">
-                관리자 승인 대기 중 — 이 페이지를 닫아도 됩니다
+                Awaiting admin approval — you can close this page
               </span>
             </div>
           </div>
@@ -71,14 +69,15 @@ export default function Step2Page() {
       <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-6 mt-6">
         <h2 className="text-lg font-medium text-white mb-2">Deposit funds</h2>
         <p className="text-sm text-white/[0.45] mb-6 leading-[1.7]">
-          아래 계좌로 투자금을 이체해주세요. 관리자가 24시간 이내에 확인 후 Step 3를 활성화합니다.
+          Please transfer your investment to the account below. An admin will verify within 24 hours
+          and activate Step 3.
         </p>
 
         <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-lg p-4 mb-5 space-y-3">
           {[
-            { label: '은행', value: process.env.NEXT_PUBLIC_BANK_NAME || '—' },
-            { label: '계좌번호', value: process.env.NEXT_PUBLIC_BANK_ACCOUNT || '—' },
-            { label: '예금주', value: process.env.NEXT_PUBLIC_BANK_HOLDER || '—' },
+            { label: 'Bank', value: process.env.NEXT_PUBLIC_BANK_NAME || '—' },
+            { label: 'Account no.', value: process.env.NEXT_PUBLIC_BANK_ACCOUNT || '—' },
+            { label: 'Account holder', value: process.env.NEXT_PUBLIC_BANK_HOLDER || '—' },
           ].map((row) => (
             <div key={row.label} className="flex justify-between text-sm">
               <span className="text-white/40">{row.label}</span>
@@ -89,7 +88,7 @@ export default function Step2Page() {
 
         <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-4 py-3 mb-5">
           <p className="text-xs text-[#f59e0b]/80 leading-[1.6]">
-            이체 시 메모란에 <strong>이름 또는 이메일</strong>을 기재해주세요.
+            Please include your <strong>name or email</strong> in the transfer memo.
           </p>
         </div>
 
@@ -98,10 +97,10 @@ export default function Step2Page() {
           disabled={loading}
           className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-60 text-white rounded-xl py-3 text-sm font-medium transition-colors"
         >
-          {loading ? '처리 중…' : '이체 완료했습니다 →'}
+          {loading ? 'Processing…' : 'Transfer complete →'}
         </button>
         <p className="text-center text-[11px] text-white/[0.28] mt-3">
-          관리자 승인 후 Step 3가 활성화됩니다
+          Step 3 will be activated after admin approval
         </p>
       </div>
     </div>

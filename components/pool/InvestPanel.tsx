@@ -86,7 +86,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
               disabled={isConnecting || !connectors[0]}
               className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 text-white rounded-xl py-[11px] text-sm font-medium transition-colors"
             >
-              {isConnecting ? 'Connecting…' : 'Connect Wallet to Invest'}
+              {isConnecting ? 'Connecting…' : 'Connect wallet'}
             </button>
             <p className="text-center text-[10px] text-white/[0.2] mt-2">
               MetaMask required · Invite-only

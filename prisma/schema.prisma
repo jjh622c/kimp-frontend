@@ -12,6 +12,7 @@ model User {
   email         String?   @unique
   walletAddress String?   @unique
   name          String?
+  phone         String?
   createdAt     DateTime  @default(now())
 
   investment Investment?

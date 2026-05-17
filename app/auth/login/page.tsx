@@ -30,7 +30,7 @@ function LoginForm() {
     setLoading(false)
 
     if (result?.error) {
-      setError('이메일 또는 비밀번호가 올바르지 않습니다')
+      setError('Incorrect email or password')
     } else {
       router.push(callbackUrl)
       router.refresh()
@@ -46,8 +46,8 @@ function LoginForm() {
 
       <div className="w-full max-w-sm">
         <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-7">
-          <h1 className="text-base font-medium text-white mb-1">로그인</h1>
-          <p className="text-xs text-white/[0.35] mb-6">계정에 접속합니다</p>
+          <h1 className="text-base font-medium text-white mb-1">Sign in</h1>
+          <p className="text-xs text-white/[0.35] mb-6">Access your account</p>
 
           {error && (
             <div className="bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg px-3 py-2.5 mb-4 text-xs text-[#ef4444]">
@@ -58,7 +58,7 @@ function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-[11px] text-white/[0.35] uppercase tracking-[0.4px] mb-1.5">
-                이메일
+                Email
               </label>
               <input
                 type="email"
@@ -73,7 +73,7 @@ function LoginForm() {
 
             <div>
               <label className="block text-[11px] text-white/[0.35] uppercase tracking-[0.4px] mb-1.5">
-                비밀번호
+                Password
               </label>
               <input
                 type="password"
@@ -94,17 +94,17 @@ function LoginForm() {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-3.5 h-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                  로그인 중…
+                  Signing in…
                 </span>
               ) : (
-                '로그인 →'
+                'Sign in →'
               )}
             </button>
           </form>
         </div>
 
         <p className="text-center text-[11px] text-white/[0.2] mt-4">
-          초대받은 투자자만 접속 가능합니다
+          Access is limited to invited investors
         </p>
       </div>
     </div>

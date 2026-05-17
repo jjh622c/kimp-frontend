@@ -2,6 +2,8 @@ import { getLatestOraclePrice, getOraclePriceHistory } from '@/lib/data/oracle'
 import { InvestPanel } from '@/components/pool/InvestPanel'
 import { PriceChartCard } from '@/components/pool/PriceChartCard'
 
+const TOKEN_NAME = process.env.NEXT_PUBLIC_TOKEN_NAME ?? 'TOKEN'
+
 export default async function PoolDetailPage() {
   const [tokenPrice, priceHistory] = await Promise.all([
     getLatestOraclePrice(),
@@ -14,11 +16,11 @@ export default async function PoolDetailPage() {
       {/* ── Vault Header ─────────────────────────── */}
       <div className="flex items-start gap-4 mb-8">
         <div className="w-12 h-12 shrink-0 rounded-full bg-[#3d8ef8]/20 border border-[#3d8ef8]/30 flex items-center justify-center text-base font-semibold text-[#3d8ef8]">
-          K
+          {TOKEN_NAME[0]}
         </div>
         <div>
           <div className="flex items-center flex-wrap gap-3 mb-1">
-            <h1 className="text-xl font-semibold text-white">[TOKEN] · KRW Arb Vault</h1>
+            <h1 className="text-xl font-semibold text-white">{TOKEN_NAME} · KRW Arb Vault</h1>
             <span className="flex items-center gap-1.5 bg-[#22c55e]/10 border border-[#22c55e]/25 rounded-full px-2.5 py-0.5 text-[11px] font-medium text-[#22c55e]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-badge-pulse" />
               Active
@@ -43,13 +45,14 @@ export default async function PoolDetailPage() {
       {/* ── Stat Cards ───────────────────────────── */}
       <div className="grid grid-cols-4 max-sm:grid-cols-2 gap-3 mb-8">
         {[
-          { label: '30D Return', value: '+2.0%', color: 'text-[#22c55e]' },
-          { label: 'All-time Return', value: '+12.2%', color: 'text-[#22c55e]' },
-          { label: 'Win Rate', value: '71%', color: 'text-white' },
+          { label: '30D Return', value: '+2.0%', color: 'text-[#22c55e]', note: 'Last 30 days' },
+          { label: 'All-time Return', value: '+12.2%', color: 'text-[#22c55e]', note: 'Since Jan 2025' },
+          { label: 'Win Rate', value: '71%', color: 'text-white', note: 'Trades settled' },
           {
             label: 'Token Price',
             value: `${tokenPrice.toLocaleString('ko-KR')} KRW`,
             color: 'text-white',
+            note: 'Oracle · live',
           },
         ].map((stat) => (
           <div key={stat.label} className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
@@ -57,6 +60,9 @@ export default async function PoolDetailPage() {
               {stat.label}
             </div>
             <div className={`text-2xl font-semibold ${stat.color}`}>{stat.value}</div>
+            {stat.note && (
+              <div className="text-[10px] text-white/[0.2] mt-1">{stat.note}</div>
+            )}
           </div>
         ))}
       </div>

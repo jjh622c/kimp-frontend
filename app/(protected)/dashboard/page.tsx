@@ -102,7 +102,7 @@ export default async function DashboardPage() {
           {!investmentData && (
             <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-4 py-3 mb-5">
               <p className="text-xs text-[#f59e0b]/80 leading-[1.6]">
-                투자 데이터를 불러올 수 없습니다. 관리자가 계정을 활성화한 후 다시 확인해주세요.
+                Your investment data is not yet available. Please check back after your account has been activated by the admin.
               </p>
             </div>
           )}
