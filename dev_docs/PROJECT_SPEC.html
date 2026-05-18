@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[PROJECT] 기술 사양서 v1.0</title>
+<title>[PROJECT] 기술 사양서 v1.1</title>
 <style>
   :root {
     --bg: #0f1117;
@@ -120,7 +120,7 @@
 <aside class="sidebar">
   <div class="sidebar-logo">
     <div class="name">[PROJECT NAME]</div>
-    <div class="version">사양서 v1.0 · 2026.05</div>
+    <div class="version">사양서 v1.1 · 2026.05</div>
   </div>
 
   <div class="sidebar-section">Overview</div>
@@ -756,8 +756,8 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
     </div>
 
     <div class="info" style="margin-top: 32px;">
-      <div class="info-label">Claude Code 세션 인계 메모 (v1.0 기준)</div>
-      <p>새 세션 시작 시: <code>CLAUDE.md</code> → 이 파일(<code>PROJECT_SPEC.html</code>) → <code>memory/ux-plan.md</code> 순으로 읽고 작업을 이어간다. 현재 완성: Next.js 전체 구조 · UI/UX 1차 개선(이중 CTA·용어통일·언어일관성·APY맥락레이블) · ConnectButton(wagmi MetaMask) · TradingView 차트 · 대시보드/관리자 페이지 · 토스트 · 보안 헤더. <strong>다음 작업:</strong> 프로젝트명·토큰명 확정 → .env 설정 → prisma db push → 모두싸인 Step1 연동 → ERC-20 컨트랙트 배포.</p>
+      <div class="info-label">Claude Code 세션 인계 메모 (v1.1 기준)</div>
+      <p>새 세션 시작 시: <code>CLAUDE.md</code> → 이 파일(<code>PROJECT_SPEC.html</code>) → <code>dev_docs/WORKLOG.md</code> 순으로 읽고 작업을 이어간다. 현재 완성(v1.1): Next.js 전체 구조 · UI/UX 개선(이중 CTA·용어통일·stat note레이블) · ConnectButton(wagmi MetaMask) · TradingView 차트 · 대시보드/관리자 · 토스트 · 보안 헤더 · 모두싸인 구조 · 카카오 알림톡 구조 · 온체인 해시 구조 · ERC-20 컨트랙트 파일 · AdminReportSection · User.phone 필드 · UI 전체 영문화. <strong>다음 작업(v1.2):</strong> <code>WORKLOG.md</code>의 GATE-01~04 (Gate 시스템, 🔴최우선) → OB-01~02 (Step2 대기 UI) → UI-01~04 (Hero stat·락업UI·SVG차트·모바일indicator) → REF-01~07 (레퍼럴 시스템) → DATA-01 (V1 정산 파일 수령 후). 참조 스펙: <code>dev_docs/kimp_spec_v1.1.md</code></p>
     </div>
   </section>
 
@@ -906,6 +906,21 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <div class="phase-item"><strong>형상관리 문서 정비</strong> — PROJECT_SPEC.html v1.0 업데이트. memory/ux-plan.md 신규 생성 (Phase A/B/C 진행 추적). MEMORY.md 인덱스 추가. 세션 초기화 후에도 즉시 이어 작업 가능한 체계 확립</div>
     </div>
 
+    <div class="phase" style="margin-top:16px; border: 0.5px solid rgba(245,158,11,0.3);">
+      <div class="phase-header">
+        <span class="badge badge-amber">v1.2 — 예정</span>
+        <span class="phase-title">Gate 시스템 · 레퍼럴 · UI 개선 · 실데이터</span>
+      </div>
+      <div class="phase-item">🔴 <strong>Gate 시스템</strong> — <code>gate/page.tsx</code> 신규 · <code>middleware.ts</code> invite 토큰 기반 전체 라우트 보호 · Step1 code 입력 제거 · verify-invite URL 파라미터 전환</div>
+      <div class="phase-item">🔴 <strong>Step2 대기 상태 UI</strong> — DEPOSIT_PENDING 상태 · 버튼 비활성 · "24시간 내 확인" 안내 · 관리자 승인 전 step3 접근 차단</div>
+      <div class="phase-item">🟡 <strong>HeroSection 실적 stat</strong> — 운용 기간(5년+) · 누적 수익률(+275%) · 현재 시드(₩3B+) 3개 stat 추가 (하드코딩, DATA-01 수령 후 교체)</div>
+      <div class="phase-item">🟡 <strong>Dashboard Withdraw 락업 UI</strong> — 180일 기준 Locked(amber notice + disabled) / Unlocked(현행 유지) 분기</div>
+      <div class="phase-item">🟡 <strong>SVG 차트 엔드포인트 수정</strong> — pool/detail SVG circle cx=596 cy=6 (뷰박스 클리핑 방지)</div>
+      <div class="phase-item">🟡 <strong>온보딩 모바일 step indicator</strong> — 390px에서 레이블 겹침 방지 (<code>hidden sm:block</code>)</div>
+      <div class="phase-item">🟡 <strong>레퍼럴 시스템</strong> — prisma 스키마 (depth·canInvite·referral 필드) · API (invite/generate POST, invite/tree GET) · InviteSection(dashboard) · AdminInviteSection · depth 2단계 고정</div>
+      <div class="phase-item">🟢 <strong>실데이터 반영</strong> — V1 정산 CSV 수령 후: HeroSection stat 확정 · Monthly Returns 12개월+ · 누적 수익률/CAGR/Win Rate 재계산</div>
+    </div>
+
     <div class="phase" style="margin-top:16px">
       <div class="phase-header">
         <span class="badge badge-green">v1.1 — 2026.05.18</span>
@@ -922,49 +937,99 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <div class="phase-item"><strong>UI 언어 전체 영문화</strong> — 투자자 노출 화면 한국어 → 영문 전면 교체: step1~3, error/not-found/global-error/loading, auth/login, AdminInvestorTable/AdminStatsCards/InviteLinkGenerator/OracleUpdateForm, InvestmentTimeline/WithdrawForm/WithdrawHistory</div>
     </div>
 
-    <h2>다음 작업 순서 (v1.1 이후)</h2>
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v1.2 — 2026.05.18</span>
+        <span class="phase-title">Gate 시스템 + UI 개선 Phase 1~3</span>
+      </div>
+      <div class="phase-item"><strong>GATE-01</strong> — <code>app/gate/page.tsx</code> 신규. Invitation Only 전용 차단 페이지 (에러 종류별 메시지: invalid/used/expired/missing/server)</div>
+      <div class="phase-item"><strong>GATE-02</strong> — <code>middleware.ts</code> 전면 재작성. withAuth → getToken 수동 구현. ?invite=TOKEN 파라미터 감지 → verify-invite로 리다이렉트. kimp_access 쿠키 없으면 /gate 리다이렉트</div>
+      <div class="phase-item"><strong>GATE-03</strong> — <code>onboarding/step1</code> 토큰 검증 UI 완전 제거. 게이트 통과 후 계약 폼 직행. 토큰은 URL ?token= 파라미터로 전달</div>
+      <div class="phase-item"><strong>GATE-04</strong> — <code>api/onboarding/verify-invite</code> GET 핸들러 추가. 토큰 검증 성공 시 kimp_access=1 쿠키(httpOnly, 30일) 설정 → /onboarding/step1?token=TOKEN 리다이렉트. POST 하위호환 유지</div>
+      <div class="phase-item"><strong>OB-01</strong> — <code>onboarding/step2</code> notify-deposit API 연동. 제출 시간 sessionStorage 저장 + 표시. Suspense 래퍼 추가</div>
+      <div class="phase-item"><strong>OB-02</strong> — <code>api/onboarding/notify-deposit</code> 신규 라우트. TODO: DEPOSIT_PENDING 스키마 확장 후 상태 업데이트 / 알림 전송</div>
+      <div class="phase-item"><strong>UI-01</strong> — <code>HeroSection</code> 하단 실적 stat 3개 추가: 5yr+ / +275% / ₩3B+ (하드코딩, DATA-01 후 교체)</div>
+      <div class="phase-item"><strong>UI-02</strong> — <code>WithdrawForm</code> Locked 상태 UI 개선: amber notice "Locked · Unlocks in X days" + 투자일/해제일 표시. dashboard에서 investedAt prop 전달</div>
+      <div class="phase-item"><strong>UI-04</strong> — <code>StepHeader</code> 스텝 도트 UI 추가. hidden sm:block text-[10px] 레이블 (Contract/Deposit/Wallet/Done). 390px 모바일 겹침 방지</div>
+    </div>
+
+    <h2>다음 작업 순서 (v1.2 완료 / v1.3 계획)</h2>
+    <div class="warn">
+      <div class="warn-label">⚠ 스펙 참조</div>
+      <p>Phase 1~3 완료. 다음은 Phase 4 레퍼럴 시스템 및 DATA-01 실데이터 반영.</p>
+    </div>
     <table class="tbl">
-      <tr><th>순서</th><th>작업</th><th>상태</th><th>메모</th></tr>
-      <tr><td>1</td><td>프론트엔드 UI/UX 개선 + 언어 통일</td><td><span class="badge badge-green">✅ 완료 (v1.1)</span></td><td>이중 CTA, 용어·언어 통일, 관리자 기능 완성</td></tr>
-      <tr><td>2</td><td><code>.env</code> 작성 → DB URL 설정</td><td><span class="badge badge-amber">사용자 직접</span></td><td>Supabase 프로젝트 생성. .env.example 참고</td></tr>
-      <tr><td>3</td><td><code>npx prisma db push</code> → <code>npx prisma generate</code></td><td><span class="badge badge-amber">사용자 직접</span></td><td>User.phone 필드 포함 스키마 → DB 반영</td></tr>
-      <tr><td>4</td><td>모두싸인 API 키 설정</td><td><span class="badge badge-amber">대기</span></td><td>MODUSIGN_API_KEY + MODUSIGN_TEMPLATE_ID env. 구조는 완성</td></tr>
-      <tr><td>5</td><td>ERC-20 컨트랙트 배포 (Base mainnet)</td><td><span class="badge badge-gray">Phase 1 후반</span></td><td>Hardhat 설정 + npx hardhat deploy. contracts/ 완성 상태</td></tr>
-      <tr><td>6</td><td>카카오 알림톡 활성화</td><td><span class="badge badge-gray">Phase 2</span></td><td>KAKAO_API_KEY + KAKAO_CHANNEL_ID + User.phone 실제 수집 후</td></tr>
-      <tr><td>7</td><td>온체인 리포트 기록 활성화</td><td><span class="badge badge-gray">Phase 2</span></td><td>ORACLE_ADMIN_PRIVATE_KEY + 컨트랙트 배포 후. AdminReportSection 완성 상태</td></tr>
+      <tr><th>Phase</th><th>작업 ID</th><th>내용</th><th>상태</th><th>우선순위</th></tr>
+      <tr><td>1 Gate</td><td>GATE-01</td><td><code>app/gate/page.tsx</code> 신규 — invitation only 진입 차단 페이지 (에러 메시지 표시)</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>1 Gate</td><td>GATE-02</td><td><code>middleware.ts</code> — kimp_access 쿠키 기반 전체 라우트 보호 + ?invite= 파라미터 감지</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>1 Gate</td><td>GATE-03</td><td><code>onboarding/step1</code> — 토큰 검증 UI 제거, 게이트 통과 후 계약 폼 직행</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>1 Gate</td><td>GATE-04</td><td><code>api/onboarding/verify-invite</code> — GET 핸들러 추가, kimp_access 쿠키 설정 + step1 리다이렉트</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>2 OB</td><td>OB-01</td><td><code>onboarding/step2</code> — notify-deposit 연동, 제출 시간 표시, Suspense 래퍼</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>2 OB</td><td>OB-02</td><td><code>api/onboarding/notify-deposit</code> 신규 — TODO: DEPOSIT_PENDING 상태/알림톡</td><td><span class="badge badge-green">완료</span></td><td>🔴 즉시</td></tr>
+      <tr><td>3 UI</td><td>UI-01</td><td><code>HeroSection</code> — 실적 stat 3개 추가 (5yr+, +275%, ₩3B+)</td><td><span class="badge badge-green">완료</span></td><td>🟡 다음</td></tr>
+      <tr><td>3 UI</td><td>UI-02</td><td><code>WithdrawForm</code> — Locked amber notice "Locked · Unlocks in X days" + 투자일/잠금해제일</td><td><span class="badge badge-green">완료</span></td><td>🟡 다음</td></tr>
+      <tr><td>3 UI</td><td>UI-03</td><td>SVG 차트 cy 수정 — 실제 앱코드에 inline SVG 없음 (lightweight-charts 사용), N/A</td><td><span class="badge badge-gray">해당없음</span></td><td>🟡 다음</td></tr>
+      <tr><td>3 UI</td><td>UI-04</td><td><code>StepHeader</code> — 스텝 도트 + hidden sm:block 레이블 (Contract/Deposit/Wallet/Done)</td><td><span class="badge badge-green">완료</span></td><td>🟡 다음</td></tr>
+      <tr><td>4 REF</td><td>REF-01~02</td><td><code>prisma/schema.prisma</code> — InviteLink depth·maxUses, User canInvite·referralDepth 추가 + DB 반영</td><td><span class="badge badge-red">예정</span></td><td>🟡 다음</td></tr>
+      <tr><td>4 REF</td><td>REF-03~04</td><td><code>api/invite/generate</code> POST + <code>api/invite/tree</code> GET 신규 라우트</td><td><span class="badge badge-red">예정</span></td><td>🟡 다음</td></tr>
+      <tr><td>4 REF</td><td>REF-05~07</td><td><code>InviteSection.tsx</code> (dashboard) + <code>AdminInviteSection.tsx</code> 신규 + dashboard 조건부 렌더링</td><td><span class="badge badge-red">예정</span></td><td>🟡 다음</td></tr>
+      <tr><td>5 DATA</td><td>DATA-01</td><td>V1 정산 CSV 수령 후 HeroSection stat·Monthly Returns 테이블 실데이터로 교체</td><td><span class="badge badge-gray">대기 중</span></td><td>🟢 파일 수령 후</td></tr>
+      <tr><td>-</td><td>ENV</td><td><code>.env</code> 작성 → <code>npx prisma db push</code> → 모두싸인/카카오/온체인 API 키 설정</td><td><span class="badge badge-amber">사용자 직접</span></td><td>REF-01 이후</td></tr>
     </table>
 
-    <h2>파일 구조 (현재 상태 — v1.0)</h2>
+    <h2>파일 구조 (현재 상태 — v1.1 / v1.2 예정 포함)</h2>
     <pre><code>kimp-frontend/
 ├── app/
-│   ├── (public)/           ✅ 랜딩(이중 CTA) · 볼트 상세(stat note 레이블) (max-w-[1280px] 폭 제한)
-│   ├── (onboarding)/       ✅ step1~4 구조 + ConnectButton (step3 wagmi 실제 연동)
-│   ├── (protected)/        ✅ dashboard(영문 에러 메시지) · admin (ConnectButton 포함)
-│   ├── auth/login/         ✅ 커스텀 로그인 페이지
-│   ├── api/                ✅ 10개 route (oracle, onboarding, dashboard, admin, withdraw + withdrawals)
-│   ├── not-found.tsx       ✅ 404 페이지
-│   ├── error.tsx           ✅ 에러 페이지
-│   ├── global-error.tsx    ✅ 전역 에러 페이지
-│   └── loading.tsx         ✅ 로딩 페이지
+│   ├── (public)/
+│   │   ├── page.tsx            ✅ 랜딩 (이중 CTA · 용어 통일)  ⬜ v1.2: invite 토큰 게이트 추가
+│   │   ├── gate/page.tsx       ⬜ v1.2 신규: invitation only 차단 페이지 (GATE-01)
+│   │   └── pool/detail/        ✅ 볼트 상세 (stat note 레이블)  ⬜ v1.2: SVG cy 수정, Monthly 12개월+ (UI-03, DATA-01)
+│   ├── (onboarding)/
+│   │   ├── onboarding/step1/   ✅ invite 토큰 URL 검증  ⬜ v1.2: code 입력 UI 제거 (GATE-03)
+│   │   ├── onboarding/step2/   ✅ 이체 완료 버튼  ⬜ v1.2: DEPOSIT_PENDING 대기 UI (OB-01)
+│   │   ├── onboarding/step3/   ✅ wagmi 지갑 연결  ⬜ v1.2: 모바일 indicator 레이블 (UI-04)
+│   │   └── onboarding/step4/   ✅ 완료 페이지
+│   ├── (protected)/
+│   │   ├── dashboard/          ✅ 영문 에러  ⬜ v1.2: locked UI (UI-02), InviteSection (REF-07)
+│   │   └── admin/              ✅ AdminReportSection · AdminStatsCards  ⬜ v1.2: AdminInviteSection (REF-06)
+│   ├── auth/login/             ✅ 커스텀 로그인 페이지
+│   ├── api/
+│   │   ├── oracle/             ✅ GET 현재 토큰 가격
+│   │   ├── onboarding/         ✅ verify-invite · contract-signed · wallet · modusign-session
+│   │   │                       ⬜ v1.2: notify-deposit 신규 (OB-02), verify-invite URL 파라미터 방식 (GATE-04)
+│   │   ├── admin/              ✅ approve-deposit · approve-withdraw · update-oracle · create-invite · record-report
+│   │   ├── dashboard/          ✅ me · withdrawals
+│   │   ├── withdraw/           ✅ request
+│   │   ├── invite/             ⬜ v1.2 신규: generate (REF-03) · tree (REF-04)
+│   │   └── webhooks/           ✅ modusign
+│   ├── not-found.tsx           ✅
+│   ├── error.tsx               ✅
+│   ├── global-error.tsx        ✅
+│   └── loading.tsx             ✅
 ├── components/
-│   ├── landing/            ✅ HeroSection(이중CTA), MarketsSection(ActiveVault/Details→/APY레이블), HowItWorks, RiskFooter
-│   ├── layout/             ✅ Navbar (ConnectButton + 앱 이름 env)
-│   ├── onboarding/         ✅ StepHeader
-│   ├── pool/               ✅ InvestPanel(Connect wallet 버튼 텍스트 단순화), PriceChartCard (lightweight-charts)
-│   ├── dashboard/          ✅ DashboardChart, WithdrawForm (토스트), InvestmentTimeline, WithdrawHistory
-│   ├── admin/              ✅ OracleUpdateForm, AdminInvestorTable (토스트 + 모바일 뷰), AdminStatsCards
-│   ├── wallet/             ✅ ConnectButton (wagmi MetaMask · 3가지 상태 · 드롭다운)
-│   └── ui/                 ✅ Button (shadcn/ui), Toaster (토스트 UI)
-├── lib/                    ✅ prisma, wagmi, utils, auth, data/oracle, toast-context
-├── prisma/schema.prisma    ✅ 확정
-├── types/index.ts          ✅ 확정
-├── middleware.ts            ✅ 라우트 보호 (auth 공개 경로 포함)
-├── next.config.mjs         ✅ 보안 헤더 (X-Frame-Options, HSTS 등)
-├── .env.example            ✅ 전체 환경변수 문서화
-├── CLAUDE.md               ✅ Claude Code 프로젝트 가이드 (한국어)
+│   ├── landing/                ✅ HeroSection · MarketsSection · HowItWorks · RiskFooter
+│   │                           ⬜ v1.2: HeroSection stat 3개 (UI-01)
+│   ├── layout/                 ✅ Navbar
+│   ├── onboarding/             ✅ StepHeader
+│   ├── pool/                   ✅ InvestPanel · PriceChartCard (lightweight-charts)
+│   ├── dashboard/              ✅ DashboardChart · WithdrawForm · InvestmentTimeline · WithdrawHistory
+│   │                           ⬜ v1.2: InviteSection 신규 (REF-05)
+│   ├── admin/                  ✅ OracleUpdateForm · AdminInvestorTable · AdminStatsCards · AdminReportSection · InviteLinkGenerator
+│   │                           ⬜ v1.2: AdminInviteSection 신규 (REF-06)
+│   ├── wallet/                 ✅ ConnectButton (wagmi MetaMask · 3상태 · 드롭다운)
+│   └── ui/                     ✅ Button · Toaster
+├── lib/                        ✅ prisma · wagmi · utils · auth · data/oracle · toast-context · modusign · kakao · onchain
+├── contracts/                  ✅ Token.sol (KimpToken ERC-20) · Oracle.sol (KimpOracle)
+├── prisma/schema.prisma        ✅ User.phone 포함  ⬜ v1.2: depth·canInvite·referral 필드 추가 (REF-01)
+├── types/index.ts              ✅
+├── middleware.ts               ✅ 라우트 보호  ⬜ v1.2: invite 토큰 기반 전체 게이팅 (GATE-02)
+├── next.config.mjs             ✅ 보안 헤더
+├── .env.example                ✅ 전체 환경변수 문서화
+├── CLAUDE.md                   ✅ Claude Code 프로젝트 가이드
 └── dev_docs/
-    ├── PROJECT_SPEC.html   ✅ 이 파일 (기능 정의 · 형상관리 기준)
-    └── WORKLOG.md          ✅ 세션 작업 상태 추적 체크리스트</code></pre>
+    ├── PROJECT_SPEC.html       ✅ 이 파일 (v1.1 기준)
+    ├── WORKLOG.md              ✅ 세션 작업 상태 체크리스트 (v1.2 계획 포함)
+    └── kimp_spec_v1.1.md       ✅ v1.2 개선 사양서 (Gate·레퍼럴·UI 스펙 원본)</code></pre>
   </section>
 
 </main>

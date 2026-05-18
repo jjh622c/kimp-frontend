@@ -1,27 +1,64 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { StepHeader } from '@/components/onboarding/StepHeader'
 
 export default function Step2Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full max-w-lg">
+          <StepHeader current={2} total={4} />
+          <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-6 mt-6 flex items-center justify-center gap-3">
+            <span className="w-4 h-4 rounded-full border-2 border-[#3d8ef8] border-t-transparent animate-spin shrink-0" />
+            <span className="text-sm text-white/40">Loading…</span>
+          </div>
+        </div>
+      }
+    >
+      <Step2Content />
+    </Suspense>
+  )
+}
+
+function Step2Content() {
+  const searchParams = useSearchParams()
+  const token = searchParams.get('token')
+
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [submittedAt, setSubmittedAt] = useState<string | null>(null)
 
   useEffect(() => {
-    if (sessionStorage.getItem('step2_submitted') === '1') {
+    const stored = sessionStorage.getItem('step2_submitted_at')
+    if (stored) {
       setSubmitted(true)
+      setSubmittedAt(stored)
     }
   }, [])
 
   async function handleTransferComplete() {
     setLoading(true)
-    await new Promise((r) => setTimeout(r, 600))
-    setLoading(false)
-    sessionStorage.setItem('step2_submitted', '1')
-    setSubmitted(true)
+    try {
+      await fetch('/api/onboarding/notify-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      })
+    } catch {
+      // fail silently — admin verifies manually
+    } finally {
+      const now = new Date().toISOString()
+      sessionStorage.setItem('step2_submitted_at', now)
+      setLoading(false)
+      setSubmitted(true)
+      setSubmittedAt(now)
+    }
   }
 
   if (submitted) {
+    const submittedDate = submittedAt ? new Date(submittedAt) : null
     return (
       <div className="w-full max-w-lg">
         <StepHeader current={2} total={4} />
@@ -29,33 +66,37 @@ export default function Step2Page() {
         <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-6 mt-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center shrink-0">
-              <svg
-                className="w-4 h-4 text-[#f59e0b]"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg className="w-4 h-4 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h2 className="text-base font-medium text-white">Awaiting deposit confirmation</h2>
+            <h2 className="text-base font-medium text-white">Deposit confirmation in progress</h2>
           </div>
-          <p className="text-sm text-white/[0.45] leading-[1.7] mb-5">
-            Deposit record received. An admin will verify and activate Step 3 within{' '}
-            <strong className="text-white/70">24 hours</strong>.
+
+          <p className="text-sm text-white/[0.45] leading-[1.7] mb-1">
+            Admin will verify your transfer within{' '}
+            <strong className="text-white/70">24 hours</strong> on business days.
           </p>
-          <div className="bg-[#0a0e1a] border border-white/[0.05] rounded-lg px-4 py-3">
+          <p className="text-sm text-white/[0.45] leading-[1.7] mb-5">
+            You&apos;ll receive a notification once confirmed.
+          </p>
+
+          <div className="bg-[#0a0e1a] border border-white/[0.05] rounded-lg px-4 py-3 space-y-2">
             <div className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-badge-pulse shrink-0" />
-              <span className="text-xs text-white/40">
-                Awaiting admin approval — you can close this page
-              </span>
+              <span className="text-xs text-white/40">Awaiting admin approval — you can close this page</span>
             </div>
+            {submittedDate && (
+              <p className="text-[11px] text-white/[0.28] pl-3.5">
+                Submitted:{' '}
+                {submittedDate.toLocaleString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </p>
+            )}
           </div>
         </div>
       </div>

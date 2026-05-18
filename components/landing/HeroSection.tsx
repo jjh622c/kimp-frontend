@@ -1,5 +1,11 @@
 import Link from 'next/link'
 
+const STATS = [
+  { value: '5yr+', label: 'Since 2021', sub: 'Track record' },
+  { value: '+275%', label: 'V1 Cumulative', sub: 'Total return' },
+  { value: '₩3B+', label: 'Active capital', sub: 'Under mgmt.' },
+]
+
 export function HeroSection() {
   return (
     <div className="px-8 max-sm:px-4 pt-14 max-sm:pt-10 pb-10 max-sm:pb-8 text-center">
@@ -30,6 +36,16 @@ export function HeroSection() {
         >
           View strategy
         </Link>
+      </div>
+
+      {/* Performance stats */}
+      <div className="mt-10 pt-8 border-t border-white/[0.06] grid grid-cols-3 gap-4 max-w-[360px] mx-auto">
+        {STATS.map((stat) => (
+          <div key={stat.value} className="text-center">
+            <div className="text-xl max-sm:text-lg font-semibold text-white">{stat.value}</div>
+            <div className="text-[10px] text-white/[0.28] mt-1 leading-[1.4]">{stat.label}</div>
+          </div>
+        ))}
       </div>
     </div>
   )

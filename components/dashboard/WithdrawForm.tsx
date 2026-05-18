@@ -8,6 +8,7 @@ interface WithdrawFormProps {
   currentPrice: number
   lockupEndsAt?: string | null
   investmentStatus: string
+  investedAt?: string | null
 }
 
 export function WithdrawForm({
@@ -15,18 +16,24 @@ export function WithdrawForm({
   currentPrice,
   lockupEndsAt,
   investmentStatus,
+  investedAt,
 }: WithdrawFormProps) {
   const [tokenAmount, setTokenAmount] = useState('')
   const [txHash, setTxHash] = useState('')
   const [loading, setLoading] = useState(false)
   const toast = useToast()
 
+  const lockupDate = lockupEndsAt ? new Date(lockupEndsAt) : null
+  const investedDate = investedAt ? new Date(investedAt) : null
+  const estimatedKrw = tokenAmount ? Math.floor(parseFloat(tokenAmount) * currentPrice) : 0
+
   const isLocked =
     investmentStatus !== 'ACTIVE' ||
-    (lockupEndsAt ? new Date(lockupEndsAt) > new Date() : true)
+    (lockupDate ? lockupDate > new Date() : true)
 
-  const lockupDate = lockupEndsAt ? new Date(lockupEndsAt) : null
-  const estimatedKrw = tokenAmount ? Math.floor(parseFloat(tokenAmount) * currentPrice) : 0
+  const daysUntilUnlock = lockupDate
+    ? Math.max(0, Math.ceil((lockupDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : null
 
   async function handleSubmit() {
     const amount = parseFloat(tokenAmount)
@@ -57,20 +64,51 @@ export function WithdrawForm({
   if (isLocked) {
     return (
       <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
-        <h2 className="text-sm font-medium text-white mb-1">Withdraw</h2>
-        <p className="text-xs text-white/[0.35] mb-4">
-          {investmentStatus !== 'ACTIVE'
-            ? 'Withdrawal available once investment is active.'
-            : lockupDate
-            ? `Locked until ${lockupDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`
-            : 'Lockup period in progress.'}
-        </p>
+        <h2 className="text-sm font-medium text-white mb-4">Withdraw</h2>
+
+        {lockupDate && daysUntilUnlock !== null ? (
+          <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-xl px-4 py-3 mb-4">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
+              <span className="text-xs font-medium text-[#f59e0b]">
+                Locked · Unlocks in {daysUntilUnlock} day{daysUntilUnlock !== 1 ? 's' : ''}
+              </span>
+            </div>
+            <div className="text-[11px] text-[#f59e0b]/60 pl-3.5 space-y-0.5">
+              {investedDate && (
+                <p>
+                  Investment date:{' '}
+                  {investedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </p>
+              )}
+              <p>
+                Unlock date:{' '}
+                {lockupDate.toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-white/[0.35] mb-4">
+            {investmentStatus !== 'ACTIVE'
+              ? 'Withdrawal available once investment is active.'
+              : 'Lockup period in progress.'}
+          </p>
+        )}
+
         <button
           disabled
           className="w-full bg-white/[0.05] text-white/30 rounded-xl py-3 text-sm font-medium cursor-not-allowed"
         >
-          {lockupDate
-            ? `Unlocks ${lockupDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+          {daysUntilUnlock !== null
+            ? `Unlocks in ${daysUntilUnlock} day${daysUntilUnlock !== 1 ? 's' : ''}`
             : 'Withdrawal locked'}
         </button>
       </div>
