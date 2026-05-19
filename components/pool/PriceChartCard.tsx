@@ -2,47 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createChart, ColorType } from 'lightweight-charts'
+import { PRICE_CHART_DATA } from '@/lib/data/monthly-returns'
 
-const PERIODS = ['1W', '1M', 'ALL'] as const
+const PERIODS = ['1Y', 'ALL'] as const
 type Period = (typeof PERIODS)[number]
-
-// 결정론적 모의 데이터 — DB 연결 전 차트를 채우기 위함
-// 2026-01-01 론치, Jan +10%, Feb +2%, Mar-May 소폭 상승
-const MOCK_DATA: { time: string; value: number }[] = (() => {
-  const points = [
-    { day: 0,   price: 1000 },
-    { day: 31,  price: 1100 },
-    { day: 59,  price: 1122 },
-    { day: 90,  price: 1140 },
-    { day: 120, price: 1155 },
-    { day: 138, price: 1162 },
-  ]
-  const result: { time: string; value: number }[] = []
-  const start = new Date('2026-01-01')
-
-  for (let i = 0; i <= 138; i++) {
-    const date = new Date(start)
-    date.setDate(date.getDate() + i)
-
-    let prev = points[0], next = points[points.length - 1]
-    for (let j = 0; j < points.length - 1; j++) {
-      if (i >= points[j].day && i <= points[j + 1].day) {
-        prev = points[j]; next = points[j + 1]; break
-      }
-    }
-    const t = next.day === prev.day ? 1 : (i - prev.day) / (next.day - prev.day)
-    const base = prev.price + t * (next.price - prev.price)
-    const noise = Math.sin(i * 0.71) * 7 + Math.sin(i * 1.37) * 3
-    const timeStr = date.toISOString().split('T')[0]
-    result.push({ time: timeStr, value: Math.round(base + noise) })
-  }
-  return result
-})()
 
 function filterByPeriod(data: { time: string; value: number }[], period: Period) {
   if (period === 'ALL') return data
-  const ms = period === '1W' ? 7 * 86400000 : 30 * 86400000
-  const cutoff = new Date(Date.now() - ms).toISOString().split('T')[0]
+  const cutoff = new Date(Date.now() - 365 * 86400000).toISOString().split('T')[0]
   return data.filter((d) => d.time >= cutoff)
 }
 
@@ -51,13 +18,13 @@ interface PriceChartCardProps {
 }
 
 export function PriceChartCard({ data }: PriceChartCardProps) {
-  const [period, setPeriod] = useState<Period>('1M')
+  const [period, setPeriod] = useState<Period>('ALL')
   const containerRef = useRef<HTMLDivElement>(null)
 
   const chartData =
     data && data.length > 0
       ? data.map((d) => ({ time: d.date.split('T')[0], value: d.price }))
-      : MOCK_DATA
+      : PRICE_CHART_DATA
 
   const filtered = filterByPeriod(chartData, period)
 
@@ -86,7 +53,7 @@ export function PriceChartCard({ data }: PriceChartCardProps) {
         borderColor: 'rgba(255,255,255,0.06)',
         timeVisible: false,
       },
-      width: el.clientWidth,
+      autoSize: true,
       height: 176,
       handleScroll: false,
       handleScale: false,
@@ -106,13 +73,7 @@ export function PriceChartCard({ data }: PriceChartCardProps) {
     series.setData(filtered)
     chart.timeScale().fitContent()
 
-    const observer = new ResizeObserver(([entry]) => {
-      chart.applyOptions({ width: entry.contentRect.width })
-    })
-    observer.observe(el)
-
     return () => {
-      observer.disconnect()
       chart.remove()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,6 +100,10 @@ export function PriceChartCard({ data }: PriceChartCardProps) {
         </div>
       </div>
       <div ref={containerRef} className="h-44" />
+      <div className="flex justify-between text-[10px] text-white/[0.28] pt-1">
+        <span>Oct 2022</span>
+        <span>May 2026</span>
+      </div>
     </div>
   )
 }

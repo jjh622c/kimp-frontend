@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Vault Stats Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--card:#0e1425;--card2:#0c1120;--th:#0b0f1f;--border:rgba(255,255,255,0.07);--blue:#3d8ef8;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--text:#e2e8f0;--text2:rgba(255,255,255,0.45);--text3:rgba(255,255,255,0.28);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',-apple-system,sans-serif;font-size:14px;line-height:1.6;}
+a{text-decoration:none;color:inherit;}
+
+/* NAV */
+.app-nav{background:var(--bg);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:100;}
+.app-nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 32px;}
+.logo{font-size:17px;font-weight:500;letter-spacing:.4px;color:#fff;}
+.logo em{color:var(--blue);font-style:normal;}
+.connect-btn{background:rgba(61,142,248,.1);border:0.5px solid rgba(61,142,248,.25);color:var(--blue);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;}
+
+/* WRAP */
+.wrap{max-width:1100px;margin:0 auto;padding:40px 32px 100px;}
+.main-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+.left-col{display:flex;flex-direction:column;gap:16px;}
+
+/* DESIGN NOTE BANNER */
+.design-note{background:rgba(245,158,11,.06);border:0.5px solid rgba(245,158,11,.2);border-radius:10px;padding:12px 16px;margin-bottom:24px;font-size:12px;color:rgba(245,158,11,.85);line-height:1.65;}
+.design-note strong{color:var(--amber);font-weight:500;}
+
+/* VAULT HEADER */
+.vault-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;}
+.vault-icon{width:46px;height:46px;border-radius:50%;background:rgba(61,142,248,.2);border:0.5px solid rgba(61,142,248,.3);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:600;color:var(--blue);flex-shrink:0;}
+.vault-title{font-size:20px;font-weight:600;color:#fff;}
+.vault-sub{font-size:13px;color:var(--text2);margin:4px 0 8px;}
+.tag{background:rgba(255,255,255,.05);border:0.5px solid rgba(255,255,255,.08);border-radius:999px;padding:2px 10px;font-size:11px;color:var(--text2);}
+.active-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.1);border:0.5px solid rgba(34,197,94,.25);border-radius:999px;padding:3px 10px;font-size:11px;font-weight:500;color:var(--green);}
+.active-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:18px 16px;transition:border-color .15s;}
+.stat-card:hover{border-color:rgba(255,255,255,.14);}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px;}
+.stat-value{font-size:22px;font-weight:600;line-height:1;margin-bottom:5px;}
+.stat-note{font-size:10px;color:var(--text3);}
+.stat-note-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,.08);border:0.5px solid rgba(34,197,94,.2);border-radius:999px;padding:1px 8px;font-size:10px;color:var(--green);}
+.stat-note-dot{width:4px;height:4px;background:var(--green);border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+.green{color:var(--green);}
+.red{color:var(--red);}
+.white{color:#fff;}
+
+/* CARD */
+.card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:20px;}
+.card-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+
+/* CHART */
+.chart-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.chart-tabs{display:flex;gap:4px;}
+.chart-tab{font-size:11px;color:var(--text3);padding:4px 10px;border-radius:5px;cursor:pointer;border:0.5px solid transparent;background:transparent;font-family:inherit;transition:all .15s;}
+.chart-tab.active{background:rgba(61,142,248,.1);color:var(--blue);border-color:rgba(61,142,248,.2);}
+.chart-tab:hover:not(.active){background:rgba(255,255,255,.04);color:var(--text2);}
+.chart-date-row{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);padding:4px 2px 0;}
+
+/* RETURNS */
+.returns-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.returns-period{font-size:11px;color:var(--text3);}
+.rtable-header{display:grid;grid-template-columns:1fr 90px 110px 88px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;}
+.rtable-header span:not(:first-child){text-align:right;}
+.year-divider{padding:10px 0 3px;font-size:10px;color:rgba(255,255,255,.2);letter-spacing:1px;text-transform:uppercase;border-bottom:0.5px solid rgba(255,255,255,.04);margin-top:2px;}
+.rrow{display:grid;grid-template-columns:1fr 90px 110px 88px;padding:10px 0;border-bottom:0.5px solid rgba(255,255,255,.04);align-items:center;}
+.rrow:hover{background:rgba(255,255,255,.015);border-radius:4px;}
+.rrow:last-child{border-bottom:none;}
+.rmonth{font-size:12px;color:var(--text);}
+.rbar-wrap{display:flex;justify-content:flex-end;align-items:center;gap:5px;}
+.rbar{height:4px;border-radius:2px;}
+.rval{font-size:12px;font-weight:500;text-align:right;min-width:46px;}
+.rprice{font-size:12px;color:var(--text2);text-align:right;}
+.rprofit{font-size:11px;text-align:right;}
+
+/* CUM BANNER */
+.cum-banner{background:rgba(61,142,248,.06);border:0.5px solid rgba(61,142,248,.18);border-radius:10px;padding:14px 16px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;}
+.cum-label{font-size:13px;color:var(--text2);}
+.cum-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.cum-val{font-size:22px;font-weight:600;color:var(--blue);}
+
+/* WIN RATE */
+.winrate-row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;}
+.winrate-label{font-size:11px;color:var(--text2);}
+.pips{display:flex;flex-wrap:wrap;gap:2px;justify-content:flex-end;max-width:260px;}
+.pip{width:9px;height:9px;border-radius:2px;}
+
+/* ALPHA NOTE */
+.alpha-note{font-size:10px;color:var(--text3);margin-top:12px;line-height:1.6;padding-top:12px;border-top:0.5px solid rgba(255,255,255,.04);}
+
+/* INVEST PANEL */
+.invest-panel{position:sticky;top:80px;display:flex;flex-direction:column;gap:12px;}
+.invest-card{background:var(--card);border:0.5px solid var(--border);border-radius:12px;padding:20px;}
+.invest-title{font-size:14px;font-weight:500;color:#fff;margin-bottom:16px;}
+.price-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:0.5px solid var(--border);margin-bottom:14px;}
+.price-label{font-size:12px;color:var(--text2);}
+.price-val{font-size:14px;font-weight:500;color:#fff;}
+.input-label{display:block;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.input-wrap{position:relative;margin-bottom:12px;}
+.input-wrap input{width:100%;background:rgba(10,14,26,.8);border:0.5px solid rgba(255,255,255,.07);border-radius:8px;padding:11px 44px 11px 14px;font-size:14px;color:#fff;font-family:inherit;outline:none;transition:border-color .15s;}
+.input-wrap input:focus{border-color:rgba(61,142,248,.4);}
+.input-unit{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text3);}
+.estimate-box{background:rgba(10,14,26,.8);border:0.5px solid rgba(255,255,255,.05);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
+.est-row{display:flex;justify-content:space-between;align-items:center;}
+.est-label{font-size:12px;color:var(--text2);}
+.est-val{font-size:14px;font-weight:500;color:#fff;}
+.est-note{font-size:10px;color:rgba(255,255,255,.2);margin-top:3px;}
+.btn-invest{width:100%;background:var(--blue);border:none;color:#fff;border-radius:10px;padding:12px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s;}
+.btn-invest:hover{background:#2d7ee8;}
+.connect-note{text-align:center;font-size:10px;color:rgba(255,255,255,.2);margin-top:8px;}
+.lockup-info{background:rgba(255,255,255,.03);border:0.5px solid rgba(255,255,255,.06);border-radius:8px;padding:10px 12px;}
+.lockup-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+.lockup-key{color:var(--text3);}
+.lockup-val{color:var(--text);font-weight:500;}
+
+/* DETAIL TABLE */
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:0.5px solid rgba(255,255,255,.04);}
+.detail-row:last-child{border-bottom:none;}
+.detail-key{font-size:13px;color:var(--text2);}
+.detail-val{font-size:13px;font-weight:500;color:#fff;}
+
+/* STRATEGY */
+.strategy-body{font-size:13px;color:rgba(255,255,255,.55);line-height:1.75;margin-bottom:14px;}
+.strategy-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid rgba(255,255,255,.04);}
+.strategy-row:last-child{border-bottom:none;}
+.strategy-key{font-size:12px;color:var(--text2);}
+.strategy-val{font-size:12px;font-weight:500;color:#fff;}
+
+/* RISK */
+.risk-box{background:rgba(245,158,11,.06);border:0.5px solid rgba(245,158,11,.2);border-radius:10px;padding:14px 16px;}
+.risk-label{font-size:10px;font-weight:500;color:var(--amber);text-transform:uppercase;letter-spacing:.3px;margin-bottom:5px;}
+.risk-text{font-size:11px;color:rgba(255,255,255,.35);line-height:1.7;}
+
+/* RESPONSIVE */
+@media(max-width:1024px){.main-grid{grid-template-columns:1fr;}.invest-panel{position:static;order:-1;}.stat-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:640px){.wrap{padding:24px 16px 60px;}.app-nav-inner{padding:14px 16px;}.stat-grid{grid-template-columns:1fr 1fr;}.vault-title{font-size:16px;}}
+</style>
+</head>
+<body>
+
+<nav class="app-nav">
+  <div class="app-nav-inner">
+    <div class="logo">[<em>K</em>iMP]</div>
+    <button class="connect-btn">Connect Wallet</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- 설계 노트 -->
+  <div class="design-note">
+    <strong>Design Note</strong> &nbsp;—&nbsp;
+    이 페이지는 통계 노출 방식 예시입니다. 파란 셀 = 수동 교체 필요 항목.
+    수치는 실제 정산 데이터 기반 (2022.10~2026.05). TOKEN / 프로젝트명은 확정 후 교체.
+  </div>
+
+  <!-- VAULT HEADER -->
+  <div class="vault-header">
+    <div class="vault-icon">K</div>
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px;">
+        <span class="vault-title">TOKEN · KRW Arb Vault</span>
+        <div class="active-badge"><span class="active-dot"></span> Active</div>
+      </div>
+      <div class="vault-sub">Automated KRW / Global spread arbitrage · Buyback &amp; burn model</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span class="tag">Private</span>
+        <span class="tag">Base chain</span>
+        <span class="tag">ERC-20</span>
+        <span class="tag">Invite only</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">30D Return</div>
+      <div class="stat-value green">+2.1%</div>
+      <div class="stat-note">Last 30 days · V3</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">All-time Return</div>
+      <div class="stat-value green">+32.6%</div>
+      <div class="stat-note">Since Oct 2022</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Win Rate</div>
+      <div class="stat-value white">60.7%</div>
+      <div class="stat-note">17 / 28 periods</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Token Price</div>
+      <div class="stat-value white">1,511 KRW</div>
+      <div class="stat-note">
+        <span class="stat-note-badge"><span class="stat-note-dot"></span>Oracle · live</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <div class="left-col">
+
+      <!-- PRICE CHART -->
+      <div class="card">
+        <div class="chart-header-row">
+          <div class="card-label" style="margin-bottom:0;">Token Price</div>
+          <div class="chart-tabs">
+            <button class="chart-tab" onclick="setTab(this,'1Y')">1Y</button>
+            <button class="chart-tab active" onclick="setTab(this,'ALL')">ALL</button>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:150px;margin-top:12px;">
+          <canvas id="priceChart"></canvas>
+        </div>
+        <div class="chart-date-row"><span>Oct 2022</span><span>May 2026</span></div>
+      </div>
+
+      <!-- MONTHLY RETURNS -->
+      <div class="card">
+        <div class="returns-top">
+          <div class="card-label" style="margin-bottom:0;">Monthly Returns</div>
+          <div class="returns-period">28 periods · Oct 2022 – present</div>
+        </div>
+        <div class="rtable-header">
+          <span>Period</span><span>Return</span><span>Token price</span><span>Net profit</span>
+        </div>
+        <div id="returnsTable"></div>
+
+        <!-- 누적 수익률 배너 -->
+        <div class="cum-banner">
+          <div>
+            <div class="cum-label">Cumulative return since inception</div>
+            <div class="cum-sub">Oct 2022 → May 2026 · compound</div>
+          </div>
+          <div class="cum-val">+32.6%</div>
+        </div>
+
+        <!-- Win rate pips -->
+        <div class="winrate-row">
+          <div>
+            <div class="winrate-label">Win / loss · 28 periods</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px;">17 win &nbsp;·&nbsp; 11 loss &nbsp;·&nbsp; 60.7%</div>
+          </div>
+          <div class="pips" id="winPips"></div>
+        </div>
+
+        <div class="alpha-note">
+          ※ Returns are calculated per settlement period, not calendar month. Some months contain multiple settlements.
+          Token price reflects cumulative net profit compounded from initial price of 1,000 KRW.
+          Past performance does not guarantee future results.
+        </div>
+      </div>
+
+      <!-- STRATEGY -->
+      <div class="card">
+        <div class="card-label">Strategy</div>
+        <p class="strategy-body">
+          Automated Korea premium (kimchi premium) arbitrage. The bot exploits persistent price differences
+          between Korean and global crypto exchanges via on-chain settlement.
+          Returns are driven by structural market inefficiencies, not directional price exposure.
+        </p>
+        <hr style="border:none;border-top:0.5px solid rgba(255,255,255,.06);margin-bottom:14px;">
+        <div class="strategy-row"><span class="strategy-key">Strategy type</span><span class="strategy-val">Market neutral arbitrage</span></div>
+        <div class="strategy-row"><span class="strategy-key">Execution</span><span class="strategy-val">Automated · 24/7</span></div>
+        <div class="strategy-row"><span class="strategy-key">Settlement</span><span class="strategy-val">Monthly buyback &amp; burn</span></div>
+        <div class="strategy-row"><span class="strategy-key">Operational since</span><span class="strategy-val">April 2021</span></div>
+      </div>
+
+      <!-- RISK -->
+      <div class="risk-box">
+        <div class="risk-label">Risk Notice</div>
+        <div class="risk-text">
+          Token value may decrease. Principal loss is possible. Past returns do not guarantee future performance.
+          Lock-up of 6 months applies from investment date.
+          This is a private arrangement for pre-approved participants only, not a regulated financial product.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- INVEST PANEL -->
+    <div class="invest-panel">
+      <div class="invest-card">
+        <div class="invest-title">Invest</div>
+        <div class="price-row">
+          <span class="price-label">Current token price</span>
+          <span class="price-val">1,511 KRW</span>
+        </div>
+        <label class="input-label">Amount (KRW)</label>
+        <div class="input-wrap">
+          <input type="number" id="amountInput" placeholder="0" value="1000000" oninput="calcEstimate()">
+          <span class="input-unit">KRW</span>
+        </div>
+        <div class="estimate-box">
+          <div class="est-row">
+            <span class="est-label">You receive</span>
+            <span class="est-val" id="tokenOut">662 TOKEN</span>
+          </div>
+          <div class="est-note" id="estNote">at 1,511 KRW · current oracle price</div>
+        </div>
+        <button class="btn-invest">Start investing →</button>
+        <div class="connect-note">Invite link required · Private pool</div>
+      </div>
+
+      <div class="invest-card">
+        <div class="card-label">Token Details</div>
+        <div class="detail-row"><span class="detail-key">Standard</span><span class="detail-val">ERC-20 (Base)</span></div>
+        <div class="detail-row"><span class="detail-key">Initial price</span><span class="detail-val">1,000 KRW</span></div>
+        <div class="detail-row"><span class="detail-key">Current price</span><span class="detail-val green">1,511 KRW</span></div>
+        <div class="detail-row"><span class="detail-key">Issuance</span><span class="detail-val">On deposit confirm</span></div>
+        <div class="detail-row"><span class="detail-key">Lock-up</span><span class="detail-val">180 days</span></div>
+        <div class="detail-row"><span class="detail-key">Buyback</span><span class="detail-val">Bot profits → monthly</span></div>
+        <div class="detail-row"><span class="detail-key">Exit</span><span class="detail-val">Operator buyback / P2P</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const DATA = [
+  {p:'Oct 2022',r:-0.47, price:995,  profit:-2150373,  y:2022},
+  {p:'Nov 2022',r:-1.16, price:984,  profit:-5249627,  y:2022},
+  {p:'Dec 2022',r:-3.39, price:950,  profit:-14900000, y:2022},
+  {p:'Jan 2023',r:+0.79, price:958,  profit:3151261,   y:2023},
+  {p:'Feb 2023',r:+4.99, price:1006, profit:20000000,  y:2023},
+  {p:'Mar 2023',r:+1.12, price:1017, profit:4556439,   y:2023},
+  {p:'Apr 2023',r:+1.29, price:1030, profit:5290124,   y:2023},
+  {p:'May 2023',r:+3.86, price:1070, profit:17016000,  y:2023},
+  {p:'Jun 2023',r:+3.06, price:1103, profit:14500000,  y:2023},
+  {p:'Jul 2023',r:-3.01, price:1070, profit:-16000000, y:2023},
+  {p:'Aug 2023',r:+6.63, price:1141, profit:30999999,  y:2023},
+  {p:'Sep 2023',r:-0.45, price:1136, profit:-1900000,  y:2023},
+  {p:'Nov 2023',r:+0.96, price:1147, profit:3864791,   y:2023},
+  {p:'Jan 2024',r:+3.07, price:1182, profit:11597071,  y:2024},
+  {p:'Feb 2024',r:+1.86, price:1204, profit:7231359,   y:2024},
+  {p:'Mar 2024',r:+5.28, price:1268, profit:21700000,  y:2024},
+  {p:'Apr 2024',r:+6.04, price:1344, profit:25623890,  y:2024},
+  {p:'May 2024',r:-0.73, price:1334, profit:-3695599,  y:2024},
+  {p:'Jun 2024',r:+1.07, price:1348, profit:5200000,   y:2024},
+  {p:'Jul 2024',r:-0.21, price:1345, profit:-1000000,  y:2024},
+  {p:'Oct 2024',r:-1.80, price:1321, profit:-5059283,  y:2024},
+  {p:'Dec 2024',r:+8.37, price:1432, profit:22625662,  y:2024},
+  {p:'Apr 2025',r:+1.06, price:1447, profit:3317600,   y:2025},
+  {p:'Jul 2025',r:-11.83,price:1276, profit:-36854264, y:2025},
+  {p:'Oct 2025',r:+8.13, price:1380, profit:21503264,  y:2025},
+  {p:'Jan 2026',r:-5.19, price:1308, profit:-9670278,  y:2026},
+  {p:'Mar 2026',r:-0.35, price:1304, profit:-600000,   y:2026},
+  {p:'Mar-Apr V3',r:+9.20,price:1424,profit:15582637,  y:2026},
+  {p:'Apr V3',  r:+2.14, price:1455, profit:3498141,   y:2026},
+  {p:'May V3',  r:+2.10, price:1511, profit:1418532,   y:2026},
+];
+
+const maxAbsR = Math.max(...DATA.map(d=>Math.abs(d.r)));
+
+function fmtProfit(n){
+  const abs=Math.abs(n);
+  const sign=n>=0?'+':'-';
+  if(abs>=1e7) return sign+(abs/1e7).toFixed(1)+'천만';
+  if(abs>=1e4) return sign+Math.round(abs/1e4)+'만';
+  return sign+abs.toLocaleString();
+}
+
+// Returns table (최신순)
+const tbody=document.getElementById('returnsTable');
+let lastY=null;
+[...DATA].reverse().forEach(d=>{
+  if(d.y!==lastY){
+    lastY=d.y;
+    const yr=document.createElement('div');
+    yr.className='year-divider';
+    yr.textContent=d.y;
+    tbody.appendChild(yr);
+  }
+  const row=document.createElement('div');
+  row.className='rrow';
+  const bw=Math.max(2,Math.round(Math.abs(d.r)/maxAbsR*56));
+  const bc=d.r>=0?'#22c55e':'#ef4444';
+  const sign=d.r>=0?'+':'';
+  const pc=d.profit>=0?'var(--green)':'var(--red)';
+  row.innerHTML=`
+    <div class="rmonth">${d.p}</div>
+    <div class="rbar-wrap">
+      <div class="rbar" style="width:${bw}px;background:${bc};opacity:.75;"></div>
+      <span class="rval" style="color:${bc};">${sign}${d.r.toFixed(2)}%</span>
+    </div>
+    <div class="rprice">${d.price.toLocaleString()} KRW</div>
+    <div class="rprofit" style="color:${pc};">${fmtProfit(d.profit)}</div>
+  `;
+  tbody.appendChild(row);
+});
+
+// Win pips
+const pipsEl=document.getElementById('winPips');
+[...DATA].reverse().forEach(d=>{
+  const pip=document.createElement('div');
+  pip.className='pip';
+  pip.style.background=d.r>=0?'#22c55e':'rgba(239,68,68,0.5)';
+  pip.title=`${d.p}: ${d.r>=0?'+':''}${d.r}%`;
+  pipsEl.appendChild(pip);
+});
+
+// Price chart
+const isDark=true;
+new Chart(document.getElementById('priceChart'),{
+  type:'line',
+  data:{
+    labels:DATA.map(d=>d.p),
+    datasets:[{
+      data:DATA.map(d=>d.price),
+      borderColor:'#3d8ef8',
+      borderWidth:1.8,
+      pointRadius:0,
+      pointHoverRadius:4,
+      pointHoverBackgroundColor:'#3d8ef8',
+      fill:true,
+      backgroundColor:(ctx)=>{
+        const g=ctx.chart.ctx.createLinearGradient(0,0,0,150);
+        g.addColorStop(0,'rgba(61,142,248,0.2)');
+        g.addColorStop(1,'rgba(61,142,248,0)');
+        return g;
+      },
+      tension:0.35
+    }]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        callbacks:{label:ctx=>`${ctx.parsed.y.toLocaleString()} KRW`},
+        backgroundColor:'#1e293b',
+        titleColor:'#94a3b8',
+        bodyColor:'#e2e8f0',
+        borderColor:'rgba(255,255,255,0.1)',
+        borderWidth:1,
+        padding:8
+      }
+    },
+    scales:{
+      x:{display:false},
+      y:{
+        display:true,
+        grid:{color:'rgba(255,255,255,0.05)',drawTicks:false},
+        ticks:{color:'rgba(255,255,255,0.3)',font:{size:10},padding:6,maxTicksLimit:4,
+          callback:v=>v.toLocaleString()},
+        border:{display:false}
+      }
+    }
+  }
+});
+
+function setTab(btn,t){
+  document.querySelectorAll('.chart-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function calcEstimate(){
+  const amt=parseFloat(document.getElementById('amountInput').value)||0;
+  const price=1511;
+  const tokens=Math.floor(amt/price);
+  document.getElementById('tokenOut').textContent=tokens.toLocaleString()+' TOKEN';
+  document.getElementById('estNote').textContent='at '+price.toLocaleString()+' KRW · current oracle price';
+}
+</script>
+</body>
+</html>

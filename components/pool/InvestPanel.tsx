@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAccount, useConnect } from 'wagmi'
 
 interface InvestPanelProps {
@@ -12,9 +12,17 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
   const [amount, setAmount] = useState('')
   const { address, isConnected } = useAccount()
   const { connect, connectors, isPending: isConnecting } = useConnect()
+  const router = useRouter()
 
   const numAmount = Number(amount.replace(/,/g, ''))
   const tokenEstimate = numAmount > 0 ? (numAmount / tokenPrice).toFixed(4) : null
+
+  function handleStartInvesting() {
+    if (numAmount > 0) {
+      sessionStorage.setItem('invest_amount', String(numAmount))
+    }
+    router.push('/onboarding/step1')
+  }
 
   return (
     <div className="sticky top-20 max-lg:static space-y-3">
@@ -53,7 +61,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
         {/* Token estimate */}
         <div className="bg-[#0a0e1a] border border-white/[0.04] rounded-lg px-4 py-3 mb-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-white/40">You'll receive ~</span>
+            <span className="text-xs text-white/40">You&apos;ll receive ~</span>
             <span className="text-sm text-white font-medium">
               {tokenEstimate ? `${tokenEstimate} TOKEN` : '—'}
             </span>
@@ -72,12 +80,13 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
                 {address?.slice(0, 6)}…{address?.slice(-4)}
               </span>
             </div>
-            <Link
-              href="/onboarding/step1"
-              className="block w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] text-white text-center rounded-xl py-[11px] text-sm font-medium transition-colors no-underline"
+            <button
+              onClick={handleStartInvesting}
+              disabled={numAmount <= 0}
+              className="block w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white text-center rounded-xl py-[11px] text-sm font-medium transition-colors"
             >
-              Invest now →
-            </Link>
+              Start Investing →
+            </button>
           </>
         ) : (
           <>
@@ -102,12 +111,12 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
         </div>
         <div className="space-y-3">
           {[
-            { label: 'Standard', value: 'ERC-20 (Base)' },
+            { label: 'Standard',   value: 'ERC-20 (Base)' },
             { label: 'Initial price', value: '1,000 KRW' },
-            { label: 'Issuance', value: 'On deposit confirmation' },
-            { label: 'Lock-up', value: '6 months' },
-            { label: 'Buyback', value: '50% of bot profits' },
-            { label: 'Exit', value: 'Operator buyback / P2P' },
+            { label: 'Issuance',   value: 'On deposit confirmation' },
+            { label: 'Lock-up',    value: '6 months' },
+            { label: 'Buyback',    value: '50% of bot profits' },
+            { label: 'Exit',       value: 'Operator buyback / P2P' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <span className="text-xs text-white/40">{item.label}</span>

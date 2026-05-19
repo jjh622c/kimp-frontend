@@ -101,29 +101,92 @@
   - 390px 겹침 방지, 진행률 바 + "Step X of Y" 텍스트 유지
 
 ### Phase 4 — 레퍼럴 시스템 🟡
-- [ ] **REF-01** `prisma/schema.prisma` — InviteLink, User 모델 수정
-  - InviteLink: depth, usedById, maxUses, useCount 필드 추가
-  - User: referredById, referralDepth, canInvite, createdInvites, usedInvite 필드 추가
-- [ ] **REF-02** `npx prisma db push` + `npx prisma generate`
-- [ ] **REF-03** `app/api/invite/generate/route.ts` 신규 (POST)
+- [x] **REF-01** `prisma/schema.prisma` — InviteLink, User 모델 수정
+  - InviteLink: depth, usedById, createdById, maxUses, useCount 필드 추가
+  - User: referredById, referralDepth, canInvite 필드 추가
+- [ ] **REF-02** `npx prisma db push` + `npx prisma generate` ⚠️ **수동 실행 필요** (DB 연결 후)
+- [x] **REF-03** `app/api/invite/generate/route.ts` 신규 (POST)
   - canInvite=true + depth < 2 투자자 or Admin만 생성 가능
   - 반환: `{ url: "https://domain.com/?invite=TOKEN" }`
-- [ ] **REF-04** `app/api/invite/tree/route.ts` 신규 (GET, Admin 전용)
-  - 전체 레퍼럴 트리 반환 (시각화용)
-- [ ] **REF-05** `components/dashboard/InviteSection.tsx` 신규
-  - canInvite=true인 투자자에게만 표시 (false면 섹션 숨김)
-  - 개인 invite 링크 + Copy 버튼 + 초대한 투자자 목록
-- [ ] **REF-06** `components/admin/AdminInviteSection.tsx` 신규
-  - 새 링크 생성(만료일+최대횟수) / 레퍼럴 트리 시각화 / canInvite 토글 / 링크 무효화
-- [ ] **REF-07** `app/(protected)/dashboard/page.tsx` — InviteSection 조건부 렌더링 추가
+  - `app/api/invite/revoke/route.ts` 신규 (POST, Admin 전용)
+- [x] **REF-04** `app/api/invite/tree/route.ts` 신규 (GET, Admin 전용)
+  - 전체 레퍼럴 트리 + 링크 목록 반환
+  - `app/api/admin/toggle-invite/route.ts` 신규 (POST, Admin 전용)
+- [x] **REF-05** `components/dashboard/InviteSection.tsx` 신규
+  - canInvite=true인 투자자에게만 표시 (false면 null 반환)
+  - 개인 invite 링크 생성 + Copy 버튼 + 초대한 투자자 목록
+- [x] **REF-06** `components/admin/AdminInviteSection.tsx` 신규
+  - 새 링크 생성(만료일+최대횟수) / links 탭 + referral tree 탭
+  - 링크별 상태 배지(Active/Used/Expired/Revoked) + Revoke 버튼 + Copy 버튼
+  - canInvite 토글: AdminInvestorTable의 Active 투자자 Action 셀에 ToggleInviteButton 추가
+  - admin/page.tsx: InviteLinkGenerator → AdminInviteSection 교체
+- [x] **REF-07** `app/(protected)/dashboard/page.tsx` — canInvite + referredUsers 조회 + InviteSection 조건부 렌더링
 
 ### Phase 5 — 데이터 업데이트 (파일 수령 후 🟢)
-- [ ] **DATA-01** V1 실제 정산 엑셀/CSV 수령 대기 중
-  - **요청 파일:** 2021~2024 월별 수익률 + 시드 규모 (엑셀 or CSV)
-  - 수령 시: HeroSection stat 수치 확정 (5년+, +275%, ₩3B+)
-  - 수령 시: Vault Detail Monthly Returns 12개월+ 데이터 채우기 (Month/Return/Token Price/Note)
-  - 수령 시: 누적 수익률, CAGR, Win Rate 재계산
-  - **현재 확인 수치:** 2023년 +22.70% / 2024년 +28.90% / V3 1월 +10% / V3 2월 +2%
+- [x] **DATA-01** V1 실제 정산 데이터 수령 완료 → Vault Stats 실데이터 반영 (v1.3)
+  - 정산 데이터: 2022.10 ~ 2026.05, 30개 정산 기간
+  - HeroSection stat은 별도 확인 필요 (파일: KiMP_정산데이터_v1.0.xlsx)
+
+---
+
+## v1.4 — Gate Popup / Onboarding 재설계 / Dashboard 개선 (2026.05.19)
+
+### Gate & Landing
+- [x] **GATE-10** `components/landing/InvitePopup.tsx` 신규 — 스크롤/버튼 트리거 팝업
+  - backdrop-blur 모달, invite code 입력 + POST verify-invite → /pool/detail 이동
+  - `app/(public)/page.tsx` — InvitePopup + `#hero-sentinel` 추가
+  - `components/landing/HeroSection.tsx` — client 컴포넌트로 전환, CTA → custom event dispatch
+  - `app/api/onboarding/verify-invite/route.ts` — POST에도 kimp_access 쿠키 설정
+
+### Onboarding 전면 재설계
+- [x] **OB-10a** `onboarding/step1/page.tsx` — MetaMask 토큰 추가 가이드
+  - 4단계 안내 + 컨트랙트 주소 Copy 버튼 + 체크박스 확인 전 Continue disabled
+- [x] **OB-10b** `onboarding/step2/page.tsx` — 입금방법 선택 + 전자서명
+  - Crypto(비활성/Coming soon) / Bank Transfer(활성) 선택 카드
+  - Bank 선택 시 MODU_SIGN_URL 오픈 + 수동 서명 확인 버튼
+- [x] **OB-10c** `onboarding/step3/page.tsx` — 계좌입금 + 10분 타이머 + 레퍼럴코드
+  - sessionStorage 기반 타이머 (새로고침 유지), 만료 시 Restart → step2
+  - 입금 완료 후 대기 화면 + notify-deposit API 연동
+- [x] **OB-10d** `onboarding/step4/page.tsx` — 투자 요약 + 트랜잭션 카드 + What's next 제거
+  - TOKEN ISSUANCE TRANSACTION 카드 (pending 상태, TODO: DB txhash 연동)
+- [x] **OB-10e** `components/pool/InvestPanel.tsx` — 금액 입력 후 온보딩 이동
+  - invest_amount → sessionStorage 저장 → /onboarding/step1 이동
+- [x] `components/onboarding/StepHeader.tsx` — 라벨 업데이트 (Token/Method/Transfer/Done)
+
+### Dashboard
+- [x] **DASH-10** `app/(protected)/dashboard/page.tsx` — max-w-3xl `mx-auto` 추가 (가운데 정렬)
+- [x] **DASH-11** `components/dashboard/InvestmentProgress.tsx` 신규
+  - 5단계 수직 타임라인 (완료/진행중/대기 상태), STEPS_COMPLETE + STEPS_DEPOSIT_PENDING export
+  - 대시보드에 InvestmentProgress 추가 (완료 상태 하드코딩, TODO: DB 연동)
+- [x] **DASH-12** `components/dashboard/WithdrawForm.tsx` — KRW 입력 + 반환계좌 안내
+  - Token 수량 → KRW 금액 입력으로 교체, 최소 ₩100,000
+  - TOKEN 소각 수량 자동 계산 표시
+  - RETURN ACCOUNT 카드 추가 (accountOnFile prop)
+  - 버튼: "Request Withdrawal in KRW"
+
+### 환경변수
+- [x] **ENV-01** `.env.example` — NEXT_PUBLIC_MODU_SIGN_URL, NEXT_PUBLIC_CONTACT_EMAIL 추가
+
+---
+
+## v1.3 — Vault Stats 실데이터 반영 (2026.05.19)
+
+> 참조: `dev_docs/20260518/CLAUDE_CODE_INSTRUCTIONS.md`
+
+- [x] **VAULT-01** `lib/data/monthly-returns.ts` 신규 + `components/pool/MonthlyReturns.tsx` 신규
+  - 30개 정산 데이터 배열 (2022.10~2026.05, 최신순)
+  - 4열 테이블: Period / Return(바 시각화) / Token price / Net profit
+  - 연도별 구분선, hover 효과
+- [x] **VAULT-02** `lib/data/vault-stats.ts` 신규 + stat 카드 4개 수치 교체
+  - 30D Return: +2.1% / All-time Return: +32.6% / Win Rate: 60.7%
+  - Token Price: live oracle 유지
+- [x] **VAULT-03** `components/pool/PriceChartCard.tsx` — 실 데이터로 교체
+  - PRICE_CHART_DATA (30포인트, 2022-10~2026-05) 적용
+  - 탭 1W·1M·ALL → 1Y·ALL 변경, 기본값 ALL
+  - 날짜 범위 레이블 추가 (Oct 2022 / May 2026)
+- [x] **VAULT-04** 누적 수익률 배너 (+32.6%) 추가 (MonthlyReturns 컴포넌트 내)
+- [x] **VAULT-05** Win/Loss pip 시각화 추가 (MonthlyReturns 컴포넌트 내)
+- [x] **VAULT-06** All-time Return note "Since Jan 2025" → "Since Oct 2022" 수정
 
 ---
 

@@ -1,10 +1,14 @@
-import Link from 'next/link'
+'use client'
 
 const STATS = [
   { value: '5yr+', label: 'Since 2021', sub: 'Track record' },
   { value: '+275%', label: 'V1 Cumulative', sub: 'Total return' },
   { value: '₩3B+', label: 'Active capital', sub: 'Under mgmt.' },
 ]
+
+function openInvitePopup() {
+  window.dispatchEvent(new CustomEvent('open-invite-popup'))
+}
 
 export function HeroSection() {
   return (
@@ -24,18 +28,18 @@ export function HeroSection() {
       </p>
 
       <div className="flex items-center justify-center gap-3 flex-wrap">
-        <Link
-          href="/onboarding/step1"
-          className="inline-flex items-center gap-[7px] bg-[#3d8ef8] hover:bg-[#2d7ee8] text-white rounded-[9px] px-6 py-[11px] text-sm font-medium transition-colors no-underline"
+        <button
+          onClick={openInvitePopup}
+          className="inline-flex items-center gap-[7px] bg-[#3d8ef8] hover:bg-[#2d7ee8] text-white rounded-[9px] px-6 py-[11px] text-sm font-medium transition-colors"
         >
           Start investing →
-        </Link>
-        <Link
-          href="/pool/detail"
-          className="inline-flex items-center gap-[7px] border border-white/[0.12] hover:border-white/25 text-white/60 hover:text-white/90 rounded-[9px] px-5 py-[11px] text-sm font-medium transition-colors no-underline"
+        </button>
+        <button
+          onClick={openInvitePopup}
+          className="inline-flex items-center gap-[7px] border border-white/[0.12] hover:border-white/25 text-white/60 hover:text-white/90 rounded-[9px] px-5 py-[11px] text-sm font-medium transition-colors"
         >
           View strategy
-        </Link>
+        </button>
       </div>
 
       {/* Performance stats */}

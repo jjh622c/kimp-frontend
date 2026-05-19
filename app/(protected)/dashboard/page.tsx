@@ -8,6 +8,8 @@ import { DashboardChart } from '@/components/dashboard/DashboardChart'
 import { WithdrawForm } from '@/components/dashboard/WithdrawForm'
 import { InvestmentTimeline } from '@/components/dashboard/InvestmentTimeline'
 import { WithdrawHistory } from '@/components/dashboard/WithdrawHistory'
+import { InviteSection } from '@/components/dashboard/InviteSection'
+import { InvestmentProgress, STEPS_COMPLETE } from '@/components/dashboard/InvestmentProgress'
 
 const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME ?? 'PROJECT'
 
@@ -31,9 +33,13 @@ export default async function DashboardPage() {
     tokenMinted: boolean
   } | null = null
 
+  let canInvite = false
+  let referredUsers: Array<{ name: string | null; email: string | null; joinedAt: string }> = []
+
   try {
     if (session?.user?.email) {
-      const user = await prisma.user.findUnique({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const user = await (prisma.user as any).findUnique({
         where: { email: session.user.email },
         include: { investment: true },
       })
@@ -52,6 +58,20 @@ export default async function DashboardPage() {
           depositConfirmed: user.investment.depositConfirmed,
           tokenMinted: user.investment.tokenMinted,
         }
+      }
+      // Referral fields (requires REF-02: npx prisma db push && prisma generate)
+      canInvite = user?.canInvite ?? false
+      if (user?.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const refs = await (prisma.user as any).findMany({
+          where: { referredById: user.id },
+          select: { name: true, email: true, createdAt: true },
+        }).catch(() => [])
+        referredUsers = refs.map((r: { name: string | null; email: string | null; createdAt: Date }) => ({
+          name: r.name,
+          email: r.email,
+          joinedAt: r.createdAt.toISOString(),
+        }))
       }
     }
   } catch {
@@ -99,7 +119,7 @@ export default async function DashboardPage() {
       </nav>
 
       <div className="max-w-[1280px] mx-auto px-8 max-sm:px-4 py-8">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto">
           <h1 className="text-xl font-medium text-white mb-6">Dashboard</h1>
 
           {!investmentData && (
@@ -109,6 +129,10 @@ export default async function DashboardPage() {
               </p>
             </div>
           )}
+
+          {/* Investment Progress — all steps complete for active investors */}
+          {/* TODO: derive steps dynamically from user.onboardingStatus */}
+          <InvestmentProgress steps={STEPS_COMPLETE} />
 
           {/* 투자 단계 타임라인 */}
           <InvestmentTimeline
@@ -145,6 +169,9 @@ export default async function DashboardPage() {
             investedAt={data.investedAt}
             investmentStatus={data.investmentStatus}
           />
+
+          {/* 초대 섹션 (canInvite=true인 투자자만 표시) */}
+          <InviteSection canInvite={canInvite} referredUsers={referredUsers} />
 
           {/* 출금 신청 내역 */}
           <WithdrawHistory />

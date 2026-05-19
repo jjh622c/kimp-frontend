@@ -40,7 +40,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: kept for backward compatibility (e.g., admin tools)
+// POST: called by InvitePopup on the landing page
+// Verifies token → sets kimp_access cookie → returns { valid: true }
 export async function POST(req: NextRequest) {
   const { token } = await req.json()
 
@@ -48,13 +49,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ valid: false, error: 'Missing token' }, { status: 400 })
   }
 
-  const invite = await prisma.inviteLink.findUnique({ where: { token } })
+  try {
+    const invite = await prisma.inviteLink.findUnique({ where: { token } })
 
-  if (!invite) return NextResponse.json({ valid: false, error: 'Invalid invite' }, { status: 404 })
-  if (invite.usedBy) return NextResponse.json({ valid: false, error: 'Already used' }, { status: 409 })
-  if (invite.expiresAt && invite.expiresAt < new Date()) {
-    return NextResponse.json({ valid: false, error: 'Expired' }, { status: 410 })
+    if (!invite) {
+      return NextResponse.json({ valid: false, error: 'Invalid invite code. Please check and try again.' }, { status: 401 })
+    }
+    if (invite.usedBy) {
+      return NextResponse.json({ valid: false, error: 'This invite code has already been used.' }, { status: 409 })
+    }
+    if (invite.expiresAt && invite.expiresAt < new Date()) {
+      return NextResponse.json({ valid: false, error: 'This invite code has expired.' }, { status: 410 })
+    }
+
+    // Set gate cookie so the user can access the platform
+    const response = NextResponse.json({ valid: true, token, inviteId: invite.id })
+    response.cookies.set('kimp_access', '1', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/',
+    })
+    return response
+  } catch {
+    return NextResponse.json({ valid: false, error: 'Server error' }, { status: 500 })
   }
-
-  return NextResponse.json({ valid: true, inviteId: invite.id })
 }

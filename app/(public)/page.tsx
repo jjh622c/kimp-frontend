@@ -3,11 +3,15 @@ import { HeroSection } from '@/components/landing/HeroSection'
 import { MarketsSection } from '@/components/landing/MarketsSection'
 import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
 import { RiskFooter } from '@/components/landing/RiskFooter'
+import { InvitePopup } from '@/components/landing/InvitePopup'
 
 export default function LandingPage() {
   return (
     <main>
+      <InvitePopup />
       <HeroSection />
+      {/* Sentinel div: InvitePopup's IntersectionObserver watches this element */}
+      <div id="hero-sentinel" aria-hidden="true" />
       <Suspense fallback={<MarketsSkeleton />}>
         <MarketsSection />
       </Suspense>

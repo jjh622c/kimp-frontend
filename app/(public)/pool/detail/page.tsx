@@ -1,6 +1,8 @@
 import { getLatestOraclePrice, getOraclePriceHistory } from '@/lib/data/oracle'
+import { VAULT_STATS } from '@/lib/data/vault-stats'
 import { InvestPanel } from '@/components/pool/InvestPanel'
 import { PriceChartCard } from '@/components/pool/PriceChartCard'
+import { MonthlyReturns } from '@/components/pool/MonthlyReturns'
 
 const TOKEN_NAME = process.env.NEXT_PUBLIC_TOKEN_NAME ?? 'TOKEN'
 
@@ -9,6 +11,37 @@ export default async function PoolDetailPage() {
     getLatestOraclePrice(),
     getOraclePriceHistory(),
   ])
+
+  const statCards = [
+    {
+      label: '30D Return',
+      value: VAULT_STATS.return30d,
+      color: 'text-[#22c55e]',
+      note: VAULT_STATS.returnNote,
+      badge: false,
+    },
+    {
+      label: 'All-time Return',
+      value: VAULT_STATS.allTimeReturn,
+      color: 'text-[#22c55e]',
+      note: VAULT_STATS.allTimeNote,
+      badge: false,
+    },
+    {
+      label: 'Win Rate',
+      value: VAULT_STATS.winRate,
+      color: 'text-white',
+      note: VAULT_STATS.winRateNote,
+      badge: false,
+    },
+    {
+      label: 'Token Price',
+      value: `${tokenPrice.toLocaleString('ko-KR')} KRW`,
+      color: 'text-white',
+      note: null,
+      badge: true,
+    },
+  ]
 
   return (
     <main className="px-6 max-sm:px-4 py-10">
@@ -44,25 +77,22 @@ export default async function PoolDetailPage() {
 
       {/* ── Stat Cards ───────────────────────────── */}
       <div className="grid grid-cols-4 max-sm:grid-cols-2 gap-3 mb-8">
-        {[
-          { label: '30D Return', value: '+2.0%', color: 'text-[#22c55e]', note: 'Last 30 days' },
-          { label: 'All-time Return', value: '+12.2%', color: 'text-[#22c55e]', note: 'Since Jan 2025' },
-          { label: 'Win Rate', value: '71%', color: 'text-white', note: 'Trades settled' },
-          {
-            label: 'Token Price',
-            value: `${tokenPrice.toLocaleString('ko-KR')} KRW`,
-            color: 'text-white',
-            note: 'Oracle · live',
-          },
-        ].map((stat) => (
+        {statCards.map((stat) => (
           <div key={stat.label} className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
             <div className="text-[11px] text-white/[0.28] tracking-[0.4px] uppercase mb-2">
               {stat.label}
             </div>
             <div className={`text-2xl font-semibold ${stat.color}`}>{stat.value}</div>
-            {stat.note && (
+            {stat.badge ? (
+              <div className="mt-1">
+                <span className="inline-flex items-center gap-1 bg-[#22c55e]/[0.08] border border-[#22c55e]/20 rounded-full px-2 py-0.5 text-[10px] text-[#22c55e]">
+                  <span className="w-1 h-1 rounded-full bg-[#22c55e] animate-badge-pulse" />
+                  Oracle · live
+                </span>
+              </div>
+            ) : stat.note ? (
               <div className="text-[10px] text-white/[0.2] mt-1">{stat.note}</div>
-            )}
+            ) : null}
           </div>
         ))}
       </div>
@@ -76,6 +106,9 @@ export default async function PoolDetailPage() {
           {/* Price chart */}
           <PriceChartCard data={priceHistory} />
 
+          {/* Monthly Returns — full table with real data */}
+          <MonthlyReturns />
+
           {/* Strategy */}
           <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
             <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-3">
@@ -88,9 +121,10 @@ export default async function PoolDetailPage() {
             </p>
             <div className="space-y-3 pt-4 border-t border-white/[0.06]">
               {[
-                { label: 'Bot version', value: 'KiMP Arb v3' },
-                { label: 'Rebalance frequency', value: '~4× / day' },
-                { label: 'Settlement', value: 'On-chain (Base)' },
+                { label: 'Strategy type', value: 'Market neutral arbitrage' },
+                { label: 'Execution', value: 'Automated · 24/7' },
+                { label: 'Settlement', value: 'Monthly buyback & burn' },
+                { label: 'Operational since', value: 'April 2021' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">
                   <span className="text-xs text-white/40">{item.label}</span>
@@ -129,37 +163,6 @@ export default async function PoolDetailPage() {
                     <div className="text-xs font-medium text-white/70 mb-0.5">{item.label}</div>
                     <div className="text-[11px] text-white/30 leading-[1.6]">{item.desc}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Monthly Returns */}
-          <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
-            <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-3">
-              Monthly Returns
-            </div>
-            <div>
-              <div className="grid grid-cols-[1fr_80px_100px] py-2 border-b border-white/[0.05] text-[11px] text-white/[0.28] uppercase tracking-[0.4px]">
-                <span>Month</span>
-                <span className="text-right">Return</span>
-                <span className="text-right">Token price</span>
-              </div>
-              {[
-                { month: 'Feb 2025', ret: '+2.0%', price: '1,000 KRW', green: true },
-                { month: 'Jan 2025', ret: '+10.0%', price: '980 KRW', green: true },
-              ].map((row) => (
-                <div
-                  key={row.month}
-                  className="grid grid-cols-[1fr_80px_100px] py-3 border-b border-white/[0.04] last:border-0"
-                >
-                  <span className="text-xs text-white/70">{row.month}</span>
-                  <span
-                    className={`text-xs font-medium text-right ${row.green ? 'text-[#22c55e]' : 'text-[#ef4444]'}`}
-                  >
-                    {row.ret}
-                  </span>
-                  <span className="text-xs text-white/50 text-right">{row.price}</span>
                 </div>
               ))}
             </div>

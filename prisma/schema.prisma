@@ -13,6 +13,9 @@ model User {
   walletAddress String?   @unique
   name          String?
   phone         String?
+  canInvite     Boolean   @default(false)
+  referralDepth Int       @default(0)
+  referredById  String?
   createdAt     DateTime  @default(now())
 
   investment Investment?
@@ -56,12 +59,17 @@ model WithdrawRequest {
 }
 
 model InviteLink {
-  id        String    @id @default(cuid())
-  token     String    @unique @default(cuid())
-  usedBy    String?
-  usedAt    DateTime?
-  expiresAt DateTime?
-  createdAt DateTime  @default(now())
+  id          String    @id @default(cuid())
+  token       String    @unique @default(cuid())
+  usedBy      String?
+  usedById    String?
+  createdById String?
+  usedAt      DateTime?
+  expiresAt   DateTime?
+  depth       Int       @default(0)
+  maxUses     Int       @default(1)
+  useCount    Int       @default(0)
+  createdAt   DateTime  @default(now())
 }
 
 enum InvestmentStatus {

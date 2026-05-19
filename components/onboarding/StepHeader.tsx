@@ -1,4 +1,4 @@
-const STEP_LABELS = ['Contract', 'Deposit', 'Wallet', 'Done']
+const STEP_LABELS = ['Token', 'Method', 'Transfer', 'Done']
 
 interface StepHeaderProps {
   current: number
