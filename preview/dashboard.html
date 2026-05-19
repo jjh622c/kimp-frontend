@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --card: #0e1425;
+    --border: rgba(255,255,255,0.07); --blue: #3d8ef8;
+    --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --text2: rgba(255,255,255,0.4); --text3: rgba(255,255,255,0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  .preview-nav { background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 7px 0; text-align: center; position: sticky; top: 0; z-index: 200; }
+  .preview-nav span { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 14px; }
+  .preview-nav a { color: rgba(255,255,255,0.45); font-size: 12px; padding: 3px 10px; border-radius: 5px; margin: 0 2px; transition: all 0.15s; }
+  .preview-nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .preview-nav a.active { background: rgba(61,142,248,0.15); color: var(--blue); }
+
+  .navbar { border-bottom: 1px solid var(--border); }
+  .navbar .inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-size: 17px; font-weight: 500; letter-spacing: 0.4px; }
+  .logo em { color: var(--blue); font-style: normal; }
+  .nav-email { font-size: 13px; color: var(--text2); margin-right: 12px; }
+  .wallet-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,197,94,0.08); border: 0.5px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--green); cursor: pointer; font-family: inherit; }
+
+  .page-wrap { max-width: 1280px; margin: 0 auto; padding: 32px 32px; }
+  .page-inner { max-width: 720px; margin: 0 auto; }
+  .page-title { font-size: 20px; font-weight: 500; color: #fff; margin-bottom: 24px; }
+
+  /* Investment progress */
+  .progress-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .section-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 20px; }
+  .progress-item { display: flex; gap: 12px; }
+  .progress-indicator { display: flex; flex-direction: column; align-items: center; }
+  .progress-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .progress-dot.done { background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); }
+  .progress-dot.active { background: rgba(61,142,248,0.2); border: 2px solid var(--blue); animation: pulse 2s ease infinite; }
+  .progress-dot.pending { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+  .progress-line { width: 1px; flex: 1; min-height: 18px; margin: 3px 0; }
+  .progress-line.done { background: rgba(34,197,94,0.2); }
+  .progress-line.pending { background: rgba(255,255,255,0.07); }
+  .progress-body { flex: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; padding-bottom: 18px; }
+  .progress-body.last { padding-bottom: 0; }
+  .progress-step-text { font-size: 13px; line-height: 1.4; }
+  .progress-status { font-size: 11px; flex-shrink: 0; }
+
+  /* Investment timeline */
+  .timeline-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .timeline-steps { display: flex; align-items: center; gap: 0; }
+  .tl-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .tl-dot { width: 24px; height: 24px; border-radius: 50%; background: rgba(34,197,94,0.15); border: 1.5px solid rgba(34,197,94,0.4); display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+  .tl-dot svg { width: 12px; height: 12px; color: var(--green); }
+  .tl-line { flex: 1; height: 1.5px; background: rgba(34,197,94,0.25); margin-bottom: 18px; align-self: center; margin-top: -15px; }
+  .tl-label { font-size: 10px; color: var(--text3); text-align: center; }
+  .tl-date { font-size: 10px; color: var(--text3); text-align: center; margin-top: 2px; }
+
+  /* Stat cards */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .stat-card-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-card-val { font-size: 22px; font-weight: 500; }
+
+  /* Chart */
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .chart-head { padding: 14px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .chart-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-body { height: 160px; }
+  .chart-svg { width: 100%; height: 100%; }
+
+  /* Withdraw form */
+  .withdraw-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .withdraw-title { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+  .withdraw-sub { font-size: 11px; color: var(--text3); margin-bottom: 16px; }
+  .field-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .input-wrap { position: relative; margin-bottom: 12px; }
+  .form-input { width: 100%; background: var(--bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 48px 10px 12px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; transition: border-color 0.15s; }
+  .form-input:focus { border-color: rgba(61,142,248,0.5); }
+  .input-suffix { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text3); }
+  .info-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+  .info-row { display: flex; justify-content: space-between; font-size: 12px; }
+  .info-key { color: var(--text2); }
+  .info-val-text { color: rgba(255,255,255,0.7); }
+  .lockup-badge { font-size: 11px; color: var(--amber); background: rgba(245,158,11,0.08); border: 0.5px solid rgba(245,158,11,0.2); border-radius: 4px; padding: 2px 8px; }
+  .withdraw-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .withdraw-btn:hover { background: #2d7ee8; }
+  .withdraw-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Return account */
+  .return-acct-card { background: rgba(255,255,255,0.015); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  .return-acct-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .return-acct-rows { display: flex; flex-direction: column; gap: 6px; }
+  .return-acct-row { display: flex; justify-content: space-between; font-size: 12px; }
+
+  /* Invite section */
+  .invite-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .invite-head { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .invite-title { font-size: 13px; font-weight: 500; color: #fff; }
+  .badge-active { font-size: 10px; font-family: monospace; color: rgba(34,197,94,0.8); background: rgba(34,197,94,0.08); border: 0.5px solid rgba(34,197,94,0.2); border-radius: 3px; padding: 2px 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .invite-desc { font-size: 11px; color: var(--text3); margin-bottom: 16px; line-height: 1.6; }
+  .invite-url-row { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .invite-url-text { font-size: 11px; color: rgba(255,255,255,0.6); font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .invite-copy-btn { font-size: 11px; color: var(--blue); cursor: pointer; transition: color 0.15s; flex-shrink: 0; }
+  .invite-gen-btn { background: rgba(61,142,248,0.12); color: var(--blue); border: 1px solid rgba(61,142,248,0.25); border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .invite-gen-btn:hover { background: rgba(61,142,248,0.2); }
+  .invite-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 16px 0; }
+  .invite-sub-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .invited-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .invited-name { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .invited-email { font-size: 11px; color: rgba(255,255,255,0.3); margin-left: 6px; }
+  .invited-date { font-size: 11px; color: rgba(255,255,255,0.3); }
+
+  /* Withdraw history */
+  .history-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .history-head { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+  .history-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .history-empty { padding: 28px 20px; text-align: center; font-size: 12px; color: rgba(255,255,255,0.2); }
+  .history-row { display: grid; grid-template-columns: 1fr 100px 100px 80px; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; align-items: center; }
+  .history-row:last-child { border-bottom: none; }
+  .h-date { color: var(--text2); }
+  .h-amount { color: rgba(255,255,255,0.7); text-align: right; }
+  .h-krw { color: rgba(255,255,255,0.5); text-align: right; }
+  .h-status { text-align: right; }
+  .badge-pending { font-size: 10px; color: var(--amber); background: rgba(245,158,11,0.08); border: 0.5px solid rgba(245,158,11,0.2); border-radius: 4px; padding: 2px 6px; }
+  .badge-done { font-size: 10px; color: var(--green); background: rgba(34,197,94,0.08); border: 0.5px solid rgba(34,197,94,0.2); border-radius: 4px; padding: 2px 6px; }
+</style>
+</head>
+<body>
+
+<div class="preview-nav">
+  <span>PREVIEW</span>
+  <a href="gate.html">Gate</a>
+  <a href="index.html">Landing</a>
+  <a href="vault.html">Vault</a>
+  <a href="dashboard.html" class="active">Dashboard</a>
+  <a href="onboarding.html">Onboarding</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html">Login</a>
+</div>
+
+<nav class="navbar">
+  <div class="inner">
+    <a href="index.html" class="logo">[<em>K</em>iMP]</a>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="nav-email">investor@example.com</span>
+      <button class="wallet-btn">0xAbcd…1234</button>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-inner">
+    <h1 class="page-title">Dashboard</h1>
+
+    <!-- Investment Progress -->
+    <div class="progress-card">
+      <div class="section-label">Investment Progress</div>
+      <div id="progressSteps"></div>
+    </div>
+
+    <!-- Investment Timeline -->
+    <div class="timeline-card">
+      <div class="section-label">Investment Timeline</div>
+      <div class="timeline-steps">
+        <div class="tl-step">
+          <div class="tl-dot"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+          <div class="tl-label">Contract Signed</div>
+          <div class="tl-date">Apr 4, 2026</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-step">
+          <div class="tl-dot"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+          <div class="tl-label">Deposit Confirmed</div>
+          <div class="tl-date">Apr 5, 2026</div>
+        </div>
+        <div class="tl-line"></div>
+        <div class="tl-step">
+          <div class="tl-dot"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>
+          <div class="tl-label">Token Minted</div>
+          <div class="tl-date">Apr 5, 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Token balance</div>
+        <div class="stat-card-val">1,500 TOKEN</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Current price</div>
+        <div class="stat-card-val">₩1,511</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Valuation</div>
+        <div class="stat-card-val">₩2,266,500</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">ROI</div>
+        <div class="stat-card-val" style="color:var(--green)">+51.10%</div>
+      </div>
+    </div>
+
+    <!-- Price chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <div class="chart-title">Token Price History</div>
+        <div style="font-size:12px;color:var(--text2)">₩1,511 <span style="color:var(--green)">+2.1%</span></div>
+      </div>
+      <div class="chart-body">
+        <svg class="chart-svg" viewBox="0 0 600 160" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3d8ef8" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#3d8ef8" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,145 L60,140 L120,118 L180,105 L240,82 L300,78 L360,70 L400,52 L440,48 L500,30 L560,18 L600,10"
+            fill="url(#g2)" stroke="none"/>
+          <path d="M0,145 L60,140 L120,118 L180,105 L240,82 L300,78 L360,70 L400,52 L440,48 L500,30 L560,18 L600,10"
+            fill="none" stroke="#3d8ef8" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Withdraw form -->
+    <div class="withdraw-card">
+      <div class="withdraw-title">Withdrawal Request</div>
+      <div class="withdraw-sub">Enter amount to withdraw and provide your return bank account</div>
+
+      <div style="background:rgba(245,158,11,0.06);border:0.5px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;margin-bottom:16px">
+        <p style="font-size:12px;color:rgba(245,158,11,0.8)">⏳ Lockup period active. Available for withdrawal: <strong>Jul 4, 2026</strong></p>
+      </div>
+
+      <div class="return-acct-card">
+        <div class="return-acct-title">Return Account</div>
+        <div class="return-acct-rows">
+          <div class="return-acct-row"><span style="color:var(--text2)">Bank</span><span style="color:rgba(255,255,255,0.7)">KB국민은행</span></div>
+          <div class="return-acct-row"><span style="color:var(--text2)">Account No.</span><span style="color:rgba(255,255,255,0.7);font-family:monospace">123-456-789012</span></div>
+          <div class="return-acct-row"><span style="color:var(--text2)">Account Holder</span><span style="color:rgba(255,255,255,0.7)">홍길동</span></div>
+        </div>
+      </div>
+
+      <div class="field-label">Amount (KRW)</div>
+      <div class="input-wrap">
+        <input class="form-input" type="number" value="500000" min="100000">
+        <span class="input-suffix">KRW</span>
+      </div>
+
+      <div class="info-rows">
+        <div class="info-row"><span class="info-key">Available balance</span><span class="info-val-text">₩2,266,500</span></div>
+        <div class="info-row"><span class="info-key">Min. withdrawal</span><span class="info-val-text">₩100,000</span></div>
+        <div class="info-row"><span class="info-key">Lockup ends</span><span class="info-val-text"><span class="lockup-badge">Jul 4, 2026</span></span></div>
+      </div>
+
+      <button class="withdraw-btn" disabled>Request Withdrawal</button>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center">Withdrawal available after lockup period ends</p>
+    </div>
+
+    <!-- Invite section -->
+    <div class="invite-card">
+      <div class="invite-head">
+        <div class="invite-title">Your invite link</div>
+        <span class="badge-active">Active</span>
+      </div>
+      <p class="invite-desc">Share your personal invite link with trusted contacts. Up to 2 levels deep — you can invite, and they can invite once.</p>
+
+      <div class="invite-url-row">
+        <span class="invite-url-text">https://kimp.example.com/?invite=abc123def456gh78</span>
+        <span class="invite-copy-btn" onclick="this.textContent='Copied ✓'">Copy</span>
+      </div>
+
+      <button class="invite-gen-btn">Regenerate link</button>
+
+      <div class="invite-divider"></div>
+      <div class="invite-sub-title">Invited (2)</div>
+      <div class="invited-row">
+        <div><span class="invited-name">김철수</span><span class="invited-email">chulsoo@example.com</span></div>
+        <span class="invited-date">May 1, 2026</span>
+      </div>
+      <div class="invited-row">
+        <div><span class="invited-name">이영희</span><span class="invited-email">younghee@example.com</span></div>
+        <span class="invited-date">May 10, 2026</span>
+      </div>
+    </div>
+
+    <!-- Withdraw history -->
+    <div class="history-card">
+      <div class="history-head">
+        <div class="history-title">Withdrawal History</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 100px 100px 80px;padding:8px 20px;border-bottom:1px solid rgba(255,255,255,0.05)">
+        <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Date</span>
+        <span style="font-size:11px;color:var(--text3);text-align:right;text-transform:uppercase;letter-spacing:.4px">Tokens</span>
+        <span style="font-size:11px;color:var(--text3);text-align:right;text-transform:uppercase;letter-spacing:.4px">KRW</span>
+        <span style="font-size:11px;color:var(--text3);text-align:right;text-transform:uppercase;letter-spacing:.4px">Status</span>
+      </div>
+      <div class="history-row">
+        <span class="h-date">Apr 20, 2026</span>
+        <span class="h-amount">200 TOKEN</span>
+        <span class="h-krw">₩302,200</span>
+        <span class="h-status"><span class="badge-done">Completed</span></span>
+      </div>
+      <div class="history-row">
+        <span class="h-date">Mar 5, 2026</span>
+        <span class="h-amount">100 TOKEN</span>
+        <span class="h-krw">₩148,400</span>
+        <span class="h-status"><span class="badge-pending">Pending</span></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { label: 'Token added to wallet',          done: true  },
+  { label: 'Investment agreement signed',    done: true  },
+  { label: 'Deposit confirmed',              done: true  },
+  { label: 'Token issued',                   done: true  },
+  { label: 'Bot profit buyback in progress', done: true  },
+];
+
+function buildProgress() {
+  const el = document.getElementById('progressSteps');
+  let html = '';
+  STEPS.forEach((step, i) => {
+    const isLast = i === STEPS.length - 1;
+    const dotClass = step.done ? 'done' : step.active ? 'active' : 'pending';
+    const textColor = step.done ? 'rgba(255,255,255,0.55)' : step.active ? '#fff' : 'rgba(255,255,255,0.25)';
+    const statusColor = step.done ? 'rgba(34,197,94,0.7)' : step.active ? 'rgba(61,142,248,0.8)' : 'rgba(255,255,255,0.2)';
+    const statusText = step.done ? '✓' : step.active ? '⏳ Pending' : '○';
+    html += `<div class="progress-item">
+      <div class="progress-indicator">
+        <div class="progress-dot ${dotClass}">
+          ${step.done ? '<svg width="9" height="9" viewBox="0 0 9 9" fill="none"><path d="M2 4.5L3.8 6.5L7 2.5" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+        </div>
+        ${!isLast ? `<div class="progress-line ${step.done ? 'done' : 'pending'}"></div>` : ''}
+      </div>
+      <div class="progress-body ${isLast ? 'last' : ''}">
+        <span class="progress-step-text" style="color:${textColor}">${step.label}</span>
+        <span class="progress-status" style="color:${statusColor}">${statusText}</span>
+      </div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+buildProgress();
+</script>
+</body>
+</html>

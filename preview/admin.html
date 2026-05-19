@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --card: #0e1425; --th: #0b0f1f;
+    --border: rgba(255,255,255,0.07); --blue: #3d8ef8;
+    --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --text2: rgba(255,255,255,0.4); --text3: rgba(255,255,255,0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  .preview-nav { background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 7px 0; text-align: center; position: sticky; top: 0; z-index: 200; }
+  .preview-nav span { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 14px; }
+  .preview-nav a { color: rgba(255,255,255,0.45); font-size: 12px; padding: 3px 10px; border-radius: 5px; margin: 0 2px; transition: all 0.15s; }
+  .preview-nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .preview-nav a.active { background: rgba(61,142,248,0.15); color: var(--blue); }
+
+  .navbar { border-bottom: 1px solid var(--border); }
+  .navbar .inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-size: 17px; font-weight: 500; letter-spacing: 0.4px; }
+  .logo em { color: var(--blue); font-style: normal; }
+  .admin-badge { font-size: 10px; color: var(--amber); background: rgba(245,158,11,0.08); border: 0.5px solid rgba(245,158,11,0.2); border-radius: 4px; padding: 2px 8px; margin-left: 8px; }
+  .wallet-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,197,94,0.08); border: 0.5px solid rgba(34,197,94,0.2); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--green); cursor: pointer; font-family: inherit; }
+
+  .page-wrap { max-width: 1280px; margin: 0 auto; padding: 32px 32px; }
+  .page-title { font-size: 20px; font-weight: 500; color: #fff; margin-bottom: 24px; }
+
+  .section-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Stat cards */
+  .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  @media (max-width: 768px) { .stat-grid { grid-template-columns: 1fr 1fr; } }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .stat-card-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-card-val { font-size: 22px; font-weight: 500; }
+  .stat-card-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* Oracle update */
+  .oracle-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .oracle-current { display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px; }
+  .oracle-price { font-size: 28px; font-weight: 600; color: #fff; }
+  .oracle-label { font-size: 12px; color: var(--text2); }
+  .oracle-change { font-size: 13px; color: var(--green); }
+  .oracle-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .oracle-input-group { display: flex; flex-direction: column; }
+  .form-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .form-input { background: var(--bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 9px 12px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; transition: border-color 0.15s; width: 160px; }
+  .form-input:focus { border-color: rgba(61,142,248,0.5); }
+  .btn-sm { background: var(--blue); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; white-space: nowrap; }
+  .btn-sm:hover { background: #2d7ee8; }
+
+  /* Investor table */
+  .table-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .table-head-row { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .table-th-row { display: grid; grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr 1.2fr; background: var(--th); padding: 10px 20px; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
+  .table-tr { display: grid; grid-template-columns: 1.4fr 0.8fr 0.8fr 0.8fr 1.2fr; padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; font-size: 12px; }
+  .table-tr:last-child { border-bottom: none; }
+  .table-tr:hover { background: rgba(255,255,255,0.015); }
+  .user-name { font-size: 13px; color: #fff; font-weight: 500; }
+  .user-email { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .badge { display: inline-block; font-size: 10px; border-radius: 4px; padding: 2px 7px; border-width: 0.5px; border-style: solid; }
+  .badge-green { color: var(--green); background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); }
+  .badge-amber { color: var(--amber); background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); }
+  .badge-gray { color: var(--text3); background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+  .badge-red { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.2); }
+  .action-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+  .action-btn { font-size: 11px; border-radius: 6px; padding: 3px 10px; border: 0.5px solid; cursor: pointer; font-family: inherit; transition: all 0.15s; background: transparent; }
+  .action-btn-blue { color: var(--blue); border-color: rgba(61,142,248,0.3); }
+  .action-btn-blue:hover { background: rgba(61,142,248,0.08); }
+  .action-btn-green { color: var(--green); border-color: rgba(34,197,94,0.3); }
+  .action-btn-green:hover { background: rgba(34,197,94,0.06); }
+  .action-btn-amber { color: var(--amber); border-color: rgba(245,158,11,0.3); }
+  .action-btn-amber:hover { background: rgba(245,158,11,0.06); }
+  .action-btn-red { color: var(--red); border-color: rgba(239,68,68,0.3); }
+  .action-btn-red:hover { background: rgba(239,68,68,0.06); }
+  .toggle-invite { font-size: 11px; border-radius: 6px; padding: 3px 10px; border: 0.5px solid; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .invite-on { color: var(--green); background: rgba(34,197,94,0.06); border-color: rgba(34,197,94,0.25); }
+  .invite-off { color: var(--text3); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1); }
+
+  /* Admin invite section */
+  .invite-admin-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .invite-admin-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .invite-admin-title { font-size: 13px; font-weight: 500; color: #fff; }
+  .invite-admin-count { font-size: 11px; color: var(--text3); }
+  .invite-admin-body { padding: 20px; }
+  .gen-section { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .gen-title { font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+  .gen-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+  .gen-field { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+  .gen-select { background: var(--bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 8px; font-size: 12px; color: var(--text); font-family: inherit; outline: none; }
+  .gen-url-row { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+  .gen-url-text { font-size: 11px; color: rgba(255,255,255,0.6); font-family: monospace; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gen-copy { font-size: 11px; color: var(--blue); cursor: pointer; flex-shrink: 0; transition: color 0.15s; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab-btn { font-size: 12px; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; background: transparent; border: none; transition: all 0.15s; color: var(--text2); }
+  .tab-btn.active { background: rgba(255,255,255,0.07); color: #fff; }
+  .tab-btn:hover:not(.active) { color: rgba(255,255,255,0.6); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Links list */
+  .link-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); margin-bottom: 8px; }
+  .link-row.inactive { background: rgba(255,255,255,0.01); border-color: rgba(255,255,255,0.04); }
+  .link-meta { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .link-token { font-size: 11px; color: var(--text2); font-family: monospace; flex-shrink: 0; }
+  .link-uses { font-size: 11px; color: var(--text3); flex-shrink: 0; }
+  .link-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+  /* Referral tree */
+  .tree-node { padding: 4px 0; }
+  .tree-row { display: flex; align-items: center; gap: 8px; }
+  .tree-depth { font-size: 10px; color: var(--text2); font-family: monospace; }
+  .tree-icon { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tree-icon span { font-size: 9px; color: var(--text2); font-family: monospace; }
+  .tree-name { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .tree-email { font-size: 11px; color: var(--text3); margin-left: 4px; }
+  .can-invite-tag { font-size: 10px; color: rgba(34,197,94,0.6); background: rgba(34,197,94,0.06); border: 0.5px solid rgba(34,197,94,0.15); border-radius: 4px; padding: 1px 6px; flex-shrink: 0; }
+  .tree-child { padding-left: 20px; }
+
+  /* Withdraw requests */
+  .wr-table { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+  .wr-th { display: grid; grid-template-columns: 1.2fr 0.8fr 1fr 0.8fr 1fr; background: var(--th); padding: 10px 20px; font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
+  .wr-tr { display: grid; grid-template-columns: 1.2fr 0.8fr 1fr 0.8fr 1fr; padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; align-items: center; }
+  .wr-tr:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<div class="preview-nav">
+  <span>PREVIEW</span>
+  <a href="gate.html">Gate</a>
+  <a href="index.html">Landing</a>
+  <a href="vault.html">Vault</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="onboarding.html">Onboarding</a>
+  <a href="admin.html" class="active">Admin</a>
+  <a href="login.html">Login</a>
+</div>
+
+<nav class="navbar">
+  <div class="inner">
+    <a href="index.html" class="logo">[<em>K</em>iMP]<span class="admin-badge">ADMIN</span></a>
+    <button class="wallet-btn">0xAbcd…1234</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <h1 class="page-title">Admin Panel</h1>
+
+  <!-- Stat cards -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-card-label">Investors</div>
+      <div class="stat-card-val">4</div>
+      <div class="stat-card-sub">Total registered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Token price</div>
+      <div class="stat-card-val">₩1,511</div>
+      <div class="stat-card-sub">Current oracle</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Active links</div>
+      <div class="stat-card-val">2</div>
+      <div class="stat-card-sub">Invite links</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-label">Pending withdrawals</div>
+      <div class="stat-card-val" style="color:var(--amber)">1</div>
+      <div class="stat-card-sub">Needs processing</div>
+    </div>
+  </div>
+
+  <!-- Oracle update -->
+  <div class="oracle-card">
+    <div class="section-label" style="margin-bottom:12px">Oracle Price Update</div>
+    <div class="oracle-current">
+      <div class="oracle-price">₩1,511</div>
+      <div class="oracle-label">Current token price</div>
+      <div class="oracle-change">+2.1%</div>
+    </div>
+    <div class="oracle-form">
+      <div class="oracle-input-group">
+        <div class="form-label">New price (KRW)</div>
+        <input class="form-input" type="number" value="1545" placeholder="e.g. 1511">
+      </div>
+      <div class="oracle-input-group">
+        <div class="form-label">Return % (optional)</div>
+        <input class="form-input" type="number" value="2.25" placeholder="e.g. 2.10" style="width:120px">
+      </div>
+      <button class="btn-sm" style="margin-bottom:0">Update Oracle →</button>
+    </div>
+  </div>
+
+  <!-- Investor table -->
+  <div class="table-card">
+    <div class="table-head-row">
+      <div class="section-label">Investor List</div>
+      <span style="font-size:11px;color:var(--text3)">4 investors</span>
+    </div>
+    <div class="table-th-row">
+      <span>Investor</span>
+      <span>Deposit</span>
+      <span>Status</span>
+      <span>Can Invite</span>
+      <span>Actions</span>
+    </div>
+    <!-- Row 1: Active -->
+    <div class="table-tr">
+      <div>
+        <div class="user-name">김철수</div>
+        <div class="user-email">chulsoo@example.com</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.7)">₩1,000,000</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div>
+        <button class="toggle-invite invite-on" onclick="toggleInvite(this)">✓ On</button>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn action-btn-green">Approve deposit</button>
+        <button class="action-btn action-btn-blue">Mint tokens</button>
+      </div>
+    </div>
+    <!-- Row 2: Pending deposit -->
+    <div class="table-tr">
+      <div>
+        <div class="user-name">이영희</div>
+        <div class="user-email">younghee@example.com</div>
+      </div>
+      <div style="color:var(--amber)">Pending</div>
+      <div><span class="badge badge-amber">Pending deposit</span></div>
+      <div>
+        <button class="toggle-invite invite-off" onclick="toggleInvite(this)">Off</button>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn action-btn-green">Approve deposit</button>
+      </div>
+    </div>
+    <!-- Row 3: Contract unsigned -->
+    <div class="table-tr">
+      <div>
+        <div class="user-name">박민준</div>
+        <div class="user-email">minjun@example.com</div>
+      </div>
+      <div style="color:var(--text3)">—</div>
+      <div><span class="badge badge-gray">Onboarding</span></div>
+      <div>
+        <button class="toggle-invite invite-off" onclick="toggleInvite(this)">Off</button>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn action-btn-amber">Resend invite</button>
+      </div>
+    </div>
+    <!-- Row 4: Active with withdraw pending -->
+    <div class="table-tr">
+      <div>
+        <div class="user-name">최수진</div>
+        <div class="user-email">sujin@example.com</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.7)">₩3,000,000</div>
+      <div><span class="badge badge-green">Active</span></div>
+      <div>
+        <button class="toggle-invite invite-on" onclick="toggleInvite(this)">✓ On</button>
+      </div>
+      <div class="action-btns">
+        <button class="action-btn action-btn-blue">Approve withdraw</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Invite Section -->
+  <div class="invite-admin-card">
+    <div class="invite-admin-head">
+      <div class="invite-admin-title">Invite &amp; Referrals</div>
+      <span class="invite-admin-count">2 active links</span>
+    </div>
+    <div class="invite-admin-body">
+
+      <!-- Generate section -->
+      <div class="gen-section">
+        <div class="gen-title">Generate admin link</div>
+        <div class="gen-controls">
+          <div class="gen-field">
+            <span>Expires in</span>
+            <select class="gen-select">
+              <option>3 days</option>
+              <option selected>7 days</option>
+              <option>14 days</option>
+              <option>30 days</option>
+            </select>
+          </div>
+          <div class="gen-field">
+            <span>Max uses</span>
+            <select class="gen-select">
+              <option selected>1</option>
+              <option>3</option>
+              <option>5</option>
+              <option>10</option>
+            </select>
+          </div>
+          <button class="btn-sm" style="font-size:12px;padding:7px 14px" onclick="showGenUrl()">Generate link</button>
+        </div>
+        <div class="gen-url-row" id="genUrlRow" style="display:none">
+          <span class="gen-url-text" id="genUrlText"></span>
+          <span class="gen-copy" onclick="this.textContent='Copied ✓'">Copy</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLinks" onclick="switchTab('links',this)">Links (3)</button>
+        <button class="tab-btn" id="tabTree" onclick="switchTab('tree',this)">Referral tree</button>
+      </div>
+
+      <!-- Links panel -->
+      <div class="tab-panel active" id="panelLinks">
+        <div class="link-row">
+          <div class="link-meta">
+            <span class="link-token">abc123de…</span>
+            <span class="link-uses">0/1</span>
+            <span style="font-size:11px;color:var(--text3)">· Exp. May 26, 2026</span>
+          </div>
+          <div class="link-actions">
+            <span class="badge badge-blue" style="color:var(--blue);background:rgba(61,142,248,0.08);border:0.5px solid rgba(61,142,248,0.2);font-size:10px;padding:2px 7px;border-radius:4px">Active</span>
+            <button class="action-btn action-btn-blue">Copy</button>
+            <button class="action-btn action-btn-red">Revoke</button>
+          </div>
+        </div>
+        <div class="link-row">
+          <div class="link-meta">
+            <span class="link-token">xyz789ab…</span>
+            <span class="link-uses">0/1</span>
+            <span style="font-size:11px;color:var(--text3)">· Exp. Jun 2, 2026</span>
+          </div>
+          <div class="link-actions">
+            <span class="badge badge-blue" style="color:var(--blue);background:rgba(61,142,248,0.08);border:0.5px solid rgba(61,142,248,0.2);font-size:10px;padding:2px 7px;border-radius:4px">Active</span>
+            <button class="action-btn action-btn-blue">Copy</button>
+            <button class="action-btn action-btn-red">Revoke</button>
+          </div>
+        </div>
+        <div class="link-row inactive">
+          <div class="link-meta">
+            <span class="link-token">def456gh…</span>
+            <span class="link-uses">1/1</span>
+          </div>
+          <div class="link-actions">
+            <span class="badge" style="color:var(--green);background:rgba(34,197,94,0.08);border:0.5px solid rgba(34,197,94,0.2);font-size:10px;padding:2px 7px;border-radius:4px">Used</span>
+            <button class="action-btn action-btn-red">Revoke</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tree panel -->
+      <div class="tab-panel" id="panelTree">
+        <!-- Root investor -->
+        <div class="tree-node">
+          <div class="tree-row">
+            <div class="tree-icon"><span>0</span></div>
+            <span class="tree-name">김철수</span>
+            <span class="tree-email">chulsoo@example.com</span>
+            <span class="can-invite-tag">Can invite</span>
+          </div>
+          <!-- Level 1 child -->
+          <div class="tree-child">
+            <div class="tree-row" style="padding-top:6px">
+              <span style="font-size:12px;color:rgba(255,255,255,0.2);margin-right:4px">└─</span>
+              <div class="tree-icon"><span>1</span></div>
+              <span class="tree-name">이영희</span>
+              <span class="tree-email">younghee@example.com</span>
+              <span class="can-invite-tag">Can invite</span>
+            </div>
+            <!-- Level 2 child -->
+            <div class="tree-child">
+              <div class="tree-row" style="padding-top:6px">
+                <span style="font-size:12px;color:rgba(255,255,255,0.2);margin-right:4px">└─</span>
+                <div class="tree-icon"><span>2</span></div>
+                <span class="tree-name">박민준</span>
+                <span class="tree-email">minjun@example.com</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tree-node" style="margin-top:10px">
+          <div class="tree-row">
+            <div class="tree-icon"><span>0</span></div>
+            <span class="tree-name">최수진</span>
+            <span class="tree-email">sujin@example.com</span>
+            <span class="can-invite-tag">Can invite</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Withdrawal requests -->
+  <div class="wr-table">
+    <div class="table-head-row">
+      <div class="section-label">Withdrawal Requests</div>
+      <span style="font-size:11px;color:var(--amber)">1 pending</span>
+    </div>
+    <div class="wr-th">
+      <span>Investor</span>
+      <span>Tokens</span>
+      <span>KRW</span>
+      <span>Status</span>
+      <span>Actions</span>
+    </div>
+    <div class="wr-tr">
+      <div>
+        <div style="font-size:12px;color:#fff">최수진</div>
+        <div style="font-size:11px;color:var(--text3)">sujin@example.com</div>
+      </div>
+      <span style="color:rgba(255,255,255,0.7)">100 TOKEN</span>
+      <span style="color:rgba(255,255,255,0.7)">₩151,100</span>
+      <span><span class="badge badge-amber">Pending</span></span>
+      <div class="action-btns">
+        <button class="action-btn action-btn-green">Approve</button>
+        <button class="action-btn action-btn-red">Reject</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleInvite(btn) {
+    if (btn.classList.contains('invite-on')) {
+      btn.classList.remove('invite-on');
+      btn.classList.add('invite-off');
+      btn.textContent = 'Off';
+    } else {
+      btn.classList.remove('invite-off');
+      btn.classList.add('invite-on');
+      btn.textContent = '✓ On';
+    }
+  }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+  }
+
+  function showGenUrl() {
+    const row = document.getElementById('genUrlRow');
+    const txt = document.getElementById('genUrlText');
+    const token = Math.random().toString(36).slice(2, 18);
+    txt.textContent = `https://kimp.example.com/?invite=${token}`;
+    row.style.display = 'flex';
+  }
+</script>
+</body>
+</html>

@@ -163,6 +163,15 @@ function Step1Content() {
         >
           Continue →
         </button>
+
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            onClick={handleContinue}
+            className="w-full mt-2 border border-[#f59e0b]/30 text-[#f59e0b]/60 hover:text-[#f59e0b] text-[11px] py-1.5 rounded-lg transition-colors"
+          >
+            DEV: Skip this step →
+          </button>
+        )}
       </div>
     </div>
   )

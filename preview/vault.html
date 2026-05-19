@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Vault Detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --card: #0e1425; --th: #0b0f1f;
+    --border: rgba(255,255,255,0.07); --blue: #3d8ef8;
+    --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --text2: rgba(255,255,255,0.4); --text3: rgba(255,255,255,0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; }
+  a { text-decoration: none; color: inherit; }
+
+  .preview-nav { background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 7px 0; text-align: center; position: sticky; top: 0; z-index: 200; }
+  .preview-nav span { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 14px; }
+  .preview-nav a { color: rgba(255,255,255,0.45); font-size: 12px; padding: 3px 10px; border-radius: 5px; margin: 0 2px; transition: all 0.15s; }
+  .preview-nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .preview-nav a.active { background: rgba(61,142,248,0.15); color: var(--blue); }
+
+  .navbar { border-bottom: 1px solid var(--border); }
+  .navbar .inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-size: 17px; font-weight: 500; letter-spacing: 0.4px; }
+  .logo em { color: var(--blue); font-style: normal; }
+  .wallet-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--text2); cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .wallet-btn:hover { background: rgba(255,255,255,0.08); }
+
+  .page-wrap { max-width: 1280px; margin: 0 auto; padding: 32px 32px; }
+  .back-link { font-size: 12px; color: var(--text3); margin-bottom: 20px; display: inline-block; transition: color 0.15s; }
+  .back-link:hover { color: var(--text2); }
+
+  /* Pool header */
+  .pool-header { margin-bottom: 28px; }
+  .pool-header-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .pool-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(61,142,248,0.1); border: 0.5px solid rgba(61,142,248,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pool-icon svg { width: 22px; height: 22px; color: var(--blue); }
+  .pool-name { font-size: 20px; font-weight: 500; color: #fff; }
+  .pool-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
+  .badge-live { font-size: 10px; background: rgba(34,197,94,0.1); color: var(--green); border: 0.5px solid rgba(34,197,94,0.25); border-radius: 4px; padding: 3px 8px; }
+
+  .stat-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stat-chip { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; }
+  .stat-chip-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .stat-chip-val { font-size: 18px; font-weight: 500; }
+
+  /* Two-col layout */
+  .layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } }
+
+  .left-col { display: flex; flex-direction: column; gap: 20px; }
+  .right-col { position: sticky; top: 52px; display: flex; flex-direction: column; gap: 16px; }
+  @media (max-width: 1024px) { .right-col { position: static; order: -1; } }
+
+  /* Chart placeholder */
+  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .chart-card-head { padding: 14px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .chart-card-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .chart-price { font-size: 22px; font-weight: 600; color: #fff; }
+  .chart-change { font-size: 11px; color: var(--green); }
+  .chart-body { height: 180px; padding: 0; position: relative; overflow: hidden; }
+  .chart-svg { width: 100%; height: 100%; }
+
+  /* Monthly returns table */
+  .returns-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .returns-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .returns-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .returns-meta { font-size: 11px; color: var(--text3); }
+  .returns-table-head { display: grid; grid-template-columns: 1fr 110px 120px 90px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; }
+  .returns-table-head span:not(:first-child) { text-align: right; }
+  .year-divider { padding: 10px 0 4px; font-size: 10px; color: rgba(255,255,255,0.2); letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.04); margin-top: 2px; }
+  .returns-row { display: grid; grid-template-columns: 1fr 110px 120px 90px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: center; font-size: 12px; }
+  .returns-row:last-child { border-bottom: none; }
+  .returns-row:hover { background: rgba(255,255,255,0.015); border-radius: 4px; }
+  .col-period { color: rgba(255,255,255,0.7); }
+  .col-return { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+  .ret-bar { height: 4px; border-radius: 2px; opacity: 0.75; flex-shrink: 0; }
+  .ret-pct { font-weight: 500; min-width: 52px; text-align: right; }
+  .col-price { color: rgba(255,255,255,0.5); text-align: right; }
+  .col-profit { font-size: 11px; text-align: right; }
+
+  .cumulative-banner { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; border-radius: 10px; padding: 14px 16px; background: rgba(61,142,248,0.06); border: 0.5px solid rgba(61,142,248,0.18); }
+  .cumulative-text p:first-child { font-size: 13px; color: rgba(255,255,255,0.45); }
+  .cumulative-text p:last-child { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .cumulative-val { font-size: 22px; font-weight: 600; color: var(--blue); }
+
+  .winloss-row { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; }
+  .winloss-text p:first-child { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .winloss-text p:last-child { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 4px; }
+  .pips { display: flex; flex-wrap: wrap; gap: 2px; justify-content: flex-end; max-width: 240px; }
+  .pip { width: 9px; height: 9px; border-radius: 2px; }
+
+  .returns-note { font-size: 10px; color: var(--text3); margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); line-height: 1.6; }
+
+  /* Invest panel */
+  .invest-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .invest-head { padding: 16px 20px 14px; border-bottom: 1px solid var(--border); }
+  .invest-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .invest-title { font-size: 15px; font-weight: 500; color: #fff; }
+  .invest-body { padding: 16px 20px 20px; }
+  .invest-field-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .invest-input-wrap { position: relative; margin-bottom: 16px; }
+  .invest-input { width: 100%; background: var(--bg); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 44px 10px 12px; font-size: 14px; color: var(--text); font-family: inherit; outline: none; transition: border-color 0.15s; }
+  .invest-input:focus { border-color: rgba(61,142,248,0.5); }
+  .invest-currency { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--text3); }
+  .invest-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 10px; }
+  .invest-row-label { color: var(--text2); }
+  .invest-row-val { color: rgba(255,255,255,0.7); }
+  .invest-divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .invest-btn { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; margin-top: 4px; }
+  .invest-btn:hover { background: #2d7ee8; }
+  .invest-note { font-size: 11px; color: var(--text3); text-align: center; margin-top: 10px; line-height: 1.5; }
+
+  .info-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; }
+  .info-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .info-row:last-child { border-bottom: none; }
+  .info-label { color: var(--text2); }
+  .info-val { color: rgba(255,255,255,0.7); font-medium: 500; }
+</style>
+</head>
+<body>
+
+<div class="preview-nav">
+  <span>PREVIEW</span>
+  <a href="gate.html">Gate</a>
+  <a href="index.html">Landing</a>
+  <a href="vault.html" class="active">Vault</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="onboarding.html">Onboarding</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html">Login</a>
+</div>
+
+<nav class="navbar">
+  <div class="inner">
+    <a href="index.html" class="logo">[<em>K</em>iMP]</a>
+    <button class="wallet-btn">Connect Wallet</button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <a href="index.html" class="back-link">← Back</a>
+
+  <!-- Pool header -->
+  <div class="pool-header">
+    <div class="pool-header-row">
+      <div class="pool-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+        </svg>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="pool-name">KiMP Arbitrage Vault</div>
+          <span class="badge-live">● Live</span>
+        </div>
+        <div class="pool-sub">KRW · ERC-20 · Base Mainnet</div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-chip">
+        <div class="stat-chip-label">Token price</div>
+        <div class="stat-chip-val">₩1,511</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-label">30-day return</div>
+        <div class="stat-chip-val" style="color:var(--green)">+2.1%</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-label">All-time return</div>
+        <div class="stat-chip-val" style="color:var(--blue)">+32.6%</div>
+      </div>
+      <div class="stat-chip">
+        <div class="stat-chip-label">Win rate</div>
+        <div class="stat-chip-val">60.7%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main layout -->
+  <div class="layout">
+    <!-- Left column -->
+    <div class="left-col">
+
+      <!-- Price chart -->
+      <div class="chart-card">
+        <div class="chart-card-head">
+          <div>
+            <div class="chart-card-title">Token Price History</div>
+          </div>
+          <div style="text-align:right">
+            <div class="chart-price">₩1,511</div>
+            <div class="chart-change">+2.1% (30d)</div>
+          </div>
+        </div>
+        <div class="chart-body">
+          <svg class="chart-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3d8ef8" stop-opacity="0.2"/>
+                <stop offset="100%" stop-color="#3d8ef8" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- price line roughly matching: 995→1511 with dips -->
+            <path d="M0,160 L20,158 L40,162 L60,155 L80,130 L100,128 L120,110 L140,115 L160,95 L180,100 L200,85 L220,90 L240,78 L260,75 L280,72 L300,68 L320,80 L340,50 L360,65 L380,60 L400,62 L420,75 L440,55 L460,48 L480,35 L500,28 L520,38 L540,25 L560,18 L580,14 L600,10"
+              fill="url(#chartGrad)" stroke="none"/>
+            <path d="M0,160 L20,158 L40,162 L60,155 L80,130 L100,128 L120,110 L140,115 L160,95 L180,100 L200,85 L220,90 L240,78 L260,75 L280,72 L300,68 L320,80 L340,50 L360,65 L380,60 L400,62 L420,75 L440,55 L460,48 L480,35 L500,28 L520,38 L540,25 L560,18 L580,14 L600,10"
+              fill="none" stroke="#3d8ef8" stroke-width="1.5"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Monthly returns table -->
+      <div class="returns-card">
+        <div class="returns-head">
+          <div class="returns-title">Monthly Returns</div>
+          <div class="returns-meta">28 periods · Oct 2022 – present</div>
+        </div>
+
+        <div class="returns-table-head">
+          <span>Period</span>
+          <span>Return</span>
+          <span>Token price</span>
+          <span>Net profit</span>
+        </div>
+
+        <div id="returnsBody"></div>
+
+        <div class="cumulative-banner">
+          <div class="cumulative-text">
+            <p>Cumulative return since inception</p>
+            <p>Oct 2022 → May 2026 · compound</p>
+          </div>
+          <span class="cumulative-val">+32.6%</span>
+        </div>
+
+        <div class="winloss-row">
+          <div class="winloss-text">
+            <p>Win / loss · 28 periods</p>
+            <p>17 win &nbsp;·&nbsp; 11 loss &nbsp;·&nbsp; 60.7%</p>
+          </div>
+          <div class="pips" id="pips"></div>
+        </div>
+
+        <p class="returns-note">※ Returns are calculated per settlement period, not calendar month.
+        Some months contain multiple settlements.
+        Token price reflects cumulative net profit compounded from initial price of 1,000 KRW.
+        Past performance does not guarantee future results.</p>
+      </div>
+
+    </div>
+
+    <!-- Right column: InvestPanel -->
+    <div class="right-col">
+      <div class="invest-card">
+        <div class="invest-head">
+          <div class="invest-label">Invest Now</div>
+          <div class="invest-title">KiMP Arbitrage Vault</div>
+        </div>
+        <div class="invest-body">
+          <div class="invest-field-label">Amount (KRW)</div>
+          <div class="invest-input-wrap">
+            <input class="invest-input" type="number" value="1000000" id="amtInput" oninput="calcTokens()">
+            <span class="invest-currency">KRW</span>
+          </div>
+          <div class="invest-row">
+            <span class="invest-row-label">Token price</span>
+            <span class="invest-row-val">₩1,511</span>
+          </div>
+          <div class="invest-row">
+            <span class="invest-row-label">Estimated tokens</span>
+            <span class="invest-row-val" id="tokenEst">661.8 TOKEN</span>
+          </div>
+          <div class="invest-divider"></div>
+          <div class="invest-row">
+            <span class="invest-row-label">Min. investment</span>
+            <span class="invest-row-val">₩1,000,000</span>
+          </div>
+          <div class="invest-row">
+            <span class="invest-row-label">Lockup period</span>
+            <span class="invest-row-val">90 days</span>
+          </div>
+          <div class="invest-row">
+            <span class="invest-row-label">Settlement</span>
+            <span class="invest-row-val">Monthly</span>
+          </div>
+          <button class="invest-btn" onclick="window.location.href='onboarding.html'">Connect wallet to invest →</button>
+          <p class="invest-note">Wallet connection required. Korean investors only.</p>
+        </div>
+      </div>
+
+      <!-- Info card -->
+      <div class="info-card">
+        <div class="returns-title" style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Vault Info</div>
+        <div class="info-row"><span class="info-label">Network</span><span class="info-val">Base Mainnet</span></div>
+        <div class="info-row"><span class="info-label">Token standard</span><span class="info-val">ERC-20</span></div>
+        <div class="info-row"><span class="info-label">Initial price</span><span class="info-val">₩1,000</span></div>
+        <div class="info-row"><span class="info-label">Current price</span><span class="info-val" style="color:var(--green)">₩1,511</span></div>
+        <div class="info-row"><span class="info-label">Since inception</span><span class="info-val">Oct 2022</span></div>
+        <div class="info-row"><span class="info-label">Access</span><span class="info-val">Invite only</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const RETURNS = [
+  { period:'May V3', year:2026, r:+2.10, p:1511, n:1418532 },
+  { period:'Apr V3', year:2026, r:+2.14, p:1455, n:3498141 },
+  { period:'Mar-Apr V3', year:2026, r:+9.20, p:1424, n:15582637 },
+  { period:'Mar 2026', year:2026, r:-0.35, p:1304, n:-600000 },
+  { period:'Jan 2026', year:2026, r:-5.19, p:1308, n:-9670278 },
+  { period:'Oct 2025', year:2025, r:+8.13, p:1380, n:21503264 },
+  { period:'Jul 2025', year:2025, r:-11.83, p:1276, n:-36854264 },
+  { period:'Apr 2025', year:2025, r:+1.06, p:1447, n:3317600 },
+  { period:'Dec 2024', year:2024, r:+8.37, p:1432, n:22625662 },
+  { period:'Oct 2024', year:2024, r:-1.80, p:1321, n:-5059283 },
+  { period:'Jul 2024', year:2024, r:-0.21, p:1345, n:-1000000 },
+  { period:'Jun 2024', year:2024, r:+1.07, p:1348, n:5200000 },
+  { period:'May 2024', year:2024, r:-0.73, p:1334, n:-3695599 },
+  { period:'Apr 2024', year:2024, r:+6.04, p:1344, n:25623890 },
+  { period:'Mar 2024', year:2024, r:+5.28, p:1268, n:21700000 },
+  { period:'Feb 2024', year:2024, r:+1.86, p:1204, n:7231359 },
+  { period:'Jan 2024', year:2024, r:+3.07, p:1182, n:11597071 },
+  { period:'Nov 2023', year:2023, r:+0.96, p:1147, n:3864791 },
+  { period:'Sep 2023', year:2023, r:-0.45, p:1136, n:-1900000 },
+  { period:'Aug 2023', year:2023, r:+6.63, p:1141, n:30999999 },
+  { period:'Jul 2023', year:2023, r:-3.01, p:1070, n:-16000000 },
+  { period:'Jun 2023', year:2023, r:+3.06, p:1103, n:14500000 },
+  { period:'May 2023', year:2023, r:+3.86, p:1070, n:17016000 },
+  { period:'Apr 2023', year:2023, r:+1.29, p:1030, n:5290124 },
+  { period:'Mar 2023', year:2023, r:+1.12, p:1017, n:4556439 },
+  { period:'Feb 2023', year:2023, r:+4.99, p:1006, n:20000000 },
+  { period:'Jan 2023', year:2023, r:+0.79, p:958, n:3151261 },
+  { period:'Dec 2022', year:2022, r:-3.39, p:950, n:-14900000 },
+  { period:'Nov 2022', year:2022, r:-1.16, p:984, n:-5249627 },
+  { period:'Oct 2022', year:2022, r:-0.47, p:995, n:-2150373 },
+];
+const MAX_ABS = 11.83;
+
+function fmtProfit(n) {
+  const abs = Math.abs(n), sign = n >= 0 ? '+' : '-';
+  if (abs >= 1e7) return sign + (abs/1e7).toFixed(1) + '천만';
+  if (abs >= 1e4) return sign + Math.round(abs/1e4) + '만';
+  return sign + abs.toLocaleString();
+}
+
+function buildTable() {
+  const body = document.getElementById('returnsBody');
+  const pipsEl = document.getElementById('pips');
+  let lastYear = null;
+  let html = '';
+  RETURNS.forEach(d => {
+    if (d.year !== lastYear) {
+      lastYear = d.year;
+      html += `<div class="year-divider">${d.year}</div>`;
+    }
+    const pos = d.r >= 0;
+    const color = pos ? '#22c55e' : '#ef4444';
+    const sign = pos ? '+' : '';
+    const barW = Math.max(2, Math.round(Math.abs(d.r) / MAX_ABS * 56));
+    html += `<div class="returns-row">
+      <span class="col-period">${d.period}</span>
+      <div class="col-return">
+        <div class="ret-bar" style="width:${barW}px;background:${color}"></div>
+        <span class="ret-pct" style="color:${color}">${sign}${d.r.toFixed(2)}%</span>
+      </div>
+      <span class="col-price">${d.p.toLocaleString()} KRW</span>
+      <span class="col-profit" style="color:${color}">${fmtProfit(d.n)}</span>
+    </div>`;
+  });
+  body.innerHTML = html;
+
+  let pipsHtml = '';
+  RETURNS.forEach(d => {
+    const c = d.r >= 0 ? '#22c55e' : 'rgba(239,68,68,0.5)';
+    pipsHtml += `<div class="pip" style="background:${c}" title="${d.period}: ${d.r>0?'+':''}${d.r}%"></div>`;
+  });
+  pipsEl.innerHTML = pipsHtml;
+}
+
+function calcTokens() {
+  const amt = parseFloat(document.getElementById('amtInput').value) || 0;
+  const tokens = (amt / 1511).toFixed(1);
+  document.getElementById('tokenEst').textContent = tokens + ' TOKEN';
+}
+
+buildTable();
+</script>
+</body>
+</html>

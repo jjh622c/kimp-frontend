@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a; --card: #0e1425;
+    --border: rgba(255,255,255,0.07); --blue: #3d8ef8;
+    --green: #22c55e; --amber: #f59e0b; --red: #ef4444;
+    --text: #e2e8f0; --text2: rgba(255,255,255,0.4); --text3: rgba(255,255,255,0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+
+  .preview-nav { background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 7px 0; text-align: center; position: sticky; top: 0; z-index: 200; }
+  .preview-nav span { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 14px; }
+  .preview-nav a { color: rgba(255,255,255,0.45); font-size: 12px; padding: 3px 10px; border-radius: 5px; margin: 0 2px; transition: all 0.15s; }
+  .preview-nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .preview-nav a.active { background: rgba(61,142,248,0.15); color: var(--blue); }
+
+  /* Step switcher (preview only) */
+  .step-switcher { background: #0b0f1e; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 8px 0; text-align: center; }
+  .step-switcher span { font-size: 10px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-right: 10px; }
+  .step-btn { background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 4px 12px; font-size: 11px; color: var(--text2); cursor: pointer; font-family: inherit; margin: 0 3px; transition: all 0.15s; }
+  .step-btn.active { background: rgba(61,142,248,0.12); border-color: rgba(61,142,248,0.3); color: var(--blue); }
+
+  /* Layout */
+  .ob-navbar { border-bottom: 1px solid var(--border); }
+  .ob-navbar .inner { max-width: 1280px; margin: 0 auto; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+  .logo { font-size: 17px; font-weight: 500; letter-spacing: 0.4px; }
+  .logo em { color: var(--blue); font-style: normal; }
+  .wallet-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--text2); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .wallet-btn:hover { background: rgba(255,255,255,0.08); }
+  .wallet-connected { background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.2); color: var(--green); }
+
+  .ob-page { min-height: calc(100vh - 90px); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 16px 48px; }
+
+  /* Step header */
+  .step-header { width: 100%; max-width: 480px; margin-bottom: 8px; }
+  .step-dots { display: flex; align-items: center; gap: 6px; margin-bottom: 14px; }
+  .dot { width: 28px; height: 3px; border-radius: 2px; transition: all 0.2s; }
+  .dot.done { background: rgba(34,197,94,0.6); }
+  .dot.active { background: var(--blue); }
+  .dot.pending { background: rgba(255,255,255,0.1); }
+  .step-text { font-size: 11px; color: var(--text3); }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; width: 100%; max-width: 480px; margin-top: 8px; }
+  .card-sublabel { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .card-title { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 16px; }
+  .card-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 20px; }
+
+  /* Step 1 */
+  .guide-list { background: rgba(255,255,255,0.02); border: 0.5px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  .guide-item { display: flex; gap: 12px; margin-bottom: 16px; }
+  .guide-item:last-child { margin-bottom: 0; }
+  .guide-num { width: 20px; height: 20px; border-radius: 50%; background: rgba(61,142,248,0.15); color: var(--blue); font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .guide-text { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  .token-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; }
+  .token-key { color: var(--text2); }
+  .token-val { color: rgba(255,255,255,0.7); font-weight: 500; font-family: monospace; }
+  .amber-note { background: rgba(245,158,11,0.06); border: 0.5px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; font-size: 12px; color: rgba(245,158,11,0.8); line-height: 1.6; }
+  .check-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 20px; cursor: pointer; }
+  .check-row input[type=checkbox] { margin-top: 2px; width: 16px; height: 16px; accent-color: var(--blue); flex-shrink: 0; cursor: pointer; }
+  .check-label { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+  /* Step 2 */
+  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .method-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: left; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+  .method-card.selected { border-color: rgba(61,142,248,0.5); background: rgba(61,142,248,0.04); }
+  .method-card.disabled { opacity: 0.4; cursor: not-allowed; }
+  .method-emoji { font-size: 20px; margin-bottom: 10px; }
+  .method-name { font-size: 13px; font-weight: 500; color: #fff; margin-bottom: 3px; }
+  .method-sub { font-size: 11px; color: var(--text3); }
+  .coming-badge { font-size: 9px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); border-radius: 999px; padding: 2px 6px; margin-top: 6px; display: inline-block; }
+  .selected-label { font-size: 11px; color: var(--blue); margin-top: 8px; font-weight: 500; }
+
+  .sig-idle, .sig-waiting { background: rgba(255,255,255,0.02); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; }
+  .sig-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .sig-icon-text { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; }
+  .sig-desc { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 16px; }
+
+  /* Step 3 */
+  .bank-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .bank-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .bank-key { color: var(--text2); }
+  .bank-val { color: rgba(255,255,255,0.8); font-weight: 500; }
+  .bank-val.mono { font-family: monospace; }
+  .copy-btn { font-size: 10px; color: var(--blue); cursor: pointer; margin-left: 8px; transition: color 0.15s; }
+  .copy-btn:hover { color: #6aabff; }
+  .timer-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; width: 100%; max-width: 480px; margin-top: 12px; }
+  .timer-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .timer-display { text-align: center; }
+  .timer-digits { font-size: 40px; font-family: monospace; font-weight: 600; color: #fff; letter-spacing: 2px; margin-bottom: 6px; }
+  .timer-sub { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+  /* Step 4 */
+  .done-icon { width: 52px; height: 52px; border-radius: 50%; background: rgba(34,197,94,0.15); border: 1.5px solid rgba(34,197,94,0.35); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+  .done-icon svg { width: 24px; height: 24px; color: var(--green); }
+  .done-title { font-size: 18px; font-weight: 500; color: #fff; text-align: center; margin-bottom: 8px; }
+  .done-desc { font-size: 13px; color: var(--text2); text-align: center; line-height: 1.7; margin-bottom: 20px; }
+  .tx-card { background: rgba(255,255,255,0.02); border: 0.5px solid var(--border); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; }
+  .tx-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
+  .tx-row:last-child { margin-bottom: 0; }
+  .tx-key { color: var(--text2); }
+  .tx-val { color: rgba(255,255,255,0.7); font-family: monospace; }
+
+  /* Buttons */
+  .btn-primary { width: 100%; background: var(--blue); color: #fff; border: none; border-radius: 12px; padding: 12px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+  .btn-primary:hover { background: #2d7ee8; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-outline { width: 100%; background: transparent; color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; margin-top: 10px; }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.9); }
+  .btn-green { width: 100%; background: transparent; color: rgba(34,197,94,0.8); border: 1px solid rgba(34,197,94,0.3); border-radius: 12px; padding: 12px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .btn-green:hover { background: rgba(34,197,94,0.05); color: var(--green); }
+  .btn-note { font-size: 11px; color: var(--text3); text-align: center; margin-top: 8px; }
+
+  /* step panels */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<div class="preview-nav">
+  <span>PREVIEW</span>
+  <a href="gate.html">Gate</a>
+  <a href="index.html">Landing</a>
+  <a href="vault.html">Vault</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="onboarding.html" class="active">Onboarding</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html">Login</a>
+</div>
+
+<div class="step-switcher">
+  <span>Step:</span>
+  <button class="step-btn active" onclick="goStep(1,this)">1 — MetaMask</button>
+  <button class="step-btn" onclick="goStep(2,this)">2 — Method</button>
+  <button class="step-btn" onclick="goStep(3,this)">3 — Transfer</button>
+  <button class="step-btn" onclick="goStep(4,this)">4 — Done</button>
+</div>
+
+<nav class="ob-navbar">
+  <div class="inner">
+    <a href="index.html" class="logo">[<em>K</em>iMP]</a>
+    <button class="wallet-btn" id="walletBtn" onclick="toggleWallet()">Connect Wallet</button>
+  </div>
+</nav>
+
+<div class="ob-page">
+
+  <!-- Step header (shared) -->
+  <div class="step-header">
+    <div class="step-dots" id="stepDots"></div>
+    <div class="step-text" id="stepText">Step 1 of 4</div>
+  </div>
+
+  <!-- ===== STEP 1: MetaMask token add ===== -->
+  <div class="step-panel active" id="panel1">
+    <div class="card">
+      <div class="card-sublabel">Add KMP to MetaMask</div>
+      <h2 class="card-title">Add Token to MetaMask</h2>
+      <p class="card-desc">MetaMask를 열고 아래 순서대로 진행하세요.</p>
+
+      <div class="guide-list">
+        <div class="guide-item">
+          <div class="guide-num">1</div>
+          <div class="guide-text">MetaMask 열기 → 하단 [Import Tokens] 탭 클릭</div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-num">2</div>
+          <div class="guide-text">[Custom Token] 선택</div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-num">3</div>
+          <div class="guide-text">
+            아래 정보를 입력:
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+              <div class="token-row"><span class="token-key">Network</span><span class="token-val">Base Mainnet (8453)</span></div>
+              <div class="token-row"><span class="token-key">Token Symbol</span><span class="token-val">KMP</span></div>
+              <div class="token-row"><span class="token-key">Decimals</span><span class="token-val">18</span></div>
+              <div class="token-row">
+                <span class="token-key">Token Contract</span>
+                <span style="display:flex;align-items:center;gap:6px">
+                  <span class="token-val">0x1234…5678</span>
+                  <span class="copy-btn" onclick="this.textContent='✓'">(TBD)</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="guide-item">
+          <div class="guide-num">4</div>
+          <div class="guide-text">[Add Custom Token] → [Import Tokens] 확인</div>
+        </div>
+      </div>
+
+      <div class="amber-note">Contract address will be provided upon deployment.</div>
+
+      <label class="check-row">
+        <input type="checkbox" id="step1Check" onchange="document.getElementById('step1Btn').disabled=!this.checked">
+        <span class="check-label">I've added the token to MetaMask</span>
+      </label>
+
+      <button class="btn-primary" id="step1Btn" disabled onclick="goStep(2)">Continue →</button>
+      <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3);margin-top:8px" onclick="goStep(2)">DEV: Skip this step →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: Deposit method ===== -->
+  <div class="step-panel" id="panel2">
+    <div class="card">
+      <div class="card-sublabel">Deposit Method</div>
+      <h2 class="card-title">Choose Deposit Method</h2>
+
+      <div class="method-grid" id="methodGrid">
+        <div class="method-card disabled">
+          <div class="method-emoji">💎</div>
+          <div class="method-name">Crypto Deposit</div>
+          <div class="method-sub">USDT / ETH</div>
+          <div class="method-sub">Direct on-chain</div>
+          <span class="coming-badge">Coming soon</span>
+        </div>
+        <button class="method-card" id="bankCard" onclick="selectBank()">
+          <div class="method-emoji">🏦</div>
+          <div class="method-name">Bank Transfer</div>
+          <div class="method-sub">Korean Won (KRW)</div>
+          <div class="method-sub">Wire transfer</div>
+          <div class="selected-label" id="bankLabel" style="display:none">✓ Selected</div>
+        </button>
+      </div>
+
+      <div id="sigSection" style="display:none">
+        <div class="sig-idle" id="sigIdle">
+          <div class="sig-head">
+            <span>📝</span>
+            <div class="sig-icon-text">Investment Agreement</div>
+          </div>
+          <p class="sig-desc">Bank transfer requires signing an investment agreement first.</p>
+          <div class="amber-note" style="margin-bottom:14px">Signature service not configured yet. Contact admin.</div>
+          <button class="btn-primary" disabled>Sign Agreement →</button>
+        </div>
+
+        <div class="sig-waiting" id="sigWaiting" style="display:none">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="width:16px;height:16px;border:2px solid var(--amber);border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;flex-shrink:0"></div>
+            <span style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:500">Waiting for signature...</span>
+          </div>
+          <p style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:16px">Please complete the signature in the window that just opened.</p>
+          <button class="btn-green" onclick="goStep(3)">✓ I've completed the signature</button>
+        </div>
+      </div>
+
+      <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3)" onclick="goStep(3)">DEV: Skip this step →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: Bank transfer + timer ===== -->
+  <div class="step-panel" id="panel3">
+    <div class="card">
+      <div class="card-sublabel">Deposit Details</div>
+      <h2 class="card-title">Transfer Funds</h2>
+
+      <div class="bank-rows">
+        <div class="bank-row"><span class="bank-key">Bank</span><span class="bank-val">—</span></div>
+        <div class="bank-row"><span class="bank-key">Holder</span><span class="bank-val">—</span></div>
+        <div class="bank-row">
+          <span class="bank-key">Account No.</span>
+          <span style="display:flex;align-items:center">
+            <span class="bank-val mono">—</span>
+            <span class="copy-btn" onclick="this.textContent='✓'">Copy</span>
+          </span>
+        </div>
+        <div class="bank-row"><span class="bank-key">Amount</span><span class="bank-val" style="color:#fff">₩1,000,000</span></div>
+        <div class="bank-row"><span class="bank-key">Reference</span><span class="bank-val mono" style="color:var(--text2);font-size:12px">abc123def456…</span></div>
+      </div>
+
+      <div class="amber-note">입금자명 또는 메모란에 Reference 코드 앞 12자리를 함께 기재해 주세요.</div>
+
+      <button class="btn-primary" onclick="handleTransfer()">I've made the transfer →</button>
+      <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3);margin-top:8px" onclick="goStep(4)">DEV: Skip this step →</button>
+    </div>
+
+    <div class="timer-card">
+      <div class="timer-label">⏱ Transfer Deadline</div>
+      <div class="timer-display">
+        <div class="timer-digits" id="timerDigits">10:00</div>
+        <p class="timer-sub">이 화면이 생성된 후 10분 이내에 입금해야 합니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 4: Done ===== -->
+  <div class="step-panel" id="panel4">
+    <div class="card" style="text-align:center">
+      <div class="done-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+      </div>
+      <div class="done-title">Transfer submitted!</div>
+      <p class="done-desc">Admin will verify your transfer within <strong style="color:rgba(255,255,255,0.7)">24 hours</strong> on business days.<br>You'll receive a notification once confirmed.</p>
+
+      <div class="tx-card" style="text-align:left">
+        <div class="tx-row"><span class="tx-key">Status</span><span style="color:var(--amber);font-size:12px">⏳ Pending confirmation</span></div>
+        <div class="tx-row"><span class="tx-key">Reference</span><span class="tx-val">abc123def456…</span></div>
+        <div class="tx-row"><span class="tx-key">Amount</span><span class="tx-val" style="color:#fff;font-family:inherit">₩1,000,000</span></div>
+        <div class="tx-row"><span class="tx-key">Submitted</span><span class="tx-val" style="font-family:inherit">May 19, 2026</span></div>
+      </div>
+
+      <button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard →</button>
+      <p class="btn-note">You can close this page and check your dashboard later.</p>
+    </div>
+  </div>
+
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+let currentStep = 1;
+let timerInterval = null;
+let timerSecs = 600;
+
+function updateDots(step) {
+  const dots = document.getElementById('stepDots');
+  dots.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot ' + (i < step ? 'done' : i === step ? 'active' : 'pending');
+    dots.appendChild(d);
+  }
+  document.getElementById('stepText').textContent = `Step ${step} of 4`;
+}
+
+function goStep(n, btn) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel' + n).classList.add('active');
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelectorAll('.step-btn')[n-1].classList.add('active');
+  currentStep = n;
+  updateDots(n);
+  if (n === 3) startTimer();
+}
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerSecs = 600;
+  function tick() {
+    const m = Math.floor(timerSecs/60).toString().padStart(2,'0');
+    const s = (timerSecs%60).toString().padStart(2,'0');
+    document.getElementById('timerDigits').textContent = m + ':' + s;
+    if (timerSecs > 0) timerSecs--;
+  }
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function selectBank() {
+  document.getElementById('bankCard').classList.add('selected');
+  document.getElementById('bankLabel').style.display = 'block';
+  document.getElementById('sigSection').style.display = 'block';
+}
+
+function handleTransfer() {
+  goStep(4);
+}
+
+function toggleWallet() {
+  const btn = document.getElementById('walletBtn');
+  if (btn.classList.contains('wallet-connected')) {
+    btn.classList.remove('wallet-connected');
+    btn.textContent = 'Connect Wallet';
+  } else {
+    btn.classList.add('wallet-connected');
+    btn.textContent = '0xAbcd…1234';
+  }
+}
+
+updateDots(1);
+</script>
+</body>
+</html>

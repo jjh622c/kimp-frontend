@@ -9,6 +9,8 @@ interface InvestorRow {
   name: string | null
   email: string | null
   createdAt: string
+  canInvite?: boolean
+  referralDepth?: number
   investment: {
     id: string
     amountKrw: number
@@ -178,11 +180,58 @@ function ApproveWithdrawButton({ requestId, userName }: { requestId: string; use
   )
 }
 
+function ToggleInviteButton({ userId, canInvite }: { userId: string; canInvite: boolean }) {
+  const router = useRouter()
+  const toast = useToast()
+  const [loading, setLoading] = useState(false)
+  const [current, setCurrent] = useState(canInvite)
+
+  async function handleToggle() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/admin/toggle-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCurrent(data.canInvite)
+        toast.success(data.canInvite ? 'Invite permission granted' : 'Invite permission revoked')
+        router.refresh()
+      } else {
+        toast.error('Failed to toggle invite permission')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleToggle}
+      disabled={loading}
+      className={`text-[11px] rounded px-2 py-0.5 transition-colors disabled:opacity-50 ${
+        current
+          ? 'bg-[#22c55e]/10 text-[#22c55e] hover:bg-[#22c55e]/20'
+          : 'bg-white/[0.05] text-white/30 hover:bg-white/[0.09] hover:text-white/50'
+      }`}
+    >
+      {loading ? '…' : current ? 'Can invite ✓' : 'Grant invite'}
+    </button>
+  )
+}
+
 function InvestorAction({ inv }: { inv: InvestorRow }) {
   if (!inv.investment) return <span className="text-xs text-white/20">—</span>
   if (!inv.investment.depositConfirmed) return <ApproveDepositButton investor={inv} />
   if (!inv.investment.tokenMinted) return <MintTokensButton investor={inv} />
-  return <span className="text-xs text-white/30">Active</span>
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-xs text-white/30">Active</span>
+      <ToggleInviteButton userId={inv.id} canInvite={inv.canInvite ?? false} />
+    </div>
+  )
 }
 
 export function AdminInvestorTable({ investors, withdrawRequests }: AdminInvestorTableProps) {

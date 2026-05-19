@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiMP — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #0e1425;
+    --border: rgba(255,255,255,0.07);
+    --blue: #3d8ef8;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --text2: rgba(255,255,255,0.4);
+    --text3: rgba(255,255,255,0.28);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  a { text-decoration: none; color: inherit; }
+
+  /* Preview Nav */
+  .preview-nav { background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 7px 0; text-align: center; position: sticky; top: 0; z-index: 200; }
+  .preview-nav span { color: rgba(255,255,255,0.25); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-right: 14px; }
+  .preview-nav a { color: rgba(255,255,255,0.45); font-size: 12px; padding: 3px 10px; border-radius: 5px; margin: 0 2px; transition: all 0.15s; }
+  .preview-nav a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+  .preview-nav a.active { background: rgba(61,142,248,0.15); color: var(--blue); }
+
+  /* Page */
+  .page { min-height: calc(100vh - 33px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 16px; }
+
+  .logo { font-size: 18px; font-weight: 500; color: #fff; letter-spacing: 0.4px; margin-bottom: 32px; }
+  .logo em { color: var(--blue); font-style: normal; }
+
+  .login-card {
+    width: 100%; max-width: 360px;
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+
+  .login-card h1 { font-size: 15px; font-weight: 500; color: #fff; margin-bottom: 4px; }
+  .login-card .sub { font-size: 12px; color: var(--text3); margin-bottom: 24px; }
+
+  .error-banner {
+    background: rgba(239,68,68,0.1);
+    border: 0.5px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--red);
+  }
+
+  .form-group { margin-bottom: 12px; }
+  .form-label {
+    display: block; font-size: 11px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--bg);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px; color: var(--text);
+    font-family: inherit; outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-input::placeholder { color: rgba(255,255,255,0.25); }
+  .form-input:focus { border-color: rgba(61,142,248,0.5); }
+
+  .submit-btn {
+    width: 100%; margin-top: 4px;
+    background: var(--blue);
+    border: none; border-radius: 10px;
+    padding: 10px; color: #fff;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+  }
+  .submit-btn:hover { background: #2d7ee8; }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .login-footer { font-size: 11px; color: rgba(255,255,255,0.2); margin-top: 16px; text-align: center; }
+
+  /* State toggle */
+  .variant-toggle { display: flex; align-items: center; gap: 8px; margin-top: 28px; }
+  .variant-toggle-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
+  .variant-btn { background: rgba(255,255,255,0.04); border: 0.5px solid rgba(255,255,255,0.08); border-radius: 5px; padding: 4px 12px; font-size: 11px; color: var(--text2); cursor: pointer; font-family: inherit; transition: all 0.15s; }
+  .variant-btn.active { background: rgba(61,142,248,0.12); border-color: rgba(61,142,248,0.3); color: var(--blue); }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid #fff; border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- Preview Nav -->
+<div class="preview-nav">
+  <span>PREVIEW</span>
+  <a href="gate.html">Gate</a>
+  <a href="index.html">Landing</a>
+  <a href="vault.html">Vault</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="onboarding.html">Onboarding</a>
+  <a href="admin.html">Admin</a>
+  <a href="login.html" class="active">Login</a>
+</div>
+
+<div class="page">
+
+  <a href="index.html" class="logo">[<em>K</em>iMP]</a>
+
+  <div class="login-card">
+    <h1>Sign in</h1>
+    <p class="sub">Access your account</p>
+
+    <!-- Error banner (shown in error state) -->
+    <div class="error-banner" id="errorBanner" style="display:none">
+      Incorrect email or password
+    </div>
+
+    <form onsubmit="return false;">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" placeholder="investor@example.com" value="investor@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" placeholder="••••••••" value="••••••••" autocomplete="current-password">
+      </div>
+      <button class="submit-btn" id="submitBtn" type="submit">Sign in →</button>
+    </form>
+  </div>
+
+  <p class="login-footer">Access is limited to invited investors</p>
+
+  <!-- Preview variant toggle -->
+  <div class="variant-toggle">
+    <span class="variant-toggle-label">State:</span>
+    <button class="variant-btn active" onclick="setVariant('default', this)">Default</button>
+    <button class="variant-btn" onclick="setVariant('error', this)">Error</button>
+    <button class="variant-btn" onclick="setVariant('loading', this)">Loading</button>
+  </div>
+
+</div>
+
+<script>
+  function setVariant(v, btn) {
+    document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const errBanner = document.getElementById('errorBanner');
+    const submitBtn = document.getElementById('submitBtn');
+
+    errBanner.style.display = 'none';
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'Sign in →';
+
+    if (v === 'error') {
+      errBanner.style.display = 'block';
+    } else if (v === 'loading') {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner"></span>Signing in…';
+    }
+  }
+</script>
+
+</body>
+</html>

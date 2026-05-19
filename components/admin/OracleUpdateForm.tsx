@@ -50,25 +50,25 @@ export function OracleUpdateForm({ currentPrice }: OracleUpdateFormProps) {
           Current: <span className="text-white">{currentPrice.toLocaleString()} KRW</span>
         </span>
       </div>
-      <div className="flex gap-2 mb-2">
+      <div className="flex gap-2 mb-2 max-sm:flex-col">
         <input
           type="number"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           placeholder="New price (KRW)"
-          className="flex-1 bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
+          className="flex-1 min-w-0 bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
         />
         <input
           type="text"
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="Note (optional)"
-          className="w-44 bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
+          className="w-44 max-sm:w-full bg-[#0a0e1a] border border-white/[0.07] rounded-lg px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-[#3d8ef8]/40"
         />
         <button
           onClick={handleSubmit}
           disabled={loading || !price}
-          className="bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap"
+          className="bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap max-sm:w-full"
         >
           {loading ? 'Processing…' : 'Update'}
         </button>

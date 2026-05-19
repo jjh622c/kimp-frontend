@@ -65,6 +65,7 @@ export function DashboardChart({ data }: DashboardChartProps) {
     if (!el) return
 
     const chart = createChart(el, {
+      autoSize: true,
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
         textColor: 'rgba(255,255,255,0.35)',
@@ -85,7 +86,6 @@ export function DashboardChart({ data }: DashboardChartProps) {
         borderColor: 'rgba(255,255,255,0.06)',
         timeVisible: false,
       },
-      width: el.clientWidth,
       height: 220,
       handleScroll: false,
       handleScale: false,
@@ -105,13 +105,7 @@ export function DashboardChart({ data }: DashboardChartProps) {
     series.setData(filtered)
     chart.timeScale().fitContent()
 
-    const observer = new ResizeObserver(([entry]) => {
-      chart.applyOptions({ width: entry.contentRect.width })
-    })
-    observer.observe(el)
-
     return () => {
-      observer.disconnect()
       chart.remove()
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -9,6 +9,7 @@ const GATE_EXEMPT_PREFIXES = [
   '/api/auth',
   '/api/oracle',
   '/api/onboarding/verify-invite',
+  '/api/dev/bypass',
   '/gate',
 ]
 

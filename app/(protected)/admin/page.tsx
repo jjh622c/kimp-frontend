@@ -7,7 +7,7 @@ import { getLatestOraclePrice } from '@/lib/data/oracle'
 import { ConnectButton } from '@/components/wallet/ConnectButton'
 import { OracleUpdateForm } from '@/components/admin/OracleUpdateForm'
 import { AdminInvestorTable } from '@/components/admin/AdminInvestorTable'
-import { InviteLinkGenerator } from '@/components/admin/InviteLinkGenerator'
+import { AdminInviteSection } from '@/components/admin/AdminInviteSection'
 import { AdminStatsCards } from '@/components/admin/AdminStatsCards'
 import { AdminReportSection } from '@/components/admin/AdminReportSection'
 
@@ -24,6 +24,8 @@ export default async function AdminPage() {
     name: string | null
     email: string | null
     createdAt: string
+    canInvite?: boolean
+    referralDepth?: number
     investment: {
       id: string
       amountKrw: number
@@ -49,12 +51,15 @@ export default async function AdminPage() {
 
   try {
     const [rawInvestors, rawWithdraws, price] = await Promise.all([
-      prisma.user.findMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (prisma.user as any).findMany({
         select: {
           id: true,
           name: true,
           email: true,
           createdAt: true,
+          canInvite: true,
+          referralDepth: true,
           investment: {
             select: {
               id: true,
@@ -86,7 +91,8 @@ export default async function AdminPage() {
 
     tokenPrice = price
 
-    investorsSerialized = rawInvestors.map((inv) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    investorsSerialized = rawInvestors.map((inv: any) => ({
       ...inv,
       createdAt: inv.createdAt.toISOString(),
       investment: inv.investment
@@ -127,7 +133,7 @@ export default async function AdminPage() {
           tokenPrice={tokenPrice}
         />
 
-        <InviteLinkGenerator />
+        <AdminInviteSection />
         <OracleUpdateForm currentPrice={tokenPrice} />
         <AdminReportSection />
         <AdminInvestorTable investors={investorsSerialized} withdrawRequests={withdrawSerialized} />

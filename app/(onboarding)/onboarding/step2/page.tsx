@@ -112,6 +112,16 @@ function Step2Content() {
           </button>
         </div>
 
+        {/* DEV: skip entire step */}
+        {process.env.NODE_ENV === 'development' && (
+          <button
+            onClick={() => router.push(`/onboarding/step3${token ? `?token=${token}` : ''}`)}
+            className="w-full mb-3 border border-[#f59e0b]/30 text-[#f59e0b]/60 hover:text-[#f59e0b] text-[11px] py-1.5 rounded-lg transition-colors"
+          >
+            DEV: Skip this step →
+          </button>
+        )}
+
         {/* Agreement section — visible when bank selected */}
         {method === 'bank' && (
           <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">

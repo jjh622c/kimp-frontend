@@ -256,6 +256,15 @@ function Step3Content() {
           <p className="text-center text-[11px] text-white/[0.25] mt-2.5">
             Deposit confirmation required before Step 4
           </p>
+
+          {process.env.NODE_ENV === 'development' && (
+            <button
+              onClick={() => router.push('/onboarding/step4')}
+              className="w-full mt-2 border border-[#f59e0b]/30 text-[#f59e0b]/60 hover:text-[#f59e0b] text-[11px] py-1.5 rounded-lg transition-colors"
+            >
+              DEV: Skip this step →
+            </button>
+          )}
         </div>
       )}
     </div>
