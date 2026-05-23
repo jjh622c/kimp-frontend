@@ -107,10 +107,11 @@ export function InvitePopup() {
 
         {/* Heading */}
         <h2 className="text-[17px] font-medium text-white text-center mb-2">
-          This platform is invite-only.
+          Welcome
         </h2>
         <p className="text-sm text-white/[0.38] text-center mb-6 leading-[1.65]">
-          Enter your invite code to access the vault.
+          You received this code from your contact.<br />
+          This platform is available to invited investors only.
         </p>
 
         {/* Form */}
@@ -122,7 +123,7 @@ export function InvitePopup() {
               setCode(e.target.value)
               setError(null)
             }}
-            placeholder="Invite code"
+            placeholder="Enter your invite code"
             autoFocus
             className="w-full bg-[#0a0e1a] border border-white/[0.07] focus:border-[#3d8ef8]/40 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 outline-none transition-colors"
           />

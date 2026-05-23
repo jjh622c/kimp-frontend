@@ -80,6 +80,10 @@
   .coming-badge { font-size: 9px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); border-radius: 999px; padding: 2px 6px; margin-top: 6px; display: inline-block; }
   .selected-label { font-size: 11px; color: var(--blue); margin-top: 8px; font-weight: 500; }
 
+  .lockup-card { width: 100%; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; cursor: pointer; font-family: inherit; text-align: left; transition: all 0.15s; }
+  .lockup-card.selected { border-color: rgba(61,142,248,0.5); background: rgba(61,142,248,0.05); }
+  .lockup-card:hover:not(.selected) { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.03); }
+
   .sig-idle, .sig-waiting { background: rgba(255,255,255,0.02); border: 0.5px solid var(--border); border-radius: 12px; padding: 16px; }
   .sig-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
   .sig-icon-text { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; }
@@ -141,7 +145,7 @@
 <div class="step-switcher">
   <span>Step:</span>
   <button class="step-btn active" onclick="goStep(1,this)">1 — MetaMask</button>
-  <button class="step-btn" onclick="goStep(2,this)">2 — Method</button>
+  <button class="step-btn" onclick="goStep(2,this)">2 — Lockup</button>
   <button class="step-btn" onclick="goStep(3,this)">3 — Transfer</button>
   <button class="step-btn" onclick="goStep(4,this)">4 — Done</button>
 </div>
@@ -161,47 +165,47 @@
     <div class="step-text" id="stepText">Step 1 of 4</div>
   </div>
 
-  <!-- ===== STEP 1: MetaMask token add ===== -->
+  <!-- ===== STEP 1: Add Token to MetaMask ===== -->
   <div class="step-panel active" id="panel1">
     <div class="card">
-      <div class="card-sublabel">Add KMP to MetaMask</div>
+      <div class="card-sublabel">STEP 01 / 04</div>
       <h2 class="card-title">Add Token to MetaMask</h2>
-      <p class="card-desc">MetaMask를 열고 아래 순서대로 진행하세요.</p>
+      <p class="card-desc">Follow the steps below to add the token to MetaMask on Base Mainnet.</p>
 
       <div class="guide-list">
         <div class="guide-item">
           <div class="guide-num">1</div>
-          <div class="guide-text">MetaMask 열기 → 하단 [Import Tokens] 탭 클릭</div>
+          <div class="guide-text">Open MetaMask → select <strong style="color:rgba(255,255,255,.7)">"Base Mainnet"</strong> network<br><span style="font-size:11px;color:rgba(255,255,255,.3)">(Add Base network if not listed)</span></div>
         </div>
         <div class="guide-item">
           <div class="guide-num">2</div>
-          <div class="guide-text">[Custom Token] 선택</div>
+          <div class="guide-text">Tap the <strong style="color:rgba(255,255,255,.7)">[Tokens]</strong> tab → <strong style="color:rgba(255,255,255,.7)">[Import tokens]</strong></div>
         </div>
         <div class="guide-item">
           <div class="guide-num">3</div>
           <div class="guide-text">
-            아래 정보를 입력:
+            Select <strong style="color:rgba(255,255,255,.7)">[Custom token]</strong> and enter:
             <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
-              <div class="token-row"><span class="token-key">Network</span><span class="token-val">Base Mainnet (8453)</span></div>
-              <div class="token-row"><span class="token-key">Token Symbol</span><span class="token-val">KMP</span></div>
-              <div class="token-row"><span class="token-key">Decimals</span><span class="token-val">18</span></div>
+              <div class="token-row"><span class="token-key">Network</span><span class="token-val">Base Mainnet (Chain ID: 8453)</span></div>
               <div class="token-row">
                 <span class="token-key">Token Contract</span>
                 <span style="display:flex;align-items:center;gap:6px">
-                  <span class="token-val">0x1234…5678</span>
-                  <span class="copy-btn" onclick="this.textContent='✓'">(TBD)</span>
+                  <span class="token-val">TBD — provided at launch</span>
+                  <span class="copy-btn" onclick="this.textContent='✓'">[Copy]</span>
                 </span>
               </div>
+              <div class="token-row"><span class="token-key">Token Symbol</span><span class="token-val">TBD</span></div>
+              <div class="token-row"><span class="token-key">Decimals</span><span class="token-val">18</span></div>
             </div>
           </div>
         </div>
         <div class="guide-item">
           <div class="guide-num">4</div>
-          <div class="guide-text">[Add Custom Token] → [Import Tokens] 확인</div>
+          <div class="guide-text">Tap <strong style="color:rgba(255,255,255,.7)">[Add custom token]</strong> → <strong style="color:rgba(255,255,255,.7)">[Import tokens]</strong> to confirm</div>
         </div>
       </div>
 
-      <div class="amber-note">Contract address will be provided upon deployment.</div>
+      <div class="amber-note">Contract address will be provided upon deployment. You can skip this step and complete it later from your dashboard.</div>
 
       <label class="check-row">
         <input type="checkbox" id="step1Check" onchange="document.getElementById('step1Btn').disabled=!this.checked">
@@ -209,90 +213,93 @@
       </label>
 
       <button class="btn-primary" id="step1Btn" disabled onclick="goStep(2)">Continue →</button>
-      <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3);margin-top:8px" onclick="goStep(2)">DEV: Skip this step →</button>
+      <p class="btn-note" style="margin-top:6px;color:rgba(245,158,11,.5)">DEV: <span style="cursor:pointer;text-decoration:underline" onclick="goStep(2)">skip step</span></p>
     </div>
   </div>
 
-  <!-- ===== STEP 2: Deposit method ===== -->
+  <!-- ===== STEP 2: Lockup & Method ===== -->
   <div class="step-panel" id="panel2">
     <div class="card">
-      <div class="card-sublabel">Deposit Method</div>
-      <h2 class="card-title">Choose Deposit Method</h2>
+      <div class="card-sublabel">STEP 02 / 04</div>
+      <h2 class="card-title">Choose Deposit Method & Lockup</h2>
 
-      <div class="method-grid" id="methodGrid">
-        <div class="method-card disabled">
-          <div class="method-emoji">💎</div>
-          <div class="method-name">Crypto Deposit</div>
-          <div class="method-sub">USDT / ETH</div>
-          <div class="method-sub">Direct on-chain</div>
-          <span class="coming-badge">Coming soon</span>
+      <!-- Deposit Method -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Deposit Method</div>
+        <div style="background:rgba(61,142,248,0.04);border:1px solid rgba(61,142,248,0.35);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:18px">🏦</span>
+          <div>
+            <div style="font-size:13px;font-weight:500;color:#fff">Bank Transfer</div>
+            <div style="font-size:11px;color:var(--text3)">Korean Won (KRW)</div>
+          </div>
+          <span style="margin-left:auto;font-size:11px;color:var(--blue);font-weight:500">✓ Selected</span>
         </div>
-        <button class="method-card" id="bankCard" onclick="selectBank()">
-          <div class="method-emoji">🏦</div>
-          <div class="method-name">Bank Transfer</div>
-          <div class="method-sub">Korean Won (KRW)</div>
-          <div class="method-sub">Wire transfer</div>
-          <div class="selected-label" id="bankLabel" style="display:none">✓ Selected</div>
-        </button>
       </div>
 
-      <div id="sigSection" style="display:none">
-        <div class="sig-idle" id="sigIdle">
-          <div class="sig-head">
-            <span>📝</span>
-            <div class="sig-icon-text">Investment Agreement</div>
-          </div>
-          <p class="sig-desc">Bank transfer requires signing an investment agreement first.</p>
-          <div class="amber-note" style="margin-bottom:14px">Signature service not configured yet. Contact admin.</div>
-          <button class="btn-primary" disabled>Sign Agreement →</button>
+      <!-- Lockup Selection -->
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Lockup Period</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="lockup-card selected" id="lockupShort" onclick="selectLockup('short')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-size:13px;font-weight:500;color:#fff">Short</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Duration TBD</div></div>
+              <div style="text-align:right"><div style="font-size:15px;font-weight:600;color:rgba(255,255,255,.7)">— %</div><div style="font-size:10px;color:var(--text3)">Withdrawal fee</div></div>
+            </div>
+          </button>
+          <button class="lockup-card" id="lockupStandard" onclick="selectLockup('standard')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-size:13px;font-weight:500;color:#fff">Standard</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Duration TBD</div></div>
+              <div style="text-align:right"><div style="font-size:15px;font-weight:600;color:rgba(255,255,255,.7)">— %</div><div style="font-size:10px;color:var(--text3)">Withdrawal fee</div></div>
+            </div>
+          </button>
+          <button class="lockup-card" id="lockupExtended" onclick="selectLockup('extended')">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><div style="font-size:13px;font-weight:500;color:#fff">Extended</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Duration TBD</div></div>
+              <div style="text-align:right"><div style="font-size:15px;font-weight:600;color:rgba(255,255,255,.7)">— %</div><div style="font-size:10px;color:var(--text3)">Withdrawal fee</div></div>
+            </div>
+          </button>
         </div>
+        <p style="font-size:11px;color:rgba(245,158,11,.6);margin-top:10px">Fee structure will be announced at launch.</p>
+      </div>
 
-        <div class="sig-waiting" id="sigWaiting" style="display:none">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-            <div style="width:16px;height:16px;border:2px solid var(--amber);border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite;flex-shrink:0"></div>
-            <span style="font-size:13px;color:rgba(255,255,255,0.7);font-weight:500">Waiting for signature...</span>
-          </div>
-          <p style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:16px">Please complete the signature in the window that just opened.</p>
-          <button class="btn-green" onclick="goStep(3)">✓ I've completed the signature</button>
+      <!-- Investment Agreement -->
+      <div style="background:rgba(255,255,255,0.02);border:0.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span>📝</span>
+          <span style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px">Investment Agreement</span>
         </div>
+        <p style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:14px">Please contact the operator directly to proceed.</p>
+        <button class="btn-primary" disabled>Sign Agreement →</button>
       </div>
 
       <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3)" onclick="goStep(3)">DEV: Skip this step →</button>
     </div>
   </div>
 
-  <!-- ===== STEP 3: Bank transfer + timer ===== -->
+  <!-- ===== STEP 3: Bank transfer ===== -->
   <div class="step-panel" id="panel3">
     <div class="card">
-      <div class="card-sublabel">Deposit Details</div>
+      <div class="card-sublabel">STEP 03 / 04</div>
       <h2 class="card-title">Transfer Funds</h2>
 
       <div class="bank-rows">
-        <div class="bank-row"><span class="bank-key">Bank</span><span class="bank-val">—</span></div>
-        <div class="bank-row"><span class="bank-key">Holder</span><span class="bank-val">—</span></div>
+        <div class="bank-row"><span class="bank-key">Bank</span><span class="bank-val">KBank (케이뱅크)</span></div>
+        <div class="bank-row"><span class="bank-key">Holder</span><span class="bank-val">이정민 (Lee Jeong-min)</span></div>
         <div class="bank-row">
           <span class="bank-key">Account No.</span>
           <span style="display:flex;align-items:center">
-            <span class="bank-val mono">—</span>
-            <span class="copy-btn" onclick="this.textContent='✓'">Copy</span>
+            <span class="bank-val mono">100-117-130167</span>
+            <span class="copy-btn" onclick="this.textContent='✓'"> Copy</span>
           </span>
         </div>
-        <div class="bank-row"><span class="bank-key">Amount</span><span class="bank-val" style="color:#fff">₩1,000,000</span></div>
+        <div class="bank-row"><span class="bank-key">Min. Amount</span><span class="bank-val" style="color:#fff">₩10,000,000</span></div>
         <div class="bank-row"><span class="bank-key">Reference</span><span class="bank-val mono" style="color:var(--text2);font-size:12px">abc123def456…</span></div>
       </div>
 
-      <div class="amber-note">입금자명 또는 메모란에 Reference 코드 앞 12자리를 함께 기재해 주세요.</div>
+      <div class="amber-note">Include the Reference code in the transfer memo.<br><span style="color:rgba(245,158,11,.65)">(이체 메모란에 Reference 코드를 입력해 주세요.)</span></div>
 
       <button class="btn-primary" onclick="handleTransfer()">I've made the transfer →</button>
       <button class="btn-outline" style="font-size:11px;color:rgba(245,158,11,0.6);border-color:rgba(245,158,11,0.3);margin-top:8px" onclick="goStep(4)">DEV: Skip this step →</button>
-    </div>
-
-    <div class="timer-card">
-      <div class="timer-label">⏱ Transfer Deadline</div>
-      <div class="timer-display">
-        <div class="timer-digits" id="timerDigits">10:00</div>
-        <p class="timer-sub">이 화면이 생성된 후 10분 이내에 입금해야 합니다.</p>
-      </div>
     </div>
   </div>
 
@@ -304,14 +311,14 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
       </div>
-      <div class="done-title">Transfer submitted!</div>
+      <div class="done-title">Transfer Submitted</div>
       <p class="done-desc">Admin will verify your transfer within <strong style="color:rgba(255,255,255,0.7)">24 hours</strong> on business days.<br>You'll receive a notification once confirmed.</p>
 
       <div class="tx-card" style="text-align:left">
         <div class="tx-row"><span class="tx-key">Status</span><span style="color:var(--amber);font-size:12px">⏳ Pending confirmation</span></div>
         <div class="tx-row"><span class="tx-key">Reference</span><span class="tx-val">abc123def456…</span></div>
-        <div class="tx-row"><span class="tx-key">Amount</span><span class="tx-val" style="color:#fff;font-family:inherit">₩1,000,000</span></div>
-        <div class="tx-row"><span class="tx-key">Submitted</span><span class="tx-val" style="font-family:inherit">May 19, 2026</span></div>
+        <div class="tx-row"><span class="tx-key">Amount</span><span class="tx-val" style="color:#fff;font-family:inherit">₩10,000,000</span></div>
+        <div class="tx-row"><span class="tx-key">Submitted</span><span class="tx-val" style="font-family:inherit">May 24, 2026</span></div>
       </div>
 
       <button class="btn-primary" onclick="window.location.href='dashboard.html'">Go to Dashboard →</button>
@@ -327,8 +334,6 @@
 
 <script>
 let currentStep = 1;
-let timerInterval = null;
-let timerSecs = 600;
 
 function updateDots(step) {
   const dots = document.getElementById('stepDots');
@@ -349,26 +354,13 @@ function goStep(n, btn) {
   else document.querySelectorAll('.step-btn')[n-1].classList.add('active');
   currentStep = n;
   updateDots(n);
-  if (n === 3) startTimer();
 }
 
-function startTimer() {
-  if (timerInterval) clearInterval(timerInterval);
-  timerSecs = 600;
-  function tick() {
-    const m = Math.floor(timerSecs/60).toString().padStart(2,'0');
-    const s = (timerSecs%60).toString().padStart(2,'0');
-    document.getElementById('timerDigits').textContent = m + ':' + s;
-    if (timerSecs > 0) timerSecs--;
-  }
-  tick();
-  timerInterval = setInterval(tick, 1000);
-}
-
-function selectBank() {
-  document.getElementById('bankCard').classList.add('selected');
-  document.getElementById('bankLabel').style.display = 'block';
-  document.getElementById('sigSection').style.display = 'block';
+function selectLockup(type) {
+  ['short','standard','extended'].forEach(t => {
+    document.getElementById('lockup' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('selected');
+  });
+  document.getElementById('lockup' + type.charAt(0).toUpperCase() + type.slice(1)).classList.add('selected');
 }
 
 function handleTransfer() {

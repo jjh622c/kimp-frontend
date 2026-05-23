@@ -129,6 +129,66 @@
 
 ---
 
+## v1.7 — 버그픽스 (2026.05.24)
+
+> 참조: `dev_docs/BUGFIX_v1.md` — CONTENT_SPEC_FINAL_v2 적용 완료 기준
+
+- [x] **FIX-01** `components/pool/MonthlyReturns.tsx` — 2025 연도 문구 수정
+  - ANNUAL_RETURNS: `'Excluded · operational issues'` → `'V3 development & migration period'`
+  - 각주: `"2025 excluded due to operational issues"` → `"2025 excluded (V3 development & migration period)"`
+- [x] **FIX-02** `middleware.ts` — `/pool/detail` 초대 게이팅 명시적 적용
+  - `INVITE_GATE_PREFIXES` 배열 추가 (`/pool/detail`, `/onboarding`, `/dashboard`, `/admin`)
+  - gate 체크 로직: 프로덕션 전체 적용 + 개발환경에서도 `INVITE_GATE_PREFIXES` 경로는 강제 적용
+  - 개발환경에서 `/pool/detail` 없이 접근 시 → `/gate` 리다이렉트
+
+---
+
+## v1.5 — 콘텐츠 최종 확정 사양 v1 반영 (2026.05.23)
+
+> 참조: `dev_docs/CONTENT_SPEC_FINAL.md` (v1) — CONTENT-01 ~ CONTENT-13 완료 (v2로 대체됨)
+
+---
+
+## v1.6 — 콘텐츠 최종 확정 사양 v2 전면 반영 (2026.05.23)
+
+> 참조: `dev_docs/CONTENT_SPEC_FINAL_v2.md` — CONTENT-01 ~ CONTENT-16 전항목 완료
+> 변경사항: 수익률 수치 전면 업데이트 (2025 제외, 연단위 통계로 간소화)
+
+### 즉시 적용 항목
+- [x] **CONTENT-01** `components/landing/HeroSection.tsx` — Hero stat bar 수치 교체
+  - 가운데 stat: 28.96% → `—` (Current APY / Accumulating)
+  - 오른쪽 stat: `1,800日+` → `1,800d+`
+- [x] **CONTENT-02** `lib/data/vault-stats.ts` + `app/(public)/pool/detail/page.tsx`
+  - return30d: '+2.10%' → '—', returnNote → 'Accumulating · V3'
+  - currentApy: '28.96%' → '+42.3%', note → 'Compound annual · 2021–2024'
+  - winRate: '60.7%' → '60.0%', winRateNote: '17/28' → '15/25 periods'
+  - page.tsx: 카드 레이블 'Current APY' → 'Historical APY'
+  - Token Price fallback: tokenPrice=0 → 'TBD' 표시
+- [x] **CONTENT-03** `components/pool/MonthlyReturns.tsx` — Monthly → Annual Returns 5행으로 교체
+  - 2021 +44.8% / 2022 +32.8% / 2023 +22.7% / 2024 +28.9% / 2025 — / 2026 —
+- [x] **CONTENT-04** `components/pool/MonthlyReturns.tsx` — Performance 하단 통계 업데이트
+  - Cumulative +210% / Historical APY +42.3% / Win Rate 60.0% / Best 2021 / Worst 2022 Q4
+- [x] **CONTENT-05** `components/pool/MonthlyReturns.tsx` — Dual APY 섹션 추가
+  - Historical APY +42.3% (2021–2024) | Current APY (V3) — (Accumulating, Since Mar 2026)
+- [x] **CONTENT-06** `components/landing/HowItWorksSection.tsx` — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-07** `components/landing/InvitePopup.tsx` — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-08** `components/landing/RiskFooter.tsx` — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-09** 온보딩 Step 1~4 — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-10** `components/dashboard/WithdrawForm.tsx` — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-11** `components/dashboard/InviteSection.tsx` — v2 스펙과 일치 확인 (변경 없음)
+- [x] **CONTENT-12** `components/pool/InvestPanel.tsx` — 최소 투자 ₩10,000,000 확인 (변경 없음)
+- [x] **CONTENT-13** `components/dashboard/WithdrawForm.tsx` — MIN_WITHDRAWAL 5000 확인 (변경 없음)
+- [x] **CONTENT-14** `.env.example` — 입금 계좌 env 확인 (변경 없음)
+
+### 구조 추가 항목
+- [x] **CONTENT-15** `app/(onboarding)/onboarding/step2/page.tsx` — 락업 선택 UI 확인 (이미 완료)
+- [x] **CONTENT-16** `.env.example` — 전체 업데이트
+  - NEXT_PUBLIC_CURRENT_APY 비워 둠 (Accumulating)
+  - NEXT_PUBLIC_HISTORICAL_APY=42.3 추가
+  - NEXT_PUBLIC_CONTACT_EMAIL 추가
+
+---
+
 ## v1.4 — Gate Popup / Onboarding 재설계 / Dashboard 개선 (2026.05.19)
 
 ### Gate & Landing

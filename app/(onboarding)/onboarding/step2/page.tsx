@@ -4,6 +4,19 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { StepHeader } from '@/components/onboarding/StepHeader'
 
+const LOCK_SHORT_LABEL = process.env.NEXT_PUBLIC_LOCK_SHORT_LABEL || 'Short'
+const LOCK_MID_LABEL   = process.env.NEXT_PUBLIC_LOCK_MID_LABEL   || 'Standard'
+const LOCK_LONG_LABEL  = process.env.NEXT_PUBLIC_LOCK_LONG_LABEL  || 'Extended'
+const FEE_SHORT = process.env.NEXT_PUBLIC_FEE_SHORT || ''
+const FEE_MID   = process.env.NEXT_PUBLIC_FEE_MID   || ''
+const FEE_LONG  = process.env.NEXT_PUBLIC_FEE_LONG  || ''
+
+const LOCK_TIERS = [
+  { key: 'short', label: LOCK_SHORT_LABEL, fee: FEE_SHORT },
+  { key: 'mid',   label: LOCK_MID_LABEL,   fee: FEE_MID   },
+  { key: 'long',  label: LOCK_LONG_LABEL,  fee: FEE_LONG  },
+]
+
 type DepositMethod = 'none' | 'bank'
 type SignatureState = 'idle' | 'waiting' | 'signed'
 
@@ -31,6 +44,7 @@ function Step2Content() {
   const token = searchParams.get('token')
 
   const [method, setMethod] = useState<DepositMethod>('none')
+  const [lockup, setLockup] = useState<string | null>(null)
   const [sigState, setSigState] = useState<SignatureState>('idle')
 
   // NEXT_PUBLIC_ prefix required for client component
@@ -70,7 +84,7 @@ function Step2Content() {
           DEPOSIT METHOD
         </div>
         <h2 className="text-lg font-medium text-white mb-5">
-          Choose Deposit Method
+          Choose Deposit Method &amp; Lockup
         </h2>
 
         {/* Method selection cards */}
@@ -122,6 +136,34 @@ function Step2Content() {
           </button>
         )}
 
+        {/* Lockup selection — visible when bank selected */}
+        {method === 'bank' && (
+          <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4 mb-3">
+            <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] mb-3">
+              LOCK-UP PERIOD
+            </div>
+            <div className="space-y-2">
+              {LOCK_TIERS.map(({ key, label, fee }) => (
+                <button
+                  key={key}
+                  onClick={() => setLockup(key)}
+                  className={`w-full text-left flex items-center justify-between rounded-lg px-3 py-2.5 border transition-colors ${
+                    lockup === key
+                      ? 'border-[#3d8ef8]/50 bg-[#3d8ef8]/[0.04]'
+                      : 'border-white/[0.07] hover:border-white/20'
+                  }`}
+                >
+                  <span className="text-sm text-white/70">{label}</span>
+                  <span className="text-sm font-medium text-white/50">{fee ? `${fee}%` : '—%'}</span>
+                </button>
+              ))}
+            </div>
+            <p className="text-[11px] text-white/[0.25] mt-3">
+              Fee structure will be announced at launch.
+            </p>
+          </div>
+        )}
+
         {/* Agreement section — visible when bank selected */}
         {method === 'bank' && (
           <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">
@@ -138,7 +180,7 @@ function Step2Content() {
                 </p>
                 {!moduSignUrl && (
                   <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-3 py-2 mb-3">
-                    <p className="text-xs text-[#f59e0b]/70">Signature service not configured</p>
+                    <p className="text-xs text-[#f59e0b]/70">Please contact the operator directly to proceed.</p>
                   </div>
                 )}
                 <button

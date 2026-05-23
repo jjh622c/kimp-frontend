@@ -59,7 +59,7 @@ export function InviteSection({ canInvite, referredUsers }: InviteSectionProps) 
         </span>
       </div>
       <p className="text-[11px] text-white/[0.28] mb-4 leading-[1.6]">
-        Share your personal invite link with trusted contacts. Up to 2 levels deep — you can invite, and they can invite once.
+        Share your personal invite link with someone you trust. They&apos;ll get the same access you have.
       </p>
 
       {inviteUrl ? (

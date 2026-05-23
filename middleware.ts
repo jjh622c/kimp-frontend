@@ -13,6 +13,14 @@ const GATE_EXEMPT_PREFIXES = [
   '/gate',
 ]
 
+// Paths requiring a valid invite (kimp_access cookie) — enforced in production
+const INVITE_GATE_PREFIXES = [
+  '/pool/detail',
+  '/onboarding',
+  '/dashboard',
+  '/admin',
+]
+
 // Paths requiring a NextAuth session
 const AUTH_REQUIRED_PREFIXES = ['/dashboard', '/admin']
 
@@ -36,10 +44,14 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(verifyUrl)
   }
 
-  // Gate check — require kimp_access cookie for all non-exempt paths
+  // Gate check — require kimp_access cookie for invite-gated paths
+  // In development, bypass gate so local testing doesn't require an invite
+  const isInviteGated = INVITE_GATE_PREFIXES.some((p) => path.startsWith(p))
   const hasAccess = req.cookies.get('kimp_access')?.value
   if (!isGateExempt(path) && !hasAccess) {
-    return NextResponse.redirect(new URL('/gate', req.url))
+    if (process.env.NODE_ENV === 'production' || isInviteGated) {
+      return NextResponse.redirect(new URL('/gate', req.url))
+    }
   }
 
   // Auth check for protected routes

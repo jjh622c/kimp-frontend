@@ -67,6 +67,13 @@ function Step3Content() {
     return () => clearInterval(interval)
   }, [])
 
+  function formatAccount(raw: string) {
+    if (/^\d{12}$/.test(raw)) {
+      return `${raw.slice(0, 3)}-${raw.slice(3, 6)}-${raw.slice(6)}`
+    }
+    return raw
+  }
+
   function formatTime(secs: number) {
     const m = Math.floor(secs / 60).toString().padStart(2, '0')
     const s = (secs % 60).toString().padStart(2, '0')
@@ -156,7 +163,7 @@ function Step3Content() {
           <div className="flex items-center justify-between text-sm">
             <span className="text-white/40">Account No.</span>
             <div className="flex items-center gap-2">
-              <span className="text-white/80 font-medium font-mono">{BANK_ACCOUNT}</span>
+              <span className="text-white/80 font-medium font-mono">{formatAccount(BANK_ACCOUNT)}</span>
               <button
                 onClick={handleCopyAccount}
                 className="text-[10px] text-[#3d8ef8] hover:text-[#6aabff] transition-colors"
@@ -185,29 +192,13 @@ function Step3Content() {
 
         <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-3 py-2.5 mt-3.5">
           <p className="text-xs text-[#f59e0b]/80 leading-[1.6]">
-            입금자명 또는 메모란에 Reference 코드 앞 12자리를 함께 기재해 주세요.
+            Include the Reference code in the transfer memo.
+          </p>
+          <p className="text-[11px] text-[#f59e0b]/55 leading-[1.6] mt-0.5">
+            이체 메모란에 Reference 코드를 입력해 주세요.
           </p>
         </div>
       </div>
-
-      {/* Referral code card */}
-      {token && (
-        <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5 mt-3">
-          <div className="text-[11px] text-white/[0.28] uppercase tracking-[1px] mb-3">
-            REFERRAL CODE
-          </div>
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-white/40">Your invite code</span>
-              <span className="text-white/65 font-mono text-xs">{token.slice(0, 12)}…</span>
-            </div>
-            {/* TODO: fetch invited-by user info from DB */}
-          </div>
-          <p className="text-[11px] text-white/25 mt-2">
-            이 코드를 입금자명 또는 메모란에 함께 기재해주세요.
-          </p>
-        </div>
-      )}
 
       {/* Timer card */}
       <div
@@ -237,7 +228,7 @@ function Step3Content() {
               {formatTime(secondsLeft)}
             </div>
             <p className="text-xs text-white/25">
-              이 화면이 생성된 후 10분 이내에 입금해야 합니다.
+              Transfer must be completed within 10 minutes of this screen loading.
             </p>
           </div>
         )}

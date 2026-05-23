@@ -41,9 +41,12 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
 
         {/* Amount input */}
         <div className="mb-3">
-          <label className="block text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-1.5">
-            Amount (KRW)
-          </label>
+          <div className="flex items-baseline justify-between mb-1.5">
+            <label className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px]">
+              Amount (KRW)
+            </label>
+            <span className="text-[10px] text-white/[0.22]">Min ₩10,000,000</span>
+          </div>
           <div className="relative">
             <input
               type="number"
@@ -67,7 +70,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
             </span>
           </div>
           <div className="text-[10px] text-white/[0.2] mt-1">
-            Lock-up: 6 months after investment date
+            Lock-up: Short / Standard / Extended
           </div>
         </div>
 
@@ -111,12 +114,13 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
         </div>
         <div className="space-y-3">
           {[
-            { label: 'Standard',   value: 'ERC-20 (Base)' },
-            { label: 'Initial price', value: '1,000 KRW' },
-            { label: 'Issuance',   value: 'On deposit confirmation' },
-            { label: 'Lock-up',    value: '6 months' },
-            { label: 'Buyback',    value: '50% of bot profits' },
-            { label: 'Exit',       value: 'Operator buyback / P2P' },
+            { label: 'Standard',      value: 'ERC-20 (Base Mainnet)' },
+            { label: 'Initial price', value: 'TBD upon launch' },
+            { label: 'Issuance',      value: 'On deposit confirmation' },
+            { label: 'Lock-up',       value: 'Short / Standard / Extended' },
+            { label: 'Buyback',       value: 'Bot profits → periodic buyback' },
+            { label: 'Exit',          value: 'Operator buyback' },
+            { label: 'Chain',         value: 'Base Mainnet (Chain ID: 8453)' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
               <span className="text-xs text-white/40">{item.label}</span>
@@ -133,7 +137,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
         </div>
         <p className="text-[10px] text-white/[0.35] leading-[1.7]">
           Token value may decrease. Principal loss is possible. Past returns do not guarantee
-          future performance. Lock-up of 6 months applies from investment date.
+          future performance. Lock-up period applies from investment date.
         </p>
       </div>
     </div>

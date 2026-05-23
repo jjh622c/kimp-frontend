@@ -64,12 +64,15 @@ function Step1Content() {
         </h2>
 
         <p className="text-sm text-white/[0.45] mb-5 leading-[1.7]">
-          MetaMask를 열고 아래 순서대로 진행하세요.
+          Follow the steps below to add the token to MetaMask on Base Mainnet.
         </p>
 
         {/* Step-by-step guide */}
         <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-lg p-4 mb-5 space-y-4">
-          {(['MetaMask 열기 → 하단 [Import Tokens] 탭 클릭', '[Custom Token] 선택'] as string[]).map(
+          {([
+            'Open MetaMask → select "Base Mainnet" network (Add Base network if not listed)',
+            'Tap the [Tokens] tab → [Import tokens]',
+          ] as string[]).map(
             (text, i) => (
               <div key={i} className="flex gap-3">
                 <span className="shrink-0 w-5 h-5 rounded-full bg-[#3d8ef8]/15 text-[#3d8ef8] text-[11px] font-medium flex items-center justify-center">
@@ -86,7 +89,7 @@ function Step1Content() {
               3
             </span>
             <div className="flex-1">
-              <span className="text-sm text-white/55">아래 정보를 입력:</span>
+              <span className="text-sm text-white/55">Select [Custom token] and enter:</span>
               <div className="mt-2.5 space-y-2">
                 {[
                   { label: 'Network',       value: 'Base Mainnet (Chain ID: 8453)' },
@@ -130,7 +133,7 @@ function Step1Content() {
               4
             </span>
             <span className="text-sm text-white/55 leading-[1.5]">
-              [Add Custom Token] → [Import Tokens] 확인
+              Tap [Add custom token] → [Import tokens] to confirm
             </span>
           </div>
         </div>
@@ -139,6 +142,7 @@ function Step1Content() {
           <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-4 py-3 mb-5">
             <p className="text-xs text-[#f59e0b]/80 leading-[1.6]">
               Contract address will be provided upon deployment.
+              You can skip this step and complete it later from your dashboard.
             </p>
           </div>
         )}

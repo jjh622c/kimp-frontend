@@ -996,10 +996,49 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <div class="phase-item"><strong>ENV-01</strong> — <code>.env.example</code> NEXT_PUBLIC_MODU_SIGN_URL·NEXT_PUBLIC_CONTACT_EMAIL 추가. StepHeader 라벨 Token/Method/Transfer/Done으로 업데이트</div>
     </div>
 
-    <h2>다음 작업 순서 (v1.4 완료 / v1.5 계획)</h2>
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v1.5 — 2026.05.23</span>
+        <span class="phase-title">콘텐츠 최종 확정 사양 전면 반영 (CONTENT-01~13)</span>
+      </div>
+      <div class="phase-item"><strong>CONTENT-01</strong> — <code>components/landing/HeroSection.tsx</code> Hero stat bar 교체: 5yr+/Since Apr 2021/Track record · 28.96%/Current APY/Annualized · 1,800일+/Days operated/Consecutive. sub-label 2줄 렌더링 추가</div>
+      <div class="phase-item"><strong>CONTENT-02</strong> — <code>lib/data/vault-stats.ts</code> + <code>app/(public)/pool/detail/page.tsx</code>: Vault stat 2번 카드 All-time Return → Current APY 28.96% (Annualized · V3)</div>
+      <div class="phase-item"><strong>CONTENT-03</strong> — <code>components/landing/HowItWorksSection.tsx</code>: 3개 카드 최종 문구 (01 Deposit / 02 Token issuance / 03 Profit distribution)</div>
+      <div class="phase-item"><strong>CONTENT-04</strong> — <code>components/landing/InvitePopup.tsx</code>: 제목 "Welcome", 설명/placeholder/버튼 최종 문구</div>
+      <div class="phase-item"><strong>CONTENT-05</strong> — <code>components/landing/RiskFooter.tsx</code>: Risk notice 3줄 버전 확정</div>
+      <div class="phase-item"><strong>CONTENT-06</strong> — 온보딩 Step 1~4 텍스트 전면 교체. step1: 설명·4단계 가이드·amber note 영문화. step2: 제목 "Choose Deposit Method &amp; Lockup", agreement 에러 텍스트. step3: formatAccount() 추가(100-117-130167), amber note 한영 병기, 타이머 안내 영문화, REFERRAL CODE 카드 제거. step4: 전면 재작성 — "Transfer Submitted" + 상태 카드(Status/Reference/Amount/Submitted) + 하단 안내</div>
+      <div class="phase-item"><strong>CONTENT-07·10</strong> — <code>components/dashboard/WithdrawForm.tsx</code>: 한국어 병기 전면 추가, MIN_WITHDRAWAL=5000으로 변경</div>
+      <div class="phase-item"><strong>CONTENT-08</strong> — <code>components/dashboard/InviteSection.tsx</code>: 설명 문구 최종 확정</div>
+      <div class="phase-item"><strong>CONTENT-09</strong> — <code>components/pool/InvestPanel.tsx</code>: 최소 투자 Min ₩10,000,000 레이블 추가. 토큰 상세 업데이트 (Lock-up: Short/Standard/Extended, Initial price: TBD, Buyback: Bot profits → periodic buyback, Chain 행 추가)</div>
+      <div class="phase-item"><strong>CONTENT-11·13</strong> — <code>.env.example</code> 전체 재작성: 입금 계좌(KBank/100117130167/이정민), 락업(NEXT_PUBLIC_LOCK_*/FEE_*), 통계(NEXT_PUBLIC_CURRENT_APY=28.96), 투자 조건(MIN_INVESTMENT/MIN_WITHDRAWAL) 섹션 추가</div>
+      <div class="phase-item"><strong>CONTENT-12</strong> — <code>app/(onboarding)/onboarding/step2/page.tsx</code>: Short/Standard/Extended 락업 선택 UI 추가, NEXT_PUBLIC_LOCK_*/FEE_* env 참조, "Fee structure will be announced at launch." 안내</div>
+    </div>
+
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v1.6 — 2026.05.23</span>
+        <span class="phase-title">콘텐츠 최종 확정 사양 v2 전면 반영 (CONTENT-01~16)</span>
+      </div>
+      <div class="phase-item"><strong>CONTENT-01</strong> — <code>HeroSection.tsx</code>: Hero stat bar 수치 교체. 가운데: 28.96%→<em>—</em> (Annualized→Accumulating). 오른쪽: 1,800日+→1,800d+</div>
+      <div class="phase-item"><strong>CONTENT-02</strong> — <code>lib/data/vault-stats.ts</code>: return30d→'—' (Accumulating·V3), currentApy→'+42.3%' (Compound annual 2021–2024), winRate→'60.0%' (15/25 periods). <code>pool/detail/page.tsx</code>: 카드 레이블 'Current APY'→'Historical APY', Token Price 0→'TBD' fallback</div>
+      <div class="phase-item"><strong>CONTENT-03·04·05</strong> — <code>components/pool/MonthlyReturns.tsx</code> 전면 재작성. Monthly 28행→Annual 6행 (2021~2026). 하단 통계: Cumulative +210%/Historical APY +42.3%/Win Rate 60.0%/Best 2021/Worst 2022 Q4. Dual APY 섹션 추가 (Historical +42.3% 2021–2024 | Current V3 — Accumulating Since Mar 2026)</div>
+      <div class="phase-item"><strong>CONTENT-06~15</strong> — HowItWorks, InvitePopup, RiskFooter, 온보딩 Step1~4, WithdrawForm, InviteSection, InvestPanel, .env 계좌, Step2 락업 UI — v2 스펙과 이미 일치함 (변경 없음)</div>
+      <div class="phase-item"><strong>CONTENT-16</strong> — <code>.env.example</code>: NEXT_PUBLIC_HISTORICAL_APY=42.3 추가, NEXT_PUBLIC_CURRENT_APY 빈값으로 초기화 (Accumulating), NEXT_PUBLIC_CONTACT_EMAIL 추가</div>
+    </div>
+
+    <div class="phase" style="margin-top:16px">
+      <div class="phase-header">
+        <span class="badge badge-green">v1.7 — 2026.05.24</span>
+        <span class="phase-title">버그픽스 (FIX-01 ~ FIX-02)</span>
+      </div>
+      <div class="phase-item"><strong>FIX-01</strong> — <code>components/pool/MonthlyReturns.tsx</code>: 2025 연도 note 문구 수정. ANNUAL_RETURNS 배열: <em>'Excluded · operational issues'</em> → <em>'V3 development &amp; migration period'</em>. 각주 텍스트도 동일하게 수정</div>
+      <div class="phase-item"><strong>FIX-02</strong> — <code>middleware.ts</code>: <code>INVITE_GATE_PREFIXES</code> 배열 추가 (<code>/pool/detail</code>, <code>/onboarding</code>, <code>/dashboard</code>, <code>/admin</code>). gate 체크 로직 개선: 프로덕션에서는 전체 경로 강제 적용, 개발환경에서는 INVITE_GATE_PREFIXES 경로만 강제 적용 (랜딩 페이지 등 개발 편의 허용)</div>
+    </div>
+
+    <h2>다음 작업 순서 (v1.7 완료 / 보류 항목)</h2>
     <div class="warn">
       <div class="warn-label">⚠ 스펙 참조</div>
-      <p>v1.0~v1.4 UI/코드 완료. 남은 것: REF-02 수동 실행 (<code>npx prisma db push &amp;&amp; npx prisma generate</code>), .env 설정 (모두싸인/카카오/온체인 API 키), 컨트랙트 배포.</p>
+      <p>v1.0~v1.7 UI/코드 완료. 남은 것: REF-02 수동 실행 (<code>npx prisma db push &amp;&amp; npx prisma generate</code>), .env 설정 (모두싸인/카카오/온체인 API 키), 컨트랙트 배포. 보류 항목: CONTENT-A(프로젝트명/토큰명), CONTENT-B(컨트랙트 주소), CONTENT-C(토큰 가격), CONTENT-D(락업 기간/수수료), CONTENT-E(도메인/이메일), CONTENT-F(모두싸인 URL).</p>
     </div>
     <table class="tbl">
       <tr><th>Phase</th><th>작업 ID</th><th>내용</th><th>상태</th><th>우선순위</th></tr>
@@ -1026,6 +1065,8 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <tr><td>6 Dash</td><td>DASH-10~12</td><td>Dashboard 가운데 정렬, InvestmentProgress 컴포넌트, WithdrawForm KRW 입력</td><td><span class="badge badge-green">완료 (v1.4)</span></td><td>🟢 완료</td></tr>
       <tr><td>-</td><td>REF-02</td><td><code>npx prisma db push</code> + <code>npx prisma generate</code> — DB에 새 컬럼 반영 (수동 실행 필요)</td><td><span class="badge badge-amber">수동 필요</span></td><td>DB 연결 후</td></tr>
       <tr><td>-</td><td>ENV</td><td><code>.env</code> 작성 → 모두싸인/카카오/온체인 API 키 설정 → 컨트랙트 배포</td><td><span class="badge badge-amber">사용자 직접</span></td><td>다음 단계</td></tr>
+      <tr><td>7 FIX</td><td>FIX-01</td><td><code>MonthlyReturns.tsx</code> — 2025 note 문구 수정 (operational issues → V3 development &amp; migration period)</td><td><span class="badge badge-green">완료 (v1.7)</span></td><td>🟢 완료</td></tr>
+      <tr><td>7 FIX</td><td>FIX-02</td><td><code>middleware.ts</code> — <code>INVITE_GATE_PREFIXES</code> 추가, /pool/detail 명시적 게이팅, prod/dev 환경 분리</td><td><span class="badge badge-green">완료 (v1.7)</span></td><td>🟢 완료</td></tr>
     </table>
 
     <h2>파일 구조 (현재 상태 — v1.1 / v1.2 예정 포함)</h2>

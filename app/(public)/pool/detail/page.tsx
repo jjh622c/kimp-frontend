@@ -16,15 +16,15 @@ export default async function PoolDetailPage() {
     {
       label: '30D Return',
       value: VAULT_STATS.return30d,
-      color: 'text-[#22c55e]',
+      color: 'text-white/50',
       note: VAULT_STATS.returnNote,
       badge: false,
     },
     {
-      label: 'All-time Return',
-      value: VAULT_STATS.allTimeReturn,
+      label: 'Historical APY',
+      value: VAULT_STATS.currentApy,
       color: 'text-[#22c55e]',
-      note: VAULT_STATS.allTimeNote,
+      note: VAULT_STATS.currentApyNote,
       badge: false,
     },
     {
@@ -36,7 +36,7 @@ export default async function PoolDetailPage() {
     },
     {
       label: 'Token Price',
-      value: `${tokenPrice.toLocaleString('ko-KR')} KRW`,
+      value: tokenPrice > 0 ? `${tokenPrice.toLocaleString('ko-KR')} KRW` : 'TBD',
       color: 'text-white',
       note: null,
       badge: true,

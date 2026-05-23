@@ -1,18 +1,18 @@
 const steps = [
   {
-    num: 'STEP 01',
-    title: 'Sign agreement',
-    desc: 'Review and sign the investment agreement online. Invite-only access.',
+    num: '01 · Deposit',
+    title: 'KRW bank transfer',
+    desc: 'Send Korean Won via wire transfer to our KBank account. Minimum ₩10,000,000. Confirmed within 24 hours on business days.',
   },
   {
-    num: 'STEP 02',
-    title: 'Deposit funds',
-    desc: 'Transfer KRW to the provided account. Confirmation within 24h.',
+    num: '02 · Token issuance',
+    title: 'Receive tokens on-chain',
+    desc: 'Admin mints proportional tokens to your wallet after deposit is confirmed. Token price rises as bot profits are used for periodic buybacks and burns.',
   },
   {
-    num: 'STEP 03',
-    title: 'Receive tokens & earn',
-    desc: 'Tokens issued to your wallet. Track returns on your dashboard.',
+    num: '03 · Profit distribution',
+    title: 'Bot buybacks & burns',
+    desc: 'Arbitrage bot profits are periodically used to buy back and burn tokens, increasing the price for all holders transparently on-chain.',
   },
 ]
 

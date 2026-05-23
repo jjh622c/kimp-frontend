@@ -1,9 +1,9 @@
 'use client'
 
 const STATS = [
-  { value: '5yr+', label: 'Since 2021', sub: 'Track record' },
-  { value: '+275%', label: 'V1 Cumulative', sub: 'Total return' },
-  { value: '₩3B+', label: 'Active capital', sub: 'Under mgmt.' },
+  { value: '5yr+',   label: 'Since Apr 2021', sub: 'Track record' },
+  { value: '—',      label: 'Current APY',    sub: 'Accumulating' },
+  { value: '1,800d+', label: 'Days operated',  sub: 'Consecutive'  },
 ]
 
 function openInvitePopup() {
@@ -47,7 +47,11 @@ export function HeroSection() {
         {STATS.map((stat) => (
           <div key={stat.value} className="text-center">
             <div className="text-xl max-sm:text-lg font-semibold text-white">{stat.value}</div>
-            <div className="text-[10px] text-white/[0.28] mt-1 leading-[1.4]">{stat.label}</div>
+            <div className="text-[10px] text-white/[0.28] mt-1 leading-[1.4]">
+              {stat.label}
+              <br />
+              <span className="text-white/[0.16]">{stat.sub}</span>
+            </div>
           </div>
         ))}
       </div>
