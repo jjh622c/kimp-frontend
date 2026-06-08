@@ -9,7 +9,7 @@ const STEPS = [
   { key: 'contract', label: 'Contract signed', desc: 'Investment agreement signed' },
   { key: 'deposit', label: 'Deposit confirmed', desc: 'Admin verified deposit' },
   { key: 'minted', label: 'Tokens minted', desc: 'ERC-20 tokens sent to wallet' },
-  { key: 'active', label: 'Active', desc: 'Bot profit buyback in progress' },
+  { key: 'active', label: 'Active', desc: 'Oracle price appreciation in progress' },
 ]
 
 function getStepState(

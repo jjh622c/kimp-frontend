@@ -97,7 +97,7 @@ export const STEPS_COMPLETE: ProgressStep[] = [
   { label: 'Investment agreement signed',    done: true  },
   { label: 'Deposit confirmed',              done: true  },
   { label: 'Token issued',                   done: true  },
-  { label: 'Bot profit buyback in progress', done: true  },
+  { label: 'Oracle price appreciation in progress', done: true  },
 ]
 
 export const STEPS_DEPOSIT_PENDING: ProgressStep[] = [
@@ -105,5 +105,5 @@ export const STEPS_DEPOSIT_PENDING: ProgressStep[] = [
   { label: 'Investment agreement signed',    done: true,  active: false },
   { label: 'Deposit confirmed',              done: false, active: true, note: 'Pending admin confirmation' },
   { label: 'Token issued',                   done: false, active: false },
-  { label: 'Bot profit buyback in progress', done: false, active: false },
+  { label: 'Oracle price appreciation in progress', done: false, active: false },
 ]

@@ -60,7 +60,7 @@ export default async function PoolDetailPage() {
             </span>
           </div>
           <p className="text-sm text-white/40 mb-2.5">
-            Automated KRW / Global spread arbitrage · Buyback &amp; burn model
+            Automated KRW / Global spread arbitrage · Oracle price settlement model
           </p>
           <div className="flex flex-wrap gap-1.5">
             {['Private', 'Base chain', 'ERC-20', 'Invite only'].map((tag) => (
@@ -131,7 +131,7 @@ export default async function PoolDetailPage() {
               {[
                 { label: 'Strategy type', value: 'Market neutral arbitrage' },
                 { label: 'Execution', value: 'Automated · 24/7' },
-                { label: 'Settlement', value: 'Monthly buyback & burn' },
+                { label: 'Settlement', value: 'Oracle price appreciation' },
                 { label: 'Operational since', value: 'April 2021' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between">

@@ -38,7 +38,7 @@ export async function MarketsSection() {
             </div>
             <div>
               <div className="text-[13px] font-medium text-white">{TOKEN_NAME} · KRW Arb Vault</div>
-              <div className="text-[11px] text-white/30 mt-0.5">Buyback &amp; burn · Private</div>
+              <div className="text-[11px] text-white/30 mt-0.5">Oracle price growth · Private</div>
             </div>
           </div>
 
