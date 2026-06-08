@@ -4,21 +4,18 @@ import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { StepHeader } from '@/components/onboarding/StepHeader'
 
-const LOCK_SHORT_LABEL = process.env.NEXT_PUBLIC_LOCK_SHORT_LABEL || 'Short'
-const LOCK_MID_LABEL   = process.env.NEXT_PUBLIC_LOCK_MID_LABEL   || 'Standard'
-const LOCK_LONG_LABEL  = process.env.NEXT_PUBLIC_LOCK_LONG_LABEL  || 'Extended'
-const FEE_SHORT = process.env.NEXT_PUBLIC_FEE_SHORT || ''
-const FEE_MID   = process.env.NEXT_PUBLIC_FEE_MID   || ''
-const FEE_LONG  = process.env.NEXT_PUBLIC_FEE_LONG  || ''
-
-const LOCK_TIERS = [
-  { key: 'short', label: LOCK_SHORT_LABEL, fee: FEE_SHORT },
-  { key: 'mid',   label: LOCK_MID_LABEL,   fee: FEE_MID   },
-  { key: 'long',  label: LOCK_LONG_LABEL,  fee: FEE_LONG  },
-]
-
 type DepositMethod = 'none' | 'bank'
 type SignatureState = 'idle' | 'waiting' | 'signed'
+
+const RISK_ITEMS = [
+  'I understand that I may lose all or part of my invested principal.',
+  'I understand that past performance does not guarantee future returns.',
+  'I understand that token value may fall and that this token is not listed on any exchange.',
+  'I understand that instant withdrawal may be restricted and large withdrawals may be delayed.',
+  'I understand that technical risks (hacking, smart contract bugs, oracle errors) may result in asset loss.',
+  'I understand that regulatory changes may alter or terminate operations.',
+  'I understand that performance fees apply to unrealized gains and are not refunded on subsequent losses.',
+]
 
 export default function Step2Page() {
   return (
@@ -44,12 +41,21 @@ function Step2Content() {
   const token = searchParams.get('token')
 
   const [method, setMethod] = useState<DepositMethod>('none')
-  const [lockup, setLockup] = useState<string | null>(null)
+  const [checkedItems, setCheckedItems] = useState<boolean[]>(new Array(RISK_ITEMS.length).fill(false))
   const [sigState, setSigState] = useState<SignatureState>('idle')
 
-  // NEXT_PUBLIC_ prefix required for client component
+  const allChecked = checkedItems.every(Boolean)
+
   // TODO: set NEXT_PUBLIC_MODU_SIGN_URL in environment
   const moduSignUrl = process.env.NEXT_PUBLIC_MODU_SIGN_URL || null
+
+  function toggleItem(index: number) {
+    setCheckedItems((prev) => {
+      const next = [...prev]
+      next[index] = !next[index]
+      return next
+    })
+  }
 
   function handleSignAgreement() {
     if (moduSignUrl) {
@@ -70,7 +76,7 @@ function Step2Content() {
         })
       }
     } catch {
-      // admin verifies manually
+      // 관리자 수동 확인
     }
     router.push(`/onboarding/step3${token ? `?token=${token}` : ''}`)
   }
@@ -84,7 +90,7 @@ function Step2Content() {
           DEPOSIT METHOD
         </div>
         <h2 className="text-lg font-medium text-white mb-5">
-          Choose Deposit Method &amp; Lockup
+          Choose Deposit Method
         </h2>
 
         {/* Method selection cards */}
@@ -136,80 +142,169 @@ function Step2Content() {
           </button>
         )}
 
-        {/* Lockup selection — visible when bank selected */}
+        {/* Bank selected — show contract info, withdrawal fee, risk disclosure, agreement */}
         {method === 'bank' && (
-          <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4 mb-3">
-            <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] mb-3">
-              LOCK-UP PERIOD
-            </div>
-            <div className="space-y-2">
-              {LOCK_TIERS.map(({ key, label, fee }) => (
-                <button
-                  key={key}
-                  onClick={() => setLockup(key)}
-                  className={`w-full text-left flex items-center justify-between rounded-lg px-3 py-2.5 border transition-colors ${
-                    lockup === key
-                      ? 'border-[#3d8ef8]/50 bg-[#3d8ef8]/[0.04]'
-                      : 'border-white/[0.07] hover:border-white/20'
-                  }`}
-                >
-                  <span className="text-sm text-white/70">{label}</span>
-                  <span className="text-sm font-medium text-white/50">{fee ? `${fee}%` : '—%'}</span>
-                </button>
-              ))}
-            </div>
-            <p className="text-[11px] text-white/[0.25] mt-3">
-              Fee structure will be announced at launch.
-            </p>
-          </div>
-        )}
+          <div className="space-y-3">
 
-        {/* Agreement section — visible when bank selected */}
-        {method === 'bank' && (
-          <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">
-            {sigState === 'idle' && (
-              <>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-base">📝</span>
-                  <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] font-medium">
-                    INVESTMENT AGREEMENT
+            {/* CONTRACT INFO card (CTRCT-OB-02) */}
+            <div className="bg-[#3d8ef8]/[0.06] border border-[#3d8ef8]/20 rounded-xl p-4">
+              <div className="text-[11px] font-medium text-[#3d8ef8] mb-3 uppercase tracking-[0.8px]">
+                CONTRACT INFO
+              </div>
+              <div className="space-y-2">
+                {[
+                  { label: 'Contract Type', value: 'Anonymous Partnership (Korean Commercial Act §78–86)' },
+                  { label: 'Operators', value: '이정민 (Dev & Operations) · 장재혁 (Business)' },
+                  { label: 'Min. Investment', value: '₩10,000,000' },
+                  { label: 'Performance Fee', value: '30% of net profit (after 11% tax reserve)' },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-start justify-between gap-3">
+                    <span className="text-[11px] text-white/40 shrink-0">{label}</span>
+                    <span className="text-[11px] text-white/70 text-right">{value}</span>
                   </div>
-                </div>
-                <p className="text-sm text-white/45 leading-[1.65] mb-4">
-                  Bank transfer requires signing an investment agreement first.
-                </p>
-                {!moduSignUrl && (
-                  <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-3 py-2 mb-3">
-                    <p className="text-xs text-[#f59e0b]/70">Please contact the operator directly to proceed.</p>
-                  </div>
-                )}
-                <button
-                  onClick={handleSignAgreement}
-                  disabled={!moduSignUrl}
-                  className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl py-3 text-sm font-medium transition-colors"
-                >
-                  Sign Agreement →
-                </button>
-              </>
-            )}
+                ))}
+              </div>
+            </div>
 
-            {sigState === 'waiting' && (
-              <>
-                <div className="flex items-center gap-2.5 mb-3">
-                  <span className="w-4 h-4 rounded-full border-2 border-[#f59e0b] border-t-transparent animate-spin shrink-0" />
-                  <span className="text-sm text-white/70 font-medium">Waiting for signature...</span>
+            {/* Withdrawal Fee Structure info (CTRCT-WD-01) */}
+            <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">
+              <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] mb-3">
+                WITHDRAWAL FEE STRUCTURE
+              </div>
+              <div className="space-y-1.5 mb-3">
+                {[
+                  { type: 'Instant',    timing: 'Immediate',     fee: '5.0%', note: 'Subject to liquidity', recommended: false },
+                  { type: 'Standard',   timing: 'Within 24 hrs', fee: '1.0%', note: '',                      recommended: false },
+                  { type: 'Scheduled',  timing: 'Within 7 days', fee: '0.1%', note: 'Recommended',           recommended: true  },
+                ].map(({ type, timing, fee, note, recommended }) => (
+                  <div
+                    key={type}
+                    className="flex items-center justify-between px-3 py-2 bg-[#0e1425] border border-white/[0.05] rounded-lg"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xs text-white/70 w-16">{type}</span>
+                      <span className="text-[11px] text-white/30">{timing}</span>
+                      {recommended && (
+                        <span className="text-[9px] font-medium bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 rounded-full px-1.5 py-0.5">
+                          ✓
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-white">{fee}</span>
+                      {note && !recommended && (
+                        <span className="text-[10px] text-white/30">{note}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[11px] text-[#f59e0b]/70">
+                Withdrawal type is selected at the time of each withdrawal request.
+              </p>
+            </div>
+
+            {/* RISK DISCLOSURE checklist (CTRCT-OB-01) */}
+            <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base">📋</span>
+                <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] font-medium">
+                  RISK DISCLOSURE
                 </div>
-                <p className="text-sm text-white/40 leading-[1.65] mb-4">
-                  Please complete the signature in the window that just opened.
+              </div>
+              <p className="text-[11px] text-white/40 leading-[1.6] mb-4">
+                Please read and acknowledge all risk items before signing. (계약서 제10조)
+              </p>
+              <div className="space-y-3">
+                {RISK_ITEMS.map((item, i) => (
+                  <label
+                    key={i}
+                    className="flex items-start gap-3 cursor-pointer group"
+                  >
+                    <div
+                      className={`mt-0.5 w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
+                        checkedItems[i]
+                          ? 'bg-[#3d8ef8] border-[#3d8ef8]'
+                          : 'border-white/20 group-hover:border-[#3d8ef8]/50'
+                      }`}
+                      onClick={() => toggleItem(i)}
+                    >
+                      {checkedItems[i] && (
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </div>
+                    <span
+                      className={`text-[12px] leading-[1.65] transition-colors ${
+                        checkedItems[i] ? 'text-white/60' : 'text-white/40'
+                      }`}
+                      onClick={() => toggleItem(i)}
+                    >
+                      {item}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {!allChecked && (
+                <p className="text-[11px] text-white/25 mt-4 text-center">
+                  {checkedItems.filter(Boolean).length} / {RISK_ITEMS.length} items acknowledged
                 </p>
-                <button
-                  onClick={handleSignConfirmed}
-                  className="w-full border border-[#22c55e]/30 hover:bg-[#22c55e]/[0.05] text-[#22c55e]/80 hover:text-[#22c55e] rounded-xl py-3 text-sm font-medium transition-colors"
-                >
-                  ✓ I&apos;ve completed the signature
-                </button>
-              </>
-            )}
+              )}
+              {allChecked && (
+                <p className="text-[11px] text-[#22c55e]/70 mt-4 text-center">
+                  ✓ All risk items acknowledged
+                </p>
+              )}
+            </div>
+
+            {/* Investment Agreement — disabled until all 7 checked */}
+            <div className="bg-[#0a0e1a] border border-white/[0.07] rounded-xl p-4">
+              {sigState === 'idle' && (
+                <>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-base">📝</span>
+                    <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] font-medium">
+                      INVESTMENT AGREEMENT
+                    </div>
+                  </div>
+                  <p className="text-sm text-white/45 leading-[1.65] mb-4">
+                    Bank transfer requires signing an investment agreement first.
+                  </p>
+                  {!moduSignUrl && (
+                    <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-3 py-2 mb-3">
+                      <p className="text-xs text-[#f59e0b]/70">Please contact the operator directly to proceed.</p>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleSignAgreement}
+                    disabled={!allChecked || !moduSignUrl}
+                    className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl py-3 text-sm font-medium transition-colors"
+                  >
+                    {allChecked ? 'Sign Agreement →' : `Acknowledge all ${RISK_ITEMS.length} items to continue`}
+                  </button>
+                </>
+              )}
+
+              {sigState === 'waiting' && (
+                <>
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <span className="w-4 h-4 rounded-full border-2 border-[#f59e0b] border-t-transparent animate-spin shrink-0" />
+                    <span className="text-sm text-white/70 font-medium">Waiting for signature...</span>
+                  </div>
+                  <p className="text-sm text-white/40 leading-[1.65] mb-4">
+                    Please complete the signature in the window that just opened.
+                  </p>
+                  <button
+                    onClick={handleSignConfirmed}
+                    className="w-full border border-[#22c55e]/30 hover:bg-[#22c55e]/[0.05] text-[#22c55e]/80 hover:text-[#22c55e] rounded-xl py-3 text-sm font-medium transition-colors"
+                  >
+                    ✓ I&apos;ve completed the signature
+                  </button>
+                </>
+              )}
+            </div>
+
           </div>
         )}
       </div>

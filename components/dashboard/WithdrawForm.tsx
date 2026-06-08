@@ -3,12 +3,18 @@
 import { useState } from 'react'
 import { useToast } from '@/lib/toast-context'
 
+type WithdrawType = 'instant' | 'standard' | 'scheduled'
+
+const WITHDRAW_TYPES: { key: WithdrawType; label: string; timing: string; fee: number; note?: string; recommended?: boolean }[] = [
+  { key: 'instant',   label: 'Instant',   timing: 'Immediate',     fee: 0.05, note: 'May be unavailable for large amounts' },
+  { key: 'standard',  label: 'Standard',  timing: 'Within 24 hrs', fee: 0.01 },
+  { key: 'scheduled', label: 'Scheduled', timing: 'Within 7 days', fee: 0.001, recommended: true },
+]
+
 interface WithdrawFormProps {
   tokenBalance: number
   currentPrice: number
-  lockupEndsAt?: string | null
   investmentStatus: string
-  investedAt?: string | null
   /** Masked bank account on file, e.g. "신한 ***-****-1234". Null if not yet on record. */
   accountOnFile?: string | null
 }
@@ -16,32 +22,26 @@ interface WithdrawFormProps {
 export function WithdrawForm({
   tokenBalance,
   currentPrice,
-  lockupEndsAt,
   investmentStatus,
-  investedAt,
   accountOnFile,
 }: WithdrawFormProps) {
+  const [withdrawType, setWithdrawType] = useState<WithdrawType>('scheduled')
   const [krwAmount, setKrwAmount] = useState('')
   const [loading, setLoading] = useState(false)
   const toast = useToast()
 
   const MIN_WITHDRAWAL = 5000
+  const LARGE_WITHDRAWAL_THRESHOLD = 100_000_000
 
-  const lockupDate  = lockupEndsAt  ? new Date(lockupEndsAt)  : null
-  const investedDate = investedAt   ? new Date(investedAt)    : null
-
-  const isLocked =
-    investmentStatus !== 'ACTIVE' ||
-    (lockupDate ? lockupDate > new Date() : true)
-
-  const daysUntilUnlock = lockupDate
-    ? Math.max(0, Math.ceil((lockupDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : null
+  const selectedType = WITHDRAW_TYPES.find((t) => t.key === withdrawType)!
+  const feeRate = selectedType.fee
 
   const numKrw = parseFloat(krwAmount) || 0
-  const tokenBurnEstimate = numKrw > 0 && currentPrice > 0
-    ? (numKrw / currentPrice).toFixed(2)
-    : null
+  const feeAmount = numKrw * feeRate
+  const netAmount = numKrw - feeAmount
+  const tokensToReturn = numKrw > 0 && currentPrice > 0 ? numKrw / currentPrice : null
+
+  const isLargeWithdrawal = numKrw >= LARGE_WITHDRAWAL_THRESHOLD
 
   async function handleSubmit() {
     if (numKrw < MIN_WITHDRAWAL) {
@@ -53,7 +53,7 @@ export function WithdrawForm({
       const res = await fetch('/api/withdraw/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ krwAmount: numKrw }),
+        body: JSON.stringify({ krwAmount: numKrw, withdrawType }),
       })
       const json = await res.json()
       if (res.ok) {
@@ -69,60 +69,21 @@ export function WithdrawForm({
     }
   }
 
-  if (isLocked) {
+  if (investmentStatus !== 'ACTIVE') {
     return (
       <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5 mb-5">
         <div className="mb-4">
           <h2 className="text-sm font-medium text-white leading-tight">Withdrawal Request</h2>
           <p className="text-[11px] text-white/[0.28] mt-0.5">출금 신청</p>
         </div>
-
-        {lockupDate && daysUntilUnlock !== null ? (
-          <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-xl px-4 py-3 mb-4">
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] shrink-0" />
-              <span className="text-xs font-medium text-[#f59e0b]">
-                Locked · Unlocks in {daysUntilUnlock} day{daysUntilUnlock !== 1 ? 's' : ''}
-              </span>
-            </div>
-            <div className="text-[11px] text-[#f59e0b]/60 pl-3.5 space-y-0.5">
-              <p className="text-white/[0.28]">
-                Withdrawal available after lockup period ends.
-              </p>
-              <p className="text-white/[0.22]">
-                락업 기간 종료 후 출금 가능합니다.
-              </p>
-              {investedDate && (
-                <p>
-                  Investment date:{' '}
-                  {investedDate.toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'long', day: 'numeric',
-                  })}
-                </p>
-              )}
-              <p>
-                Unlocks:{' '}
-                {lockupDate.toLocaleDateString('en-US', {
-                  year: 'numeric', month: 'long', day: 'numeric',
-                })}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-xs text-white/[0.35] mb-4">
-            {investmentStatus !== 'ACTIVE'
-              ? 'Withdrawal available once investment is active.'
-              : 'Lockup period in progress. 락업 기간 종료 후 출금 가능합니다.'}
-          </p>
-        )}
-
+        <p className="text-xs text-white/[0.35] mb-4">
+          Withdrawal available once investment is active.
+        </p>
         <button
           disabled
           className="w-full bg-white/[0.05] text-white/30 rounded-xl py-3 text-sm font-medium cursor-not-allowed"
         >
-          {daysUntilUnlock !== null
-            ? `Unlocks in ${daysUntilUnlock} day${daysUntilUnlock !== 1 ? 's' : ''}`
-            : 'Withdrawal locked'}
+          Not available
         </button>
       </div>
     )
@@ -165,6 +126,54 @@ export function WithdrawForm({
         </p>
       </div>
 
+      {/* WITHDRAWAL TYPE selector (CTRCT-WD-03) */}
+      <div className="mb-4">
+        <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.8px] mb-2">
+          WITHDRAWAL TYPE
+        </div>
+        <div className="space-y-2">
+          {WITHDRAW_TYPES.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setWithdrawType(t.key)}
+              className={`w-full text-left flex items-center justify-between rounded-lg px-3.5 py-3 border transition-colors ${
+                withdrawType === t.key
+                  ? 'border-[#3d8ef8]/50 bg-[#3d8ef8]/[0.04]'
+                  : 'border-white/[0.07] hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center ${
+                  withdrawType === t.key ? 'border-[#3d8ef8]' : 'border-white/20'
+                }`}>
+                  {withdrawType === t.key && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#3d8ef8]" />
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-white">{t.label}</span>
+                    {t.recommended && (
+                      <span className="text-[9px] font-medium bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 rounded-full px-1.5 py-0.5">
+                        Recommended
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-white/30">{t.timing}</span>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-semibold text-white">{(t.fee * 100).toFixed(1)}%</span>
+                <span className="block text-[10px] text-white/30">fee</span>
+              </div>
+            </button>
+          ))}
+        </div>
+        {selectedType.note && (
+          <p className="text-[11px] text-white/25 mt-2 pl-1">{selectedType.note}</p>
+        )}
+      </div>
+
       {/* KRW amount input */}
       <div className="mb-3">
         <div className="flex items-baseline gap-1.5 mb-1.5">
@@ -186,19 +195,51 @@ export function WithdrawForm({
         </div>
         <div className="flex items-center gap-1 mt-1">
           <p className="text-[11px] text-white/30">Minimum ₩{MIN_WITHDRAWAL.toLocaleString('ko-KR')}</p>
-          <span className="text-[11px] text-white/[0.18]">· 최소 출금금액 ₩{MIN_WITHDRAWAL.toLocaleString('ko-KR')}</span>
+          <span className="text-[11px] text-white/[0.18]">· 최소 출금금액</span>
         </div>
       </div>
 
-      {/* Token burn estimate */}
-      {tokenBurnEstimate && (
-        <div className="bg-[#0a0e1a] border border-white/[0.04] rounded-lg px-3 py-2.5 mb-4">
-          <p className="text-[11px] text-white/40">
-            <span className="text-white/60 font-medium">{tokenBurnEstimate} TOKEN</span>{' '}
-            will be burned at current price ({currentPrice.toLocaleString('ko-KR')} KRW/TOKEN)
+      {/* Large withdrawal warning (CTRCT-WD-05) */}
+      {isLargeWithdrawal && (
+        <div className="bg-[#f59e0b]/[0.06] border border-[#f59e0b]/20 rounded-lg px-4 py-3 mb-3">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[#f59e0b] text-xs">⚠️</span>
+            <span className="text-xs font-medium text-[#f59e0b]">Large withdrawal detected</span>
+          </div>
+          <p className="text-[11px] text-white/45 leading-[1.6]">
+            Processing may be extended or split into multiple payments. Please contact the operator in advance.
           </p>
-          <p className="text-[11px] text-white/25 mt-0.5">
-            Balance after: {Math.max(0, tokenBalance - parseFloat(tokenBurnEstimate)).toLocaleString('ko-KR')} TOKEN
+          {/* TODO: ₩100,000,000 또는 전체 운용자산 10% 초과 조건 — 백엔드에서 운용자산 기준값 제공 필요 */}
+        </div>
+      )}
+
+      {/* Real-time withdrawal calculation (CTRCT-WD-04) */}
+      {numKrw > 0 && tokensToReturn !== null && (
+        <div className="bg-[#0b0f1f] border border-white/[0.05] rounded-lg px-4 py-3.5 mb-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-white/[0.28]">Tokens to return</span>
+              <span className="text-xs text-white/70 font-medium">
+                {tokensToReturn.toFixed(4)} TOKEN
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-white/[0.28]">
+                Fee ({(feeRate * 100).toFixed(1)}%)
+              </span>
+              <span className="text-xs text-[#ef4444]/70">
+                −₩{Math.round(feeAmount).toLocaleString('ko-KR')}
+              </span>
+            </div>
+            <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
+              <span className="text-[11px] text-white/50 font-medium">You receive</span>
+              <span className="text-sm text-white font-semibold">
+                ₩{Math.round(netAmount).toLocaleString('ko-KR')}
+              </span>
+            </div>
+          </div>
+          <p className="text-[10px] text-white/[0.2] mt-2.5 leading-[1.5]">
+            Based on: tokens × token price (KRW) × (1 − fee rate) · 제8조 기준
           </p>
         </div>
       )}
@@ -208,11 +249,13 @@ export function WithdrawForm({
         disabled={loading || numKrw < MIN_WITHDRAWAL}
         className="w-full bg-[#3d8ef8] hover:bg-[#2d7ee8] disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl py-3 text-sm font-medium transition-colors"
       >
-        {loading ? 'Processing…' : 'Request Withdrawal in KRW'}
+        {loading ? 'Processing…' : `Request ${selectedType.label} Withdrawal`}
       </button>
 
       <p className="text-center text-[11px] text-white/[0.22] mt-3">
-        출금 신청 후 영업일 기준 24시간 이내 처리됩니다.
+        {selectedType.key === 'instant' ? '즉시 처리 (유동성 조건부)' :
+         selectedType.key === 'standard' ? '영업일 기준 24시간 이내 처리' :
+         '7일 이내 처리 · 권장'}
       </p>
     </div>
   )

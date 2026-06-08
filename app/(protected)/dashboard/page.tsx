@@ -25,8 +25,6 @@ export default async function DashboardPage() {
     entryPrice: number
     valuationKrw: number
     roi: number
-    lockupEndsAt: string | null
-    investedAt: string | null
     investmentStatus: string
     contractSigned: boolean
     depositConfirmed: boolean
@@ -51,8 +49,6 @@ export default async function DashboardPage() {
           entryPrice,
           valuationKrw: tokenBalance * tokenPrice,
           roi: ((tokenPrice - entryPrice) / entryPrice) * 100,
-          lockupEndsAt: user.investment.lockupEndsAt?.toISOString() ?? null,
-          investedAt: user.investment.createdAt.toISOString(),
           investmentStatus: user.investment.status,
           contractSigned: user.investment.contractSigned,
           depositConfirmed: user.investment.depositConfirmed,
@@ -83,8 +79,6 @@ export default async function DashboardPage() {
     entryPrice: 1000,
     valuationKrw: tokenPrice * 1500,
     roi: ((tokenPrice - 1000) / 1000) * 100,
-    lockupEndsAt: new Date(Date.now() + 90 * 86400000).toISOString(),
-    investedAt: new Date(Date.now() - 45 * 86400000).toISOString(),
     investmentStatus: 'ACTIVE',
     contractSigned: true,
     depositConfirmed: true,
@@ -165,8 +159,6 @@ export default async function DashboardPage() {
           <WithdrawForm
             tokenBalance={data.tokenBalance}
             currentPrice={tokenPrice}
-            lockupEndsAt={data.lockupEndsAt}
-            investedAt={data.investedAt}
             investmentStatus={data.investmentStatus}
           />
 

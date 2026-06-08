@@ -229,16 +229,17 @@
       </div>
     </div>
 
-    <h2>수익 배분 구조 (제안)</h2>
+    <h2>수익 배분 구조 (계약서 v3 기준)</h2>
     <table class="tbl">
-      <tr><th>항목</th><th>비율</th><th>용도</th></tr>
-      <tr><td>바이백 실행</td><td>50%</td><td>토큰 소각 → 가격 상승 압력</td></tr>
-      <tr><td>재투자 (시드 증가)</td><td>30%</td><td>봇 운용 자금 확대</td></tr>
-      <tr><td>바이백 준비금</td><td>20%</td><td>손실 구간 버퍼 (3~4개월치 적립 목표)</td></tr>
+      <tr><th>단계</th><th>비율</th><th>설명</th></tr>
+      <tr><td>① 세금 유보</td><td>총이익 × 11%</td><td>세금 별도 유보</td></tr>
+      <tr><td>② 성과보수 (영업자)</td><td>세후 × 30%</td><td>이정민·장재혁 배분</td></tr>
+      <tr><td>③ 투자자 배분</td><td>세후 × 70%</td><td>토큰 가격 상승에 반영</td></tr>
     </table>
-    <div class="warn">
-      <div class="warn-label">⚠ 손실 구간 대응</div>
-      <p>봇 손실 발생 시 바이백 중단, 준비금에서 최소 유지. 계약서에 "봇 손실 시 바이백 중단 및 토큰 가격 하락 가능" 명시 필수.</p>
+    <div class="info">
+      <div class="info-label">예시</div>
+      <p>총이익 100 기준: 세금 11 → 잔여 89 → 성과보수 26.7 → 투자자 62.3</p>
+      <p style="margin-top:6px;"><strong>출금 수수료 (계약서 제8조):</strong> Instant 5% · Standard 1% (24시간) · Scheduled 0.1% (7일, 권장). 락업 없음.</p>
     </div>
   </section>
 
@@ -287,7 +288,8 @@
       <tr><td>원금 손실 가능성</td><td>명시 필수 — 유사수신 방어</td></tr>
       <tr><td>수익 미보장</td><td>"봇 실적에 연동, 보장 없음" 명시</td></tr>
       <tr><td>토큰 가격 하락 가능</td><td>손실 구간 바이백 중단 조건 포함</td></tr>
-      <tr><td>락업 기간</td><td>투자 후 6개월 매도 불가 (유동성 압박 방지)</td></tr>
+      <tr><td>출금 수수료</td><td>Instant 5% / Standard 1% / Scheduled 0.1% — 락업 없음 (계약서 v3)</td></tr>
+      <tr><td>대형 출금 제한</td><td>₩100,000,000 이상 또는 AUM 10% 이상 — 사전 협의 필요 (제8조⑤)</td></tr>
       <tr><td>바이백 조건</td><td>가격 산정 기준, 처리 기간(30일 이내) 명시</td></tr>
       <tr><td>청산 조항</td><td>사업 종료 시 잔여 자산 배분 방식</td></tr>
       <tr><td>분쟁 해결</td><td>민사 중재 우선, 관할 법원 명시</td></tr>
@@ -398,7 +400,7 @@
       <tr><td>평가금액 카드</td><td>잔고 × 현재가 계산</td><td>KRW 표시</td></tr>
       <tr><td>수익률 카드</td><td>(현재가 - 취득가) / 취득가</td><td>% 표시</td></tr>
       <tr><td>가격 차트</td><td>TradingView 위젯 (오라클 히스토리)</td><td>라인 차트</td></tr>
-      <tr><td>출금 신청</td><td>폼 → 토큰 전송 → 관리자 알림</td><td>락업 기간 중 비활성화</td></tr>
+      <tr><td>출금 신청</td><td>폼 → 출금 유형 선택 (Instant/Standard/Scheduled) → 토큰 전송 → 관리자 알림</td><td>수수료 0.1%–5% (유형별)</td></tr>
     </table>
 
     <h2>⑤ 관리자 패널 <code>/admin</code></h2>
@@ -425,7 +427,7 @@
       <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><div class="title">Step 3: MetaMask 연결</div><div class="desc">지갑 주소 등록. wagmi 사용.</div></div></div>
       <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><div class="title">Step 4: 토큰 수령 확인 → 대시보드 진입</div><div class="desc">투자금 비례 토큰 자동 발행. ERC-20 전송.</div></div></div>
       <div class="flow-step"><div class="flow-num">7</div><div class="flow-content"><div class="title">대시보드 → 잔고/가격/수익률 모니터링</div><div class="desc">오라클 가격 기준. 차트는 TradingView.</div></div></div>
-      <div class="flow-step"><div class="flow-num">8</div><div class="flow-content"><div class="title">출금 신청 → 토큰 전송 → 승인 대기 → 현금 수령</div><div class="desc">락업 6개월 이후 가능. 운영팀 수동 처리.</div></div></div>
+      <div class="flow-step"><div class="flow-num">8</div><div class="flow-content"><div class="title">출금 신청 → 유형 선택 → 토큰 전송 → 승인 대기 → 현금 수령</div><div class="desc">락업 없음. 출금 수수료 0.1%–5% (유형별). 운영팀 수동 처리.</div></div></div>
     </div>
   </section>
 
@@ -443,7 +445,7 @@
       <tr><td>소각 방식</td><td>봇 수익으로 바이백 후 burn 함수 호출</td></tr>
       <tr><td>가격 결정</td><td>수동 오라클 (관리자 입력) — 자동화 아님</td></tr>
       <tr><td>거래소 상장</td><td>없음. 운영팀 바이백 또는 투자자 간 P2P만 허용</td></tr>
-      <tr><td>락업</td><td>투자 후 6개월 출금 불가 (컨트랙트 또는 계약서)</td></tr>
+      <tr><td>출금 수수료</td><td>락업 없음. 출금 시 유형별 수수료: Instant 5% / Standard 1% / Scheduled 0.1%</td></tr>
     </table>
 
     <h2>프레이밍 전략</h2>
@@ -765,6 +767,24 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
   <section class="section" id="changelog">
     <h1>변경 이력</h1>
 
+    <div class="phase" style="border: 0.5px solid rgba(61,142,248,0.3);">
+      <div class="phase-header">
+        <span class="badge badge-blue">v1.9 — 2026.06.08</span>
+        <span class="phase-title">계약서 v3 기반 UI 정합 (CONTRACT_ALIGN_v1)</span>
+      </div>
+      <div class="phase-item"><strong>CTRCT-OB-01</strong> — <code>onboarding/step2</code> RISK DISCLOSURE 체크리스트 7개 항목 추가 (계약서 제10조). 전부 체크 전 Sign Agreement 버튼 비활성화</div>
+      <div class="phase-item"><strong>CTRCT-OB-02</strong> — <code>onboarding/step2</code> CONTRACT INFO 카드 추가 (계약형태·영업자·최소투자·성과보수)</div>
+      <div class="phase-item"><strong>CTRCT-WD-01</strong> — <code>onboarding/step2</code> Lockup Period 선택 UI 제거 → 출금 수수료 안내 테이블 (Instant 5% / Standard 1% / Scheduled 0.1%) 표시</div>
+      <div class="phase-item"><strong>CTRCT-WD-02~06</strong> — <code>WithdrawForm</code> 락업 상태 UI 완전 제거 (lockedUntil 로직, isLocked 조건분기, Locked amber 박스, Unlocks in X days 버튼)</div>
+      <div class="phase-item"><strong>CTRCT-WD-03</strong> — <code>WithdrawForm</code> 출금 유형 선택 라디오 3개 (Instant 5% / Standard 1% / Scheduled 0.1%·권장·기본값)</div>
+      <div class="phase-item"><strong>CTRCT-WD-04</strong> — <code>WithdrawForm</code> 실시간 출금 계산 표시 (Tokens to return / Fee / You receive) — 제8조 공식 기반</div>
+      <div class="phase-item"><strong>CTRCT-WD-05</strong> — <code>WithdrawForm</code> 대형 출금 경고 (≥₩100,000,000) amber box</div>
+      <div class="phase-item"><strong>CTRCT-VAULT-01</strong> — <code>InvestPanel</code> "Lock-up: Short/Standard/Extended" → "Withdrawal: 0.1%–5% · type at exit" 교체 (token estimate 아래 + Token Details 행)</div>
+      <div class="phase-item"><strong>CTRCT-VAULT-02</strong> — <code>pool/detail</code> FEE STRUCTURE 섹션 신규 추가 (세금유보 11% → 성과보수 30% → 투자자 70% + 예시 + 하이워터마크 + 출금수수료 3단계)</div>
+      <div class="phase-item"><strong>CTRCT-VAULT-03</strong> — <code>pool/detail</code> Token Price "Oracle · live" 배지에 ⓘ 아이콘 + hover tooltip (공식: Total AUM ÷ Total Tokens Issued, Upbit USDT/KRW, off-chain oracle)</div>
+      <div class="phase-item"><strong>CTRCT-DOC-01~03</strong> — preview/onboarding.html · dashboard.html · vault.html 동기화 업데이트</div>
+    </div>
+
     <div class="phase">
       <div class="phase-header">
         <span class="badge badge-green">v0.1 — 2026.05.18</span>
@@ -1035,10 +1055,10 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <div class="phase-item"><strong>FIX-02</strong> — <code>middleware.ts</code>: <code>INVITE_GATE_PREFIXES</code> 배열 추가 (<code>/pool/detail</code>, <code>/onboarding</code>, <code>/dashboard</code>, <code>/admin</code>). gate 체크 로직 개선: 프로덕션에서는 전체 경로 강제 적용, 개발환경에서는 INVITE_GATE_PREFIXES 경로만 강제 적용 (랜딩 페이지 등 개발 편의 허용)</div>
     </div>
 
-    <h2>다음 작업 순서 (v1.7 완료 / 보류 항목)</h2>
+    <h2>다음 작업 순서 (v1.9 완료 / 보류 항목)</h2>
     <div class="warn">
       <div class="warn-label">⚠ 스펙 참조</div>
-      <p>v1.0~v1.7 UI/코드 완료. 남은 것: REF-02 수동 실행 (<code>npx prisma db push &amp;&amp; npx prisma generate</code>), .env 설정 (모두싸인/카카오/온체인 API 키), 컨트랙트 배포. 보류 항목: CONTENT-A(프로젝트명/토큰명), CONTENT-B(컨트랙트 주소), CONTENT-C(토큰 가격), CONTENT-D(락업 기간/수수료), CONTENT-E(도메인/이메일), CONTENT-F(모두싸인 URL).</p>
+      <p>v1.0~v1.9 UI/코드 완료. 남은 것: REF-02 수동 실행 (<code>npx prisma db push &amp;&amp; npx prisma generate</code>), .env 설정 (모두싸인/온체인 API 키), 컨트랙트 배포. 보류 항목: CONTENT-A(프로젝트명/토큰명), CONTENT-B(컨트랙트 주소), CONTENT-C(토큰 가격), CONTENT-E(도메인/이메일), CONTENT-F(모두싸인 URL).</p>
     </div>
     <table class="tbl">
       <tr><th>Phase</th><th>작업 ID</th><th>내용</th><th>상태</th><th>우선순위</th></tr>
@@ -1067,6 +1087,11 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
       <tr><td>-</td><td>ENV</td><td><code>.env</code> 작성 → 모두싸인/카카오/온체인 API 키 설정 → 컨트랙트 배포</td><td><span class="badge badge-amber">사용자 직접</span></td><td>다음 단계</td></tr>
       <tr><td>7 FIX</td><td>FIX-01</td><td><code>MonthlyReturns.tsx</code> — 2025 note 문구 수정 (operational issues → V3 development &amp; migration period)</td><td><span class="badge badge-green">완료 (v1.7)</span></td><td>🟢 완료</td></tr>
       <tr><td>7 FIX</td><td>FIX-02</td><td><code>middleware.ts</code> — <code>INVITE_GATE_PREFIXES</code> 추가, /pool/detail 명시적 게이팅, prod/dev 환경 분리</td><td><span class="badge badge-green">완료 (v1.7)</span></td><td>🟢 완료</td></tr>
+      <tr><td>8 CTRCT</td><td>CTRCT-OB-01</td><td><code>onboarding/step2</code> — 리스크 공시 체크리스트 7개 (제10조), 전체 동의 전 버튼 비활성화</td><td><span class="badge badge-green">완료 (v1.9)</span></td><td>🟢 완료</td></tr>
+      <tr><td>8 CTRCT</td><td>CTRCT-OB-02</td><td><code>onboarding/step2</code> — CONTRACT INFO 카드 (계약형태·영업자·최소투자·성과보수)</td><td><span class="badge badge-green">완료 (v1.9)</span></td><td>🟢 완료</td></tr>
+      <tr><td>8 CTRCT</td><td>CTRCT-WD-01~06</td><td><code>onboarding/step2 + WithdrawForm + dashboard/page</code> — 락업 UI 전면 제거, 출금 유형 선택 (Instant/Standard/Scheduled), 실시간 계산, 대형출금 경고</td><td><span class="badge badge-green">완료 (v1.9)</span></td><td>🟢 완료</td></tr>
+      <tr><td>8 CTRCT</td><td>CTRCT-VAULT-01~03</td><td><code>InvestPanel + pool/detail</code> — 락업→출금수수료 텍스트 교체, FEE STRUCTURE 섹션, Oracle ⓘ tooltip</td><td><span class="badge badge-green">완료 (v1.9)</span></td><td>🟢 완료</td></tr>
+      <tr><td>8 CTRCT</td><td>CTRCT-DOC-01~04</td><td>preview/onboarding.html · dashboard.html · vault.html · PROJECT_SPEC.html 동기화</td><td><span class="badge badge-green">완료 (v1.9)</span></td><td>🟢 완료</td></tr>
     </table>
 
     <h2>파일 구조 (현재 상태 — v1.1 / v1.2 예정 포함)</h2>

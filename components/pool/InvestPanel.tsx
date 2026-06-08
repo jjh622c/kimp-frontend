@@ -70,7 +70,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
             </span>
           </div>
           <div className="text-[10px] text-white/[0.2] mt-1">
-            Lock-up: Short / Standard / Extended
+            Withdrawal: 0.1%–5% · type at exit
           </div>
         </div>
 
@@ -117,7 +117,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
             { label: 'Standard',      value: 'ERC-20 (Base Mainnet)' },
             { label: 'Initial price', value: 'TBD upon launch' },
             { label: 'Issuance',      value: 'On deposit confirmation' },
-            { label: 'Lock-up',       value: 'Short / Standard / Extended' },
+            { label: 'Withdrawal',     value: '0.1%–5% · type at exit' },
             { label: 'Buyback',       value: 'Bot profits → periodic buyback' },
             { label: 'Exit',          value: 'Operator buyback' },
             { label: 'Chain',         value: 'Base Mainnet (Chain ID: 8453)' },
@@ -137,7 +137,7 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
         </div>
         <p className="text-[10px] text-white/[0.35] leading-[1.7]">
           Token value may decrease. Principal loss is possible. Past returns do not guarantee
-          future performance. Lock-up period applies from investment date.
+          future performance. Withdrawal fee applies (0.1%–5% by type).
         </p>
       </div>
     </div>

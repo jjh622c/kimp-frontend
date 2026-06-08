@@ -84,11 +84,19 @@ export default async function PoolDetailPage() {
             </div>
             <div className={`text-2xl font-semibold ${stat.color}`}>{stat.value}</div>
             {stat.badge ? (
-              <div className="mt-1">
-                <span className="inline-flex items-center gap-1 bg-[#22c55e]/[0.08] border border-[#22c55e]/20 rounded-full px-2 py-0.5 text-[10px] text-[#22c55e]">
+              <div className="mt-1 relative group">
+                <span className="inline-flex items-center gap-1 bg-[#22c55e]/[0.08] border border-[#22c55e]/20 rounded-full px-2 py-0.5 text-[10px] text-[#22c55e] cursor-default">
                   <span className="w-1 h-1 rounded-full bg-[#22c55e] animate-badge-pulse" />
                   Oracle · live
+                  <span className="ml-0.5 text-[#22c55e]/60">ⓘ</span>
                 </span>
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-0 mb-2 w-64 bg-[#0b0f1f] border border-white/[0.1] rounded-lg p-3 text-[11px] text-white/60 leading-[1.65] hidden group-hover:block z-10 shadow-xl">
+                  <p className="font-medium text-white/80 mb-1.5">Token Price Formula</p>
+                  <p className="mb-1">Token Price (USD) = Total AUM ÷ Total Tokens Issued</p>
+                  <p className="mb-1">KRW conversion: Upbit USDT/KRW market rate</p>
+                  <p className="text-white/35">Source: Operator-run closed-source off-chain oracle node</p>
+                </div>
               </div>
             ) : stat.note ? (
               <div className="text-[10px] text-white/[0.2] mt-1">{stat.note}</div>
@@ -131,6 +139,59 @@ export default async function PoolDetailPage() {
                   <span className="text-xs text-white font-medium">{item.value}</span>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Fee Structure (CTRCT-VAULT-02) */}
+          <div className="bg-[#0e1425] border border-white/[0.07] rounded-xl p-5">
+            <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-4">
+              Fee Structure
+            </div>
+            <div className="space-y-2 mb-4">
+              {[
+                { step: '①', label: 'Tax Reserve',     formula: 'Gross profit × 11%',   dest: 'Held separately' },
+                { step: '②', label: 'Performance Fee', formula: 'Remaining × 30%',       dest: 'Operators' },
+                { step: '③', label: 'Investor Share',  formula: 'Remaining × 70%',       dest: 'Reflected in token price ↑' },
+              ].map(({ step, label, formula, dest }) => (
+                <div key={step} className="flex items-start gap-3 py-2 border-b border-white/[0.04] last:border-0">
+                  <span className="text-[11px] text-white/25 w-5 shrink-0">{step}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <span className="text-xs text-white/70 font-medium">{label}</span>
+                      <span className="text-[11px] text-white/40 font-mono">{formula}</span>
+                    </div>
+                    <span className="text-[11px] text-white/30">{dest}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="bg-[#0a0e1a] border border-white/[0.05] rounded-lg px-3 py-2.5 mb-3">
+              <p className="text-[11px] text-white/40 leading-[1.65]">
+                <span className="text-white/60 font-medium">Example (profit 100):</span>{' '}
+                Tax 11 → Remaining 89 → Fee 26.7 → Investor 62.3
+              </p>
+            </div>
+            <p className="text-[11px] text-white/30 leading-[1.6]">
+              High-watermark: No fee applies when AUM is below the prior peak.
+            </p>
+            {/* Withdrawal fees */}
+            <div className="mt-4 pt-4 border-t border-white/[0.06]">
+              <div className="text-[11px] text-white/[0.28] uppercase tracking-[0.5px] mb-2">
+                Withdrawal Fee
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: 'Instant',   fee: '5.0%', note: 'Immediate' },
+                  { label: 'Standard',  fee: '1.0%', note: '24 hrs' },
+                  { label: 'Scheduled', fee: '0.1%', note: '7 days ✓' },
+                ].map(({ label, fee, note }) => (
+                  <div key={label} className="bg-[#0a0e1a] border border-white/[0.05] rounded-lg p-2.5 text-center">
+                    <div className="text-xs font-semibold text-white mb-0.5">{fee}</div>
+                    <div className="text-[10px] text-white/50">{label}</div>
+                    <div className="text-[10px] text-white/25">{note}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

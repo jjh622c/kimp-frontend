@@ -4,6 +4,29 @@
 > 작업 완료 시 `[ ]` → `[x]`로 변경.
 > **형상관리 기준 파일: `dev_docs/PROJECT_SPEC.html`** — 모든 기능 변경 시 여기에도 반영.
 
+---
+
+## v1.9 — 계약서 v3 기반 UI 정합 (2026.06.08 완료)
+
+지침서: `dev_docs/CONTRACT_ALIGN_v1.md`
+
+### 완료된 작업 [x]
+- [x] **CTRCT-OB-01** `app/(onboarding)/onboarding/step2/page.tsx` — RISK DISCLOSURE 체크리스트 7개 항목 (계약서 제10조). 전부 체크 전 Sign Agreement 버튼 비활성화
+- [x] **CTRCT-OB-02** `app/(onboarding)/onboarding/step2/page.tsx` — CONTRACT INFO 카드 추가 (익명조합 · 이정민·장재혁 · ₩10,000,000 · 30%)
+- [x] **CTRCT-WD-01** `app/(onboarding)/onboarding/step2/page.tsx` — Lockup Period 선택 UI 제거 → Withdrawal Fee Structure 안내 테이블 (Instant 5% / Standard 1% / Scheduled 0.1%)
+- [x] **CTRCT-WD-02** `components/dashboard/WithdrawForm.tsx` — 락업 상태 UI 완전 제거 (isLocked, lockedUntil, Locked amber notice, Unlocks in X days 버튼)
+- [x] **CTRCT-WD-03** `components/dashboard/WithdrawForm.tsx` — 출금 유형 라디오 카드 3개 (Instant/Standard/Scheduled·권장·기본값)
+- [x] **CTRCT-WD-04** `components/dashboard/WithdrawForm.tsx` — 실시간 계산: Tokens to return / Fee / You receive
+- [x] **CTRCT-WD-05** `components/dashboard/WithdrawForm.tsx` — 대형 출금 경고 (≥₩100,000,000) amber box
+- [x] **CTRCT-WD-06** `app/(protected)/dashboard/page.tsx` — lockupEndsAt / investedAt props 제거
+- [x] **CTRCT-VAULT-01** `components/pool/InvestPanel.tsx` — "Lock-up: Short/Standard/Extended" → "Withdrawal: 0.1%–5% · type at exit"
+- [x] **CTRCT-VAULT-02** `app/(public)/pool/detail/page.tsx` — FEE STRUCTURE 섹션 추가 (3단계 배분 + 예시 + 하이워터마크 + 출금 수수료 3열 그리드)
+- [x] **CTRCT-VAULT-03** `app/(public)/pool/detail/page.tsx` — Oracle 배지 ⓘ hover tooltip (공식·Upbit·off-chain 설명)
+- [x] **CTRCT-DOC-01** `preview/onboarding.html` — step2 패널 계약서 v3 기반 동기화 (락업 제거, CONTRACT INFO, RISK DISCLOSURE)
+- [x] **CTRCT-DOC-02** `preview/vault.html` — InvestPanel 락업→출금수수료 텍스트 교체
+- [x] **CTRCT-DOC-03** `preview/dashboard.html` — 출금 유형 선택 UI, 실시간 계산 미리보기 추가 (락업 amber notice 제거)
+- [x] **CTRCT-DOC-04** `dev_docs/PROJECT_SPEC.html` — v1.9 changelog, 수익 배분 구조, 계약서 필수 항목, 토크노믹스, 플로우, 다음 작업 순서 업데이트
+
 ## 작업 규칙
 - 백엔드 연동 부분은 구조/UI만 만들고 TODO 주석으로 표시
 - 작업 완료 후 반드시 PROJECT_SPEC.html changelog + 다음 작업 순서 업데이트

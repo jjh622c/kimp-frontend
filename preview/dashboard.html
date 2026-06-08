@@ -236,8 +236,46 @@
       <div class="withdraw-title">Withdrawal Request</div>
       <div class="withdraw-sub">Enter amount to withdraw and provide your return bank account</div>
 
-      <div style="background:rgba(245,158,11,0.06);border:0.5px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px 12px;margin-bottom:16px">
-        <p style="font-size:12px;color:rgba(245,158,11,0.8)">⏳ Lockup period active. Available for withdrawal: <strong>Jul 4, 2026</strong></p>
+      <!-- Withdrawal Type selector -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Withdrawal Type</div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="wdTypeGroup">
+          <button onclick="selectWdType('instant',this)" style="text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:inherit;transition:all .15s">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:#fff">Instant</div>
+              <div style="font-size:11px;color:var(--text3)">Immediate</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:14px;font-weight:600;color:#fff">5.0%</div>
+              <div style="font-size:10px;color:var(--text3)">fee</div>
+            </div>
+          </button>
+          <button onclick="selectWdType('standard',this)" style="text-align:left;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:inherit;transition:all .15s">
+            <div>
+              <div style="font-size:13px;font-weight:500;color:#fff">Standard</div>
+              <div style="font-size:11px;color:var(--text3)">Within 24 hrs</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:14px;font-weight:600;color:#fff">1.0%</div>
+              <div style="font-size:10px;color:var(--text3)">fee</div>
+            </div>
+          </button>
+          <button id="wdScheduled" onclick="selectWdType('scheduled',this)" style="text-align:left;background:rgba(61,142,248,0.04);border:1px solid rgba(61,142,248,0.4);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-family:inherit;transition:all .15s">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div>
+                <div style="font-size:13px;font-weight:500;color:#fff;display:flex;align-items:center;gap:6px">
+                  Scheduled
+                  <span style="font-size:9px;color:#22c55e;background:rgba(34,197,94,0.1);border:0.5px solid rgba(34,197,94,0.2);border-radius:99px;padding:2px 6px">Recommended</span>
+                </div>
+                <div style="font-size:11px;color:var(--text3)">Within 7 days</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:14px;font-weight:600;color:#fff">0.1%</div>
+              <div style="font-size:10px;color:var(--text3)">fee</div>
+            </div>
+          </button>
+        </div>
       </div>
 
       <div class="return-acct-card">
@@ -255,14 +293,24 @@
         <span class="input-suffix">KRW</span>
       </div>
 
-      <div class="info-rows">
-        <div class="info-row"><span class="info-key">Available balance</span><span class="info-val-text">₩2,266,500</span></div>
-        <div class="info-row"><span class="info-key">Min. withdrawal</span><span class="info-val-text">₩100,000</span></div>
-        <div class="info-row"><span class="info-key">Lockup ends</span><span class="info-val-text"><span class="lockup-badge">Jul 4, 2026</span></span></div>
+      <!-- Withdrawal calculation preview -->
+      <div id="wdCalc" style="background:#0b0f1f;border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:14px 16px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:11px;color:var(--text3)">Tokens to return</span>
+          <span style="font-size:12px;color:rgba(255,255,255,0.7)">330.68 TOKEN</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:11px;color:var(--text3)">Fee (0.1%)</span>
+          <span style="font-size:12px;color:rgba(239,68,68,0.7)">−₩500</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05)">
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);font-weight:500">You receive</span>
+          <span style="font-size:14px;color:#fff;font-weight:600">₩499,500</span>
+        </div>
       </div>
 
-      <button class="withdraw-btn" disabled>Request Withdrawal</button>
-      <p style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center">Withdrawal available after lockup period ends</p>
+      <button class="withdraw-btn">Request Scheduled Withdrawal</button>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px;text-align:center">7일 이내 처리 · 권장</p>
     </div>
 
     <!-- Invite section -->
@@ -355,6 +403,27 @@ function buildProgress() {
 }
 
 buildProgress();
+
+// Withdrawal type selector
+const WD_FEES = { instant: 0.05, standard: 0.01, scheduled: 0.001 };
+const WD_LABELS = { instant: 'Instant Withdrawal', standard: 'Standard Withdrawal', scheduled: 'Scheduled Withdrawal' };
+const WD_NOTES = { instant: '즉시 처리 (유동성 조건부)', standard: '영업일 기준 24시간 이내 처리', scheduled: '7일 이내 처리 · 권장' };
+let selectedWdType = 'scheduled';
+
+function selectWdType(type, el) {
+  selectedWdType = type;
+  const btns = document.querySelectorAll('#wdTypeGroup button');
+  btns.forEach(b => {
+    b.style.border = '1px solid rgba(255,255,255,0.07)';
+    b.style.background = 'rgba(255,255,255,0.02)';
+  });
+  el.style.border = '1px solid rgba(61,142,248,0.4)';
+  el.style.background = 'rgba(61,142,248,0.04)';
+  const btn = document.querySelector('.withdraw-btn');
+  if (btn) { btn.textContent = 'Request ' + WD_LABELS[type]; }
+  const note = btn && btn.nextElementSibling;
+  if (note) { note.textContent = WD_NOTES[type]; }
+}
 </script>
 </body>
 </html>
