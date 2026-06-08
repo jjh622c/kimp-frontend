@@ -128,6 +128,29 @@
   .info-row:last-child{border-bottom:none}
   .info-label{color:var(--text2)}
   .info-val{color:rgba(255,255,255,.7)}
+
+  /* oracle tooltip */
+  .oracle-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(34,197,94,0.08);border:0.5px solid rgba(34,197,94,0.2);border-radius:999px;padding:2px 8px;font-size:10px;color:var(--green);cursor:default;position:relative}
+  .oracle-badge:hover .oracle-tip{display:block}
+  .oracle-tip{display:none;position:absolute;bottom:calc(100% + 8px);left:0;width:256px;background:var(--th);border:0.5px solid rgba(255,255,255,0.1);border-radius:10px;padding:12px 14px;font-size:11px;color:rgba(255,255,255,.55);line-height:1.65;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .oracle-tip p{margin-bottom:6px}
+  .oracle-tip p:last-child{margin-bottom:0;color:rgba(255,255,255,.3)}
+
+  /* fee structure card */
+  .fee-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-top:12px}
+  .fee-step{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+  .fee-step:last-of-type{border-bottom:none}
+  .fee-num{font-size:11px;color:rgba(255,255,255,.22);width:16px;flex-shrink:0;margin-top:1px}
+  .fee-detail{flex:1}
+  .fee-label{font-size:12px;color:rgba(255,255,255,.7);font-weight:500}
+  .fee-formula{font-size:11px;color:rgba(255,255,255,.35);font-family:monospace}
+  .fee-dest{font-size:11px;color:rgba(255,255,255,.28)}
+  .fee-example{background:#0a0e1a;border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:10px 12px;margin:10px 0;font-size:11px;color:rgba(255,255,255,.38);line-height:1.65}
+  .fee-wd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .fee-wd-box{background:#0a0e1a;border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:10px;text-align:center}
+  .fee-wd-pct{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+  .fee-wd-name{font-size:10px;color:rgba(255,255,255,.45)}
+  .fee-wd-note{font-size:10px;color:rgba(255,255,255,.22);margin-top:2px}
 </style>
 </head>
 <body>
@@ -190,7 +213,17 @@
       <div class="stat-card">
         <div class="sc-label">Token Price</div>
         <div class="sc-val" style="color:var(--text);font-size:18px">TBD</div>
-        <div class="sc-note"><span class="oracle-dot"></span>Oracle · live</div>
+        <div style="margin-top:4px">
+          <span class="oracle-badge">
+            <span class="oracle-dot"></span>Oracle · live <span style="color:rgba(34,197,94,.5);margin-left:2px">ⓘ</span>
+            <div class="oracle-tip">
+              <p style="font-weight:500;color:rgba(255,255,255,.8);margin-bottom:6px">Token Price Formula</p>
+              <p>Token Price (USD) = Total AUM ÷ Total Tokens Issued</p>
+              <p>KRW conversion: Upbit USDT/KRW market rate</p>
+              <p>Source: Operator-run closed-source off-chain oracle node</p>
+            </div>
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -316,6 +349,66 @@
 
         <p class="returns-footnote">※ 2021–2022 returns use Modified Dietz method. 2022 Q4 – 2024 returns are official settlement data.
         2025 excluded (V3 development &amp; migration period). Past performance does not guarantee future results.</p>
+      </div>
+
+      <!-- Fee Structure (CTRCT-VAULT-02) -->
+      <div class="fee-card">
+        <div class="info-title">Fee Structure</div>
+        <div class="fee-step">
+          <span class="fee-num">①</span>
+          <div class="fee-detail">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">
+              <span class="fee-label">Tax Reserve</span>
+              <span class="fee-formula">Gross profit × 11%</span>
+            </div>
+            <span class="fee-dest">Held separately</span>
+          </div>
+        </div>
+        <div class="fee-step">
+          <span class="fee-num">②</span>
+          <div class="fee-detail">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">
+              <span class="fee-label">Performance Fee</span>
+              <span class="fee-formula">Remaining × 30%</span>
+            </div>
+            <span class="fee-dest">Operators</span>
+          </div>
+        </div>
+        <div class="fee-step">
+          <span class="fee-num">③</span>
+          <div class="fee-detail">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">
+              <span class="fee-label">Investor Share</span>
+              <span class="fee-formula">Remaining × 70%</span>
+            </div>
+            <span class="fee-dest">Reflected in token price ↑</span>
+          </div>
+        </div>
+        <div class="fee-example">
+          <span style="color:rgba(255,255,255,.6);font-weight:500">Example (profit 100):</span>
+          Tax 11 → Remaining 89 → Fee 26.7 → Investor 62.3
+        </div>
+        <p style="font-size:11px;color:rgba(255,255,255,.28);line-height:1.6">High-watermark: No fee applies when AUM is below the prior peak.</p>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.05)">
+          <div class="info-title" style="margin-bottom:8px">Withdrawal Fee</div>
+          <div class="fee-wd-grid">
+            <div class="fee-wd-box">
+              <div class="fee-wd-pct">5.0%</div>
+              <div class="fee-wd-name">Instant</div>
+              <div class="fee-wd-note">Immediate</div>
+            </div>
+            <div class="fee-wd-box">
+              <div class="fee-wd-pct">1.0%</div>
+              <div class="fee-wd-name">Standard</div>
+              <div class="fee-wd-note">24 hrs</div>
+            </div>
+            <div class="fee-wd-box" style="border-color:rgba(34,197,94,0.15)">
+              <div class="fee-wd-pct">0.1%</div>
+              <div class="fee-wd-name" style="color:rgba(34,197,94,.6)">Scheduled ✓</div>
+              <div class="fee-wd-note">7 days</div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
