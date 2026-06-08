@@ -442,9 +442,9 @@
       <tr><td>초기 가격</td><td>1,000 KRW 고정 시작</td></tr>
       <tr><td>발행 방식</td><td>투자금 입금 확인 후 관리자 수동 발행 (mint)</td></tr>
       <tr><td>발행량</td><td>투자금 ÷ 토큰 초기가 = 발행 토큰 수</td></tr>
-      <tr><td>소각 방식</td><td>봇 수익으로 바이백 후 burn 함수 호출</td></tr>
-      <tr><td>가격 결정</td><td>수동 오라클 (관리자 입력) — 자동화 아님</td></tr>
-      <tr><td>거래소 상장</td><td>없음. 운영팀 바이백 또는 투자자 간 P2P만 허용</td></tr>
+      <tr><td>수익 배분 구조</td><td>봇 수익 → AUM 증가 → 오라클이 토큰 가격 상향 반영 (바이백·소각 없음)</td></tr>
+      <tr><td>가격 결정</td><td>오라클: 토큰 가격 = Total AUM ÷ Total Tokens Issued (관리자 수동 업데이트)</td></tr>
+      <tr><td>거래소 상장</td><td>없음. 출금 시 토큰 반납 → 오라클 가격 정산 → KRW 지급</td></tr>
       <tr><td>출금 수수료</td><td>락업 없음. 출금 시 유형별 수수료: Instant 5% / Standard 1% / Scheduled 0.1%</td></tr>
     </table>
 
@@ -766,6 +766,18 @@ enum WithdrawStatus   { PENDING APPROVED COMPLETED REJECTED }</code></pre>
   <!-- ─── CHANGELOG ─── -->
   <section class="section" id="changelog">
     <h1>변경 이력</h1>
+
+    <div class="phase" style="border: 0.5px solid rgba(61,142,248,0.3);">
+      <div class="phase-header">
+        <span class="badge badge-blue">v2.0 — 2026.06.08</span>
+        <span class="phase-title">바이백/소각 용어 제거 및 계약서 v3 수익 구조 정합 (TERM_FIX_v1)</span>
+      </div>
+      <div class="phase-item"><strong>TERM-01/02</strong> — <code>components/landing/HowItWorksSection.tsx</code>: Section 02 설명(buybacks and burns → AUM/oracle 설명), Section 03 번호·제목·설명 전면 교체 ("Bot buybacks &amp; burns" → "Oracle price appreciation")</div>
+      <div class="phase-item"><strong>TERM-03/04/05</strong> — <code>components/pool/InvestPanel.tsx</code>: Token Details 카드 "Buyback → Returns (AUM growth → oracle price ↑)", "Exit: Operator buyback → Token redemption · oracle price settlement"</div>
+      <div class="phase-item"><strong>TERM-06</strong> — <code>components/dashboard/InvestmentProgress.tsx</code>: "Token Minted" → "Token Issued" (이미 반영됨 확인)</div>
+      <div class="phase-item"><strong>TERM-07/08/09</strong> — preview/index.html · vault.html · dashboard.html 동기화 (동일 용어 교체)</div>
+      <div class="phase-item"><strong>TERM-10</strong> — PROJECT_SPEC.html: 토큰 구조 테이블 "소각 방식" → "수익 배분 구조(AUM 증가·오라클 가격 상승)", "거래소 상장" 출금 정산 방식 명확화</div>
+    </div>
 
     <div class="phase" style="border: 0.5px solid rgba(61,142,248,0.3);">
       <div class="phase-header">

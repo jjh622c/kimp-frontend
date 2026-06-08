@@ -7,12 +7,12 @@ const steps = [
   {
     num: '02 · Token issuance',
     title: 'Receive tokens on-chain',
-    desc: 'Admin mints proportional tokens to your wallet after deposit is confirmed. Token price rises as bot profits are used for periodic buybacks and burns.',
+    desc: 'Admin issues proportional tokens to your MetaMask wallet after deposit is confirmed. Token price is calculated as Total AUM ÷ Total Tokens Issued, and rises as the bot generates profit.',
   },
   {
-    num: '03 · Profit distribution',
-    title: 'Bot buybacks & burns',
-    desc: 'Arbitrage bot profits are periodically used to buy back and burn tokens, increasing the price for all holders transparently on-chain.',
+    num: '03 · Token price growth',
+    title: 'Oracle price appreciation',
+    desc: 'As the arbitrage bot generates profits, total AUM grows. The oracle updates the token price upward, distributing gains to all holders proportionally — no buybacks or burns.',
   },
 ]
 

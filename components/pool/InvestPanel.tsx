@@ -118,8 +118,8 @@ export function InvestPanel({ tokenPrice }: InvestPanelProps) {
             { label: 'Initial price', value: 'TBD upon launch' },
             { label: 'Issuance',      value: 'On deposit confirmation' },
             { label: 'Withdrawal',     value: '0.1%–5% · type at exit' },
-            { label: 'Buyback',       value: 'Bot profits → periodic buyback' },
-            { label: 'Exit',          value: 'Operator buyback' },
+            { label: 'Returns',       value: 'AUM growth → oracle price ↑' },
+            { label: 'Exit',          value: 'Token redemption · oracle price settlement' },
             { label: 'Chain',         value: 'Base Mainnet (Chain ID: 8453)' },
           ].map((item) => (
             <div key={item.label} className="flex items-center justify-between">
